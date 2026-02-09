@@ -58,6 +58,16 @@ class Product(models.Model):
     def remaining_quantity(self):
         # (Logic คำนวณคงเหลือเหมือนเดิม - จะย้ายไป AvailabilityService เพื่อความ Clean)
         return 0 # Placeholder for now
+
+    @property
+    def key_specs(self):
+        """Extracts the first 3 bullet points from the HTML description."""
+        if not self.description:
+            return []
+        import re
+        # Find all <li> content
+        items = re.findall(r'<li>(.*?)</li>', self.description, re.DOTALL)
+        return [item.strip() for item in items[:3]]
 class ProductionVehicle(Product):
     class Meta:
         proxy = True
