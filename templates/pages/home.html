@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}MCOT Rental - Professional Broadcast Equipment{% endblock %}
+
+{% block content %}
+<!-- Industrial Commerce Container -->
+<div class="max-w-[1600px] mx-auto px-4 py-6 min-h-screen bg-[#0F0F0F]">
+
+    <div class="grid grid-cols-12 gap-6">
+
+        <!-- COLUMN 1: SIDEBAR NAV (2/12) -->
+        <div class="hidden lg:block col-span-2 space-y-6">
+            <!-- Categories -->
+            <div class="bg-[#151515] border border-white/10 overflow-hidden">
+                <div class="bg-[#202020] px-4 py-3 border-b border-white/10">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">Department</h3>
+                </div>
+                <div class="flex flex-col">
+                    <a href="{% url 'store:catalog' %}?category=camera"
+                        class="px-4 py-2 text-[13px] text-gray-400 hover:text-white hover:bg-white/5 border-b border-white/5 flex justify-between items-center group transition-colors">
+                        Camera Systems <i
+                            class="fas fa-caret-right text-[10px] opacity-0 group-hover:opacity-100 text-mcot-orange"></i>
+                    </a>
+                    <a href="{% url 'store:catalog' %}?category=lens"
+                        class="px-4 py-2 text-[13px] text-gray-400 hover:text-white hover:bg-white/5 border-b border-white/5 flex justify-between items-center group transition-colors">
+                        Lenses & Filters <i
+                            class="fas fa-caret-right text-[10px] opacity-0 group-hover:opacity-100 text-mcot-orange"></i>
+                    </a>
+                    <a href="{% url 'store:catalog' %}?category=lighting"
+                        class="px-4 py-2 text-[13px] text-gray-400 hover:text-white hover:bg-white/5 border-b border-white/5 flex justify-between items-center group transition-colors">
+                        Lighting & Grip <i
+                            class="fas fa-caret-right text-[10px] opacity-0 group-hover:opacity-100 text-mcot-orange"></i>
+                    </a>
+                    <a href="{% url 'store:catalog' %}?category=audio"
+                        class="px-4 py-2 text-[13px] text-gray-400 hover:text-white hover:bg-white/5 border-b border-white/5 flex justify-between items-center group transition-colors">
+                        Audio / Sound <i
+                            class="fas fa-caret-right text-[10px] opacity-0 group-hover:opacity-100 text-mcot-orange"></i>
+                    </a>
+                    <a href="{% url 'store:catalog' %}?category=monitor"
+                        class="px-4 py-2 text-[13px] text-gray-400 hover:text-white hover:bg-white/5 border-b border-white/5 flex justify-between items-center group transition-colors">
+                        Monitors & Video <i
+                            class="fas fa-caret-right text-[10px] opacity-0 group-hover:opacity-100 text-mcot-orange"></i>
+                    </a>
+                    <a href="{% url 'store:catalog' %}?category=broadcast"
+                        class="px-4 py-2 text-[13px] text-gray-400 hover:text-white hover:bg-white/5 border-b border-white/5 flex justify-between items-center group transition-colors">
+                        Live / Broadcast <i
+                            class="fas fa-caret-right text-[10px] opacity-0 group-hover:opacity-100 text-mcot-orange"></i>
+                    </a>
+                    <a href="{% url 'store:studio_list' %}"
+                        class="px-4 py-2 text-[13px] text-mcot-orange font-bold hover:text-white hover:bg-mcot-orange transition-colors flex justify-between items-center">
+                        Studio Booking <i class="fas fa-building text-[10px]"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="bg-[#151515] border border-white/10 p-4">
+                <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">Resources</h3>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-xs text-mcot-orange hover:underline">Download Price List (PDF)</a></li>
+                    <li><a href="#" class="text-xs text-gray-400 hover:text-white">Equipment Insurance</a></li>
+                    <li><a href="#" class="text-xs text-gray-400 hover:text-white">Rental Terms</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- COLUMN 2: MAIN CONTENT (8/12) -->
+        <div class="col-span-12 lg:col-span-8 space-y-6">
+
+            <!-- Hero Banner (Functional) -->
+            <div class="relative h-[320px] bg-[#151515] border border-white/10 overflow-hidden flex">
+                <div class="w-1/2 p-10 flex flex-col justify-center z-10 relative">
+                    <span
+                        class="inline-block px-2 py-1 bg-mcot-orange text-black text-[10px] font-bold uppercase tracking-widest mb-4 w-fit">In
+                        Stock Now</span>
+                    <h1 class="text-4xl font-bold text-white mb-2 font-display leading-tight">ARRI ALEXA 35</h1>
+                    <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+                        Elevate your cinematography with 17 stops of dynamic range. <br>
+                        Native 4K, 120fps. Available for immediate rental.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="{% url 'store:catalog' %}"
+                            class="px-6 py-2 bg-white text-black text-xs font-bold uppercase hover:bg-gray-200 transition-colors">Check
+                            Availability</a>
+                        <a href="#"
+                            class="px-6 py-2 border border-white/30 text-white text-xs font-bold uppercase hover:bg-white/10 transition-colors">Full
+                            Specs</a>
+                    </div>
+                </div>
+                <div
+                    class="w-2/3 absolute right-0 top-0 h-full bg-[url('https://www.arri.com/resource/blob/282246/3860bb4d642e5572911634b29bb85973/arri-alexa-35-camera-data.jpg')] bg-cover bg-center mask-image-linear-l">
+                    <div class="absolute inset-0 bg-gradient-to-r from-[#151515] via-[#151515]/50 to-transparent"></div>
+                </div>
+            </div>
+
+            <!-- New Arrivals (Dense Grid) -->
+            <div>
+                <div class="flex justify-between items-end mb-4 border-b border-white/10 pb-2">
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-box-open text-mcot-orange"></i> New Arrivals
+                    </h2>
+                    <a href="{% url 'store:catalog' %}"
+                        class="text-xs text-gray-500 hover:text-white uppercase font-bold tracking-wider">View All <i
+                            class="fas fa-chevron-right text-[10px]"></i></a>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Card 1 -->
+                    <div
+                        class="bg-[#151515] border border-white/10 hover:border-mcot-orange/50 transition-colors p-3 group">
+                        <div
+                            class="aspect-[4/3] bg-black mb-3 relative overflow-hidden flex items-center justify-center">
+                            <span
+                                class="absolute top-1 left-1 bg-blue-600 text-white text-[9px] px-1.5 py-0.5 font-bold uppercase">New</span>
+                            <img src="https://media.istockphoto.com/id/1661559332/photo/video-production-behind-the-scenes-making-of-tv-commercial-movie-film-crew-team-lightmen.jpg?s=612x612&w=0&k=20&c=JuuYhEM7t592D_H7u791KkP-l2tqKKAeN7gY06lM28U="
+                                class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                        </div>
+                        <h4 class="text-xs font-bold text-white mb-1 truncate">Sony FX6 Cinema Line</h4>
+                        <div class="flex flex-col gap-0.5 text-[10px] text-gray-500 mb-2 font-mono">
+                            <span>Sens: Full-Frame 4K</span>
+                            <span>Mnt: E-Mount</span>
+                        </div>
+                        <div class="flex justify-between items-center border-t border-white/10 pt-2">
+                            <span class="text-white font-bold text-sm">฿2,500</span>
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-cart-plus"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div
+                        class="bg-[#151515] border border-white/10 hover:border-mcot-orange/50 transition-colors p-3 group">
+                        <div
+                            class="aspect-[4/3] bg-black mb-3 relative overflow-hidden flex items-center justify-center">
+                            <img src="https://media.istockphoto.com/id/1153359682/photo/studio-spotlight.jpg?s=612x612&w=0&k=20&c=Nl5Mht8K9r5qXZ80t5iU9iKj_Kqj2x_1K5l9X1X1X1X="
+                                class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                        </div>
+                        <h4 class="text-xs font-bold text-white mb-1 truncate">Aputure LS 600d Pro</h4>
+                        <div class="flex flex-col gap-0.5 text-[10px] text-gray-500 mb-2 font-mono">
+                            <span>Output: 600W LED</span>
+                            <span>Temp: 5600K</span>
+                        </div>
+                        <div class="flex justify-between items-center border-t border-white/10 pt-2">
+                            <span class="text-white font-bold text-sm">฿1,800</span>
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-cart-plus"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div
+                        class="bg-[#151515] border border-white/10 hover:border-mcot-orange/50 transition-colors p-3 group">
+                        <div
+                            class="aspect-[4/3] bg-black mb-3 relative overflow-hidden flex items-center justify-center">
+                            <img src="https://media.istockphoto.com/id/1329528578/photo/camera-lens.jpg?s=612x612&w=0&k=20&c=2x2x2x2x2x2x2x2x2x2x2x2x2x2x2x2x2x2x2x2x2="
+                                class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                        </div>
+                        <h4 class="text-xs font-bold text-white mb-1 truncate">Canon CN-E 50mm T1.3</h4>
+                        <div class="flex flex-col gap-0.5 text-[10px] text-gray-500 mb-2 font-mono">
+                            <span>Mnt: EF-Mount</span>
+                            <span>Iris: T1.3</span>
+                        </div>
+                        <div class="flex justify-between items-center border-t border-white/10 pt-2">
+                            <span class="text-white font-bold text-sm">฿1,500</span>
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-cart-plus"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div
+                        class="bg-[#151515] border border-white/10 hover:border-mcot-orange/50 transition-colors p-3 group">
+                        <div
+                            class="aspect-[4/3] bg-black mb-3 relative overflow-hidden flex items-center justify-center">
+                            <img src="https://media.istockphoto.com/id/1182582878/photo/audio-mixer.jpg?s=612x612&w=0&k=20&c=1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1="
+                                class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                        </div>
+                        <h4 class="text-xs font-bold text-white mb-1 truncate">Sound Devices 833</h4>
+                        <div class="flex flex-col gap-0.5 text-[10px] text-gray-500 mb-2 font-mono">
+                            <span>Ch: 6 Preamps</span>
+                            <span>Rec: SSD/SD</span>
+                        </div>
+                        <div class="flex justify-between items-center border-t border-white/10 pt-2">
+                            <span class="text-white font-bold text-sm">฿2,200</span>
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-cart-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Studio Highlight (Horizontal Strip) -->
+            <div class="bg-[#151515] border border-white/10 p-4 flex items-center gap-6">
+                <div class="w-1/3 aspect-video bg-black relative">
+                    <span
+                        class="absolute top-2 left-2 bg-mcot-purple text-white text-[9px] px-2 py-0.5 uppercase font-bold tracking-wide">Studio
+                        1</span>
+                    <!-- Img would go here -->
+                    <img src="https://broadcast-solutions.de/wp-content/uploads/2019/08/MCOT_HD_Studio_1.jpg"
+                        class="w-full h-full object-cover opacity-80">
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-lg font-bold text-white mb-1">Professional Broadcast Studios</h3>
+                    <p class="text-xs text-gray-400 mb-4 max-w-lg">Full-scale studios equipped with lighting grids,
+                        cycloramas, and control rooms. Ideal for talk shows, live events, and commercial production.</p>
+                    <a href="{% url 'store:studio_list' %}"
+                        class="text-xs font-bold text-mcot-orange hover:text-white uppercase tracking-wider flex items-center gap-2">
+                        View Studio Specs <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- COLUMN 3: WIDGETS (2/12) -->
+        <div class="hidden lg:block col-span-2 space-y-6">
+            <!-- Operational Status -->
+            <div class="bg-[#151515] border border-white/10 p-4">
+                <h4
+                    class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 border-b border-white/10 pb-2">
+                    Facility Status</h4>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-white">Rental Desk</span>
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-white">Maintenance</span>
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-white">Studio 1</span>
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-white">Studio 2</span>
+                        <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact / Sales -->
+            <div class="bg-[#151515] border border-white/10 p-4">
+                <h4
+                    class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 border-b border-white/10 pb-2">
+                    Sales Support</h4>
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center">
+                        <i class="fas fa-headset text-mcot-orange"></i>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-white">Call Center</span>
+                        <span class="block text-[10px] text-gray-500">09:00 - 18:00</span>
+                    </div>
+                </div>
+                <a href="tel:022016000"
+                    class="block w-full py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-center text-xs text-white transition-colors">
+                    02-201-6000
+                </a>
+            </div>
+
+            <!-- Ad / Promo -->
+            <div class="bg-gradient-to-br from-mcot-purple/20 to-black border border-white/10 p-6 text-center">
+                <i class="fas fa-truck text-3xl text-gray-500 mb-2"></i>
+                <h4 class="text-sm font-bold text-white mb-1">OB Truck Service</h4>
+                <p class="text-[10px] text-gray-400 mb-3">Live production on the go. 4K Ready.</p>
+                <a href="#" class="text-[10px] text-mcot-orange underline">Request Quote</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

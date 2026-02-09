@@ -1,0 +1,200 @@
+{% extends 'rentals/public/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}บริการเช่าสตูดิโอ | MCOT Enterprise Rental{% endblock %}
+
+{% block body_class %}light-theme{% endblock %}
+
+{% block extra_css %}
+<style>
+    .studio-card {
+        border: 1px solid #e5e7eb;
+        transition: all 0.3s ease;
+    }
+
+    .studio-card:hover {
+        border-color: #111827;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        transform: translateY(-4px);
+    }
+
+    .feature-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: #f3f4f6;
+        color: #111827;
+        margin-right: 12px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="padding-bottom: 40px; border-bottom: 1px solid #f3f4f6;">
+    <div class="container-xl">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                        class="text-decoration-none text-muted">หน้าหลัก</a></li>
+                <li class="breadcrumb-item active text-dark" aria-current="page">บริการเช่าสตูดิโอ</li>
+            </ol>
+        </nav>
+        <div class="row mt-4 align-items-end">
+            <div class="col-lg-8">
+                <h1 class="fw-bold display-5 mb-3">บริการเช่าสตูดิโอ</h1>
+                <p class="lead text-muted mb-0">สตูดิโอถ่ายทำมาตรฐาน MCOT พร้อมอุปกรณ์ครบครัน</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-xl py-4">
+    <!-- Search Filter -->
+    <div class="bg-white rounded-4 shadow-sm p-4 border mb-5">
+        <form method="GET" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label small text-muted fw-bold text-uppercase">วันที่เริ่มต้น</label>
+                <input type="date" name="start_date" value="{{ start_date }}" class="form-control bg-light border-0">
+            </div>
+            <div class="col-md-5">
+                <label class="form-label small text-muted fw-bold text-uppercase">วันที่สิ้นสุด</label>
+                <input type="date" name="end_date" value="{{ end_date }}" class="form-control bg-light border-0">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm">
+                    <i class="fas fa-search me-2"></i> ตรวจสอบ
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="container-xl py-5">
+        <div class="row g-5">
+            {% for studio in studios %}
+            <div class="col-12">
+                <div class="card border-0 studio-card rounded-4 overflow-hidden bg-white">
+                    <div class="row g-0">
+                        <div class="col-lg-6">
+                            <div class="position-relative h-100" style="min-height: 400px;">
+                                {% if studio.image %}
+                                <img src="{{ studio.image.url }}"
+                                    class="w-100 h-100 object-fit-cover position-absolute top-0 start-0"
+                                    alt="{{ studio.name }}">
+                                {% else %}
+                                <div
+                                    class="w-100 h-100 position-absolute top-0 start-0 bg-light d-flex align-items-center justify-content-center text-muted">
+                                    <div class="text-center">
+                                        <i class="fas fa-warehouse fa-3x mb-3 opacity-25"></i>
+                                        <p class="small">ไม่มีรูปภาพ</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="position-absolute top-0 start-0 m-4">
+                                    {% if studio.is_date_filtered %}
+                                    {% if studio.is_available %}
+                                    <span
+                                        class="badge bg-white text-success shadow-sm px-3 py-2 rounded-pill fw-bold border">
+                                        <i class="fas fa-check-circle me-1"></i> ว่าง
+                                    </span>
+                                    {% else %}
+                                    <span
+                                        class="badge bg-white text-danger shadow-sm px-3 py-2 rounded-pill fw-bold border">
+                                        <i class="fas fa-times-circle me-1"></i> ไม่ว่าง
+                                    </span>
+                                    {% endif %}
+                                    {% else %}
+                                    <span
+                                        class="badge bg-white text-dark shadow-sm px-3 py-2 rounded-pill fw-normal border">
+                                        <i class="fas fa-camera me-1"></i> Studio
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="card-body p-4 p-md-5 d-flex flex-column h-100">
+                                <div class="mb-auto">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <span class="badge bg-light text-primary border px-3 py-2 rounded-pill">MCOT
+                                            STUDIO</span>
+                                        <div class="text-end">
+                                            <!-- Fixed single line tag -->
+                                            <h3 class="fw-bold text-primary mb-0">฿{{
+                                                studio.daily_rate|floatformat:0|intcomma }}</h3>
+                                            <small class="text-muted">ต่อวัน</small>
+                                        </div>
+                                    </div>
+
+                                    <h2 class="fw-bold mb-3">{{ studio.name }}</h2>
+                                    <p class="text-secondary mb-4 lh-lg">
+                                        {% if studio.description and studio.description != "None" %}
+                                        {{ studio.description }}
+                                        {% else %}
+                                        สตูดิโอขนาดมาตรฐาน พร้อมระบบปรับอากาศ ระบบเก็บเสียง และห้องควบคุม
+                                        {% endif %}
+                                    </p>
+
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                                                <div><small class="d-block fw-bold text-dark">ไฟ 3 เฟส</small></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="feature-icon"><i class="fas fa-user-tie"></i></div>
+                                                <div><small class="d-block fw-bold text-dark">ห้องรับรอง</small></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="feature-icon"><i class="fas fa-wifi"></i></div>
+                                                <div><small class="d-block fw-bold text-dark">High Speed</small></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="feature-icon"><i class="fas fa-parking"></i></div>
+                                                <div><small class="d-block fw-bold text-dark">ที่จอดรถ</small></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 pt-4 border-top">
+                                    <div class="row g-2">
+                                        <div class="col-md-6">
+                                            <a href="{% url 'studio_booking' studio.id %}?start_date={{ start_date }}&end_date={{ end_date }}"
+                                                class="btn btn-dark w-100 py-3 rounded-pill fw-bold">
+                                                {% if studio.is_date_filtered and not studio.is_available %}
+                                                เลือกวันอื่น
+                                                {% else %}
+                                                จองห้องนี้
+                                                {% endif %}
+                                            </a>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <a href="{% url 'studio_detail' studio.id %}?start_date={{ start_date }}&end_date={{ end_date }}"
+                                                class="btn btn-outline-dark w-100 py-3 rounded-pill fw-bold">รายละเอียด</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <h3>ยังไม่มีข้อมูลสตูดิโอ</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endblock %}

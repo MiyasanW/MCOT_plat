@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ product.name }} | MCOT Rental{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto min-h-screen py-10">
+    <!-- Breadcrumb -->
+    <a href="{% url 'store:catalog' %}"
+        class="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-8 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18">
+            </path>
+        </svg>
+        Back to Catalog
+    </a>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Left: Image Gallery (Single Hero Image for now) -->
+        <div class="space-y-4">
+            <div
+                class="aspect-square rounded-2xl overflow-hidden bg-gray-900 border border-white/10 relative shadow-2xl">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center text-gray-700">
+                    <svg class="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                </div>
+                {% endif %}
+
+                <!-- Availability Badge Overlay -->
+                <div class="absolute top-4 right-4">
+                    {% if is_available %}
+                    <span
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/20 backdrop-blur-md border border-green-500/30 text-green-400 font-bold text-sm shadow-xl">
+                        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                        Available for Selected Date
+                    </span>
+                    {% else %}
+                    <span
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/20 backdrop-blur-md border border-red-500/30 text-red-400 font-bold text-sm shadow-xl">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Unavailable
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Product Info & Actions -->
+        <div>
+            <div class="glass-panel p-8 lg:p-10 sticky top-24 relative overflow-hidden">
+                <!-- Decorative BG glow -->
+                <div
+                    class="absolute -top-20 -right-20 w-64 h-64 bg-mcot-purple/20 rounded-full blur-3xl pointer-events-none">
+                </div>
+
+                <div class="mb-6">
+                    <span
+                        class="text-mcot-orange font-bold tracking-wider text-xs uppercase bg-mcot-orange/10 px-3 py-1 rounded-full mb-4 inline-block border border-mcot-orange/20">
+                        {{ product.category.name|default:"Equipment" }}
+                    </span>
+                    <h1 class="text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">{{ product.name }}</h1>
+                    <div class="text-gray-400 leading-relaxed text-lg space-y-2">
+                        {% if product.description %}
+                        {{ product.description|safe }}
+                        {% else %}
+                        <p>No description provided.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="border-t border-white/10 my-8"></div>
+
+                <!-- Price -->
+                <div class="flex items-end gap-2 mb-8">
+                    <span class="text-4xl font-bold text-mcot-orange">฿{{ product.price|intcomma }}</span>
+                    <span class="text-gray-500 text-lg mb-1">/ day</span>
+                </div>
+
+                <!-- Date Context (Pass-through) -->
+                <div class="bg-black/30 rounded-xl p-4 border border-mcot-purple/30 mb-8 backdrop-blur-sm">
+                    <p class="text-gray-400 text-sm mb-2">Checking availability for:</p>
+                    <div class="flex items-center gap-4 text-white font-medium">
+                        <div class="flex items-center gap-2">
+                            <span class="text-mcot-orange">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                            </span>
+                            {{ selected_start_date }}
+                        </div>
+                        <span class="text-gray-600">to</span>
+                        <div class="flex items-center gap-2">
+                            {{ selected_end_date }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button
+                    onclick="addToCartAndCheckout('{{ product.id }}', '{{ product.name|escapejs }}', {{ product.price|default:0 }}, '{% if product.image %}{{ product.image.url }}{% endif %}')"
+                    {% if not is_available %}disabled{% endif %} class="w-full py-4 rounded-xl font-bold text-lg shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-3
+                    {% if is_available %}
+                        bg-transparent border border-mcot-orange text-mcot-orange hover:bg-mcot-orange hover:text-white hover:shadow-[0_0_20px_rgba(242,101,34,0.4)] cursor-pointer
+                    {% else %}
+                        bg-transparent border border-white/10 text-gray-500 cursor-not-allowed
+                    {% endif %}">
+                    {% if is_available %}
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    Add to Cart
+                    {% else %}
+                    Unavailable
+                    {% endif %}
+                </button>
+
+                {% if not is_available %}
+                <p class="text-red-400 text-center text-sm mt-4">Selected dates are fully booked.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function addToCartAndCheckout(id, name, price, image) {
+        try {
+            let cart = JSON.parse(localStorage.getItem('mcot_cart') || '[]');
+
+            // 1. Add item
+            const existingIndex = cart.findIndex(item => item.id == id);
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity = (parseInt(cart[existingIndex].quantity) || 0) + 1;
+            } else {
+                cart.push({ id, name, price, image, quantity: 1 });
+            }
+            localStorage.setItem('mcot_cart', JSON.stringify(cart));
+            window.dispatchEvent(new Event('cartUpdated'));
+
+            // 2. Save Dates context for Cart
+            const startDate = '{{ selected_start_date }}';
+            const endDate = '{{ selected_end_date }}';
+            if (startDate && endDate) {
+                localStorage.setItem('mcot_booking_start', startDate);
+                localStorage.setItem('mcot_booking_end', endDate);
+            }
+
+            // 3. Redirect to Cart immediately (or stay? User said "Must go to detail page", implied add flow)
+            // Let's suggest going to cart or keep shopping. 
+            // For now, let's show an alert and keep them here to browse more, OR redirect.
+            // Requirement said "Don't just click +", so they are here.
+
+            // Let's redirect to cart for better flow? 
+            // Or maybe just toast. 
+            // Let's do a redirect as it feels more "Actionable".
+            // Actually, "Add to Cart" usually implies stay. I'll add a toast logic later.
+            // For now, let's redirect to Cart to complete the flow strongly.
+            window.location.href = "{% url 'store:cart' %}";
+
+        } catch (e) {
+            console.error(e);
+            alert("Error adding to cart.");
+        }
+    }
+</script>
+{% endblock %}

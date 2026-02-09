@@ -1,0 +1,303 @@
+{% extends 'rentals/public/base.html' %}
+{% load humanize %}
+{% load custom_filters %}
+
+{% block title %}ยืนยันการจอง | MCOT Rental{% endblock %}
+{% block body_class %}light-theme{% endblock %}
+
+{% block content %}
+<div class="bg-light min-vh-100 py-5">
+    <div class="container">
+        <!-- Header -->
+        <div class="d-flex align-items-center mb-5">
+            <h1 class="fw-bold display-6 mb-0">ยืนยัน<span class="text-primary">การจอง</span></h1>
+            <!-- Breadcrumb / Steps -->
+            <div class="ms-auto d-none d-md-block">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center text-success">
+                        <i class="fas fa-check-circle me-2"></i> <span class="fw-semibold">เลือกสินค้า</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-muted small"></i>
+                    <div class="d-flex align-items-center text-success">
+                        <i class="fas fa-check-circle me-2"></i> <span class="fw-semibold">ตะกร้า</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-muted small"></i>
+                    <div class="d-flex align-items-center text-primary">
+                        <span
+                            class="badge bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center"
+                            style="width: 24px; height: 24px;">3</span>
+                        <span class="fw-bold">ข้อมูล & ยืนยัน</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-5">
+            <!-- Booking Form (Left) -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                    <div class="card-header bg-white py-3 px-4 border-bottom">
+                        <h5 class="fw-bold mb-0 text-dark"><i
+                                class="fas fa-user-circle me-2 text-primary"></i>ข้อมูลผู้ติดต่อ</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if error %}
+                        <div class="alert alert-danger py-3 px-3 rounded-3 mb-4 d-flex align-items-center shadow-sm"
+                            role="alert">
+                            <i class="fas fa-exclamation-circle fs-4 me-3"></i>
+                            <div>
+                                <strong class="d-block">เกิดข้อผิดพลาด</strong>
+                                {{ error }}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <form method="POST" action="" id="bookingForm" novalidate>
+                            {% csrf_token %}
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-dark mb-2">ชื่อ-นามสกุล / หน่วยงาน <span
+                                        class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i
+                                            class="fas fa-user text-muted"></i></span>
+                                    <input type="text" name="customer_name" class="form-control border-start-0 ps-0"
+                                        placeholder="ระบุชื่อผู้ติดต่อ หรือชื่อหน่วยงาน"
+                                        value="{{ initial_name|default:'' }}" required>
+                                </div>
+                            </div>
+
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-dark mb-2">เบอร์โทรศัพท์ <span
+                                            class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0"><i
+                                                class="fas fa-phone text-muted"></i></span>
+                                        <input type="tel" name="customer_phone" class="form-control border-start-0 ps-0"
+                                            placeholder="08x-xxx-xxxx" value="{{ initial_phone|default:'' }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-dark mb-2">อีเมล <span
+                                            class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0"><i
+                                                class="fas fa-envelope text-muted"></i></span>
+                                        <input type="email" name="customer_email"
+                                            class="form-control border-start-0 ps-0" placeholder="name@example.com"
+                                            value="{{ initial_email|default:'' }}" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div
+                                class="bg-primary bg-opacity-10 rounded-4 p-4 mb-4 border border-primary border-opacity-10">
+                                <h6 class="fw-bold text-primary mb-3"><i
+                                        class="far fa-calendar-alt me-2"></i>กำหนดการใช้งาน (Rental Period)</h6>
+                                <p class="small text-muted mb-3"><i class="fas fa-info-circle me-1"></i>
+                                    กรุณาระบุเวลาที่สะดวกเข้ามารับของและคืนของ (09:00 - 18:00)</p>
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <label class="small text-muted mb-1 text-uppercase fw-bold">วันรับของ
+                                            (Pick-up)</label>
+                                        <div
+                                            class="bg-white rounded-3 p-2 border shadow-sm d-flex align-items-center mb-2">
+                                            <i class="fas fa-calendar-day text-secondary ms-2 me-2"></i>
+                                            <input type="text"
+                                                class="form-control border-0 bg-transparent p-0 small fw-bold text-dark"
+                                                value="{{ initial_start_date|default:'' }}" readonly>
+                                        </div>
+                                        <div class="bg-white rounded-3 p-2 border shadow-sm d-flex align-items-center">
+                                            <i class="far fa-clock text-secondary ms-2 me-2"></i>
+                                            <input type="time" name="start_time"
+                                                class="form-control border-0 bg-transparent p-0 small fw-bold text-dark"
+                                                value="09:00" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small text-muted mb-1 text-uppercase fw-bold">วันคืนของ
+                                            (Return)</label>
+                                        <div
+                                            class="bg-white rounded-3 p-2 border shadow-sm d-flex align-items-center mb-2">
+                                            <i class="fas fa-calendar-check text-secondary ms-2 me-2"></i>
+                                            <input type="text"
+                                                class="form-control border-0 bg-transparent p-0 small fw-bold text-dark"
+                                                value="{{ initial_end_date|default:'' }}" readonly>
+                                        </div>
+                                        <div class="bg-white rounded-3 p-2 border shadow-sm d-flex align-items-center">
+                                            <i class="far fa-clock text-secondary ms-2 me-2"></i>
+                                            <input type="time" name="end_time"
+                                                class="form-control border-0 bg-transparent p-0 small fw-bold text-dark"
+                                                value="18:00" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Hidden inputs for form submission (Dates only) -->
+                                <input type="hidden" name="start_date" value="{{ initial_start_date|default:'' }}">
+                                <input type="hidden" name="end_date" value="{{ initial_end_date|default:'' }}">
+                            </div>
+
+                            <!-- Hidden Submit -->
+                            <button type="submit" id="submitBtnHidden" class="d-none"></button>
+                        </form>
+                    </div>
+                </div>
+
+                <a href="{% url 'cart_detail' %}" class="btn btn-link text-decoration-none text-muted ps-0 hover-scale">
+                    <i class="fas fa-arrow-left me-2"></i>ย้อนกลับไปแก้ไขตะกร้า
+                </a>
+            </div>
+
+            <!-- Summary (Right) -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden sticky-top" style="top: 2rem;">
+                    <div
+                        class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0 text-dark">สรุปรายการจอง</h5>
+                        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">{{ cart|length }}
+                            รายการ</span>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
+                            {% for item in cart %}
+                            <div class="list-group-item px-4 py-3 hover-bg-light transition-all">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-3 border bg-light me-3 flex-shrink-0 overflow-hidden shadow-sm"
+                                        style="width: 60px; height: 60px;">
+                                        {% if item.type == 'package' %}
+                                        {% if item.package.image %}
+                                        <img src="{{ item.package.image.url }}" class="w-100 h-100 object-fit-cover">
+                                        {% else %}
+                                        <div
+                                            class="d-flex align-items-center justify-content-center w-100 h-100 text-muted bg-secondary">
+                                            <i class="fas fa-cubes text-white"></i>
+                                        </div>
+                                        {% endif %}
+                                        {% else %}
+                                        {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}" class="w-100 h-100 object-fit-cover">
+                                        {% else %}
+                                        <div
+                                            class="d-flex align-items-center justify-content-center w-100 h-100 text-muted">
+                                            <i class="fas fa-camera"></i>
+                                        </div>
+                                        {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex-grow-1 min-w-0">
+                                        <div class="d-flex justify-content-between align-items-start mb-1">
+                                            {% if item.type == 'package' %}
+                                            <h6 class="mb-0 fw-bold text-dark text-truncate me-2"
+                                                style="max-width: 180px;">{{ item.package.name }}</h6>
+                                            {% else %}
+                                            <h6 class="mb-0 fw-bold text-dark text-truncate me-2"
+                                                style="max-width: 180px;">{{ item.product.name }}</h6>
+                                            {% endif %}
+
+                                            {% with total=item.total_price|multiply:duration_days %}
+                                            <span class="fw-bold text-primary">฿{{ total|intcomma }}</span>
+                                            {% endwith %}
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span
+                                                class="small text-muted badge bg-white border rounded-pill px-2 py-1">x
+                                                {{ item.quantity }}</span>
+                                            {% with unit_price=item.price %}
+                                            <small class="text-muted" style="font-size: 0.8rem;">(฿{{
+                                                unit_price|intcomma }}/{% if item.type == 'package' %}ชุด{% else
+                                                %}ชิ้น{% endif %})</small>
+                                            {% endwith %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="bg-light p-4 border-top">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">ระยะเวลาเช่า</span>
+                                <span class="fw-semibold">{{ duration_days }} วัน</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-end mt-3">
+                                <span class="fw-bold text-dark fs-5">ยอดรวมสุทธิ</span>
+                                <div class="text-end">
+                                    {% with grand_total=cart.get_total_price|multiply:duration_days %}
+                                    <h3 class="fw-bolder text-primary mb-0">฿{{ grand_total|intcomma }}</h3>
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-white">
+                            <div
+                                class="bg-warning bg-opacity-10 p-3 rounded-3 mb-4 border border-warning border-opacity-25">
+                                <div class="d-flex">
+                                    <i class="fas fa-info-circle text-warning mt-1 me-2 fs-5"></i>
+                                    <div>
+                                        <strong class="text-dark d-block mb-1">มัดจำ 30%</strong>
+                                        {% with deposit=cart.get_total_price|multiply:duration_days|multiply:0.3 %}
+                                        <span class="text-dark fs-5 fw-bold">฿{{ deposit|intcomma }}</span>
+                                        {% endwith %}
+                                        <p class="mb-0 small text-muted mt-1 text-danger"><i
+                                                class="fas fa-exclamation-circle me-1"></i> กรุณาชำระเงินภายในวันที่จอง
+                                            เพื่อยืนยันคิวและล็อคอุปกรณ์</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button onclick="document.getElementById('submitBtnHidden').click()"
+                                class="btn btn-primary w-100 btn-lg rounded-pill shadow-lg fw-bold py-3 hover-scale">
+                                ยืนยันการจอง <i class="fas fa-check-circle ms-2"></i>
+                            </button>
+                            <p class="text-center text-muted small mt-3 mb-0">
+                                <i class="fas fa-lock me-1"></i> ข้อมูลของท่านจะถูกเก็บเป็นความลับ
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-scale {
+        transition: transform 0.2s;
+    }
+
+    .hover-scale:hover {
+        transform: translateY(-2px);
+    }
+
+    .hover-bg-light:hover {
+        background-color: #f8f9fa;
+    }
+
+    .form-control:focus {
+        box-shadow: none;
+        border-color: var(--mcot-blue);
+    }
+
+    .input-group-text {
+        font-size: 1rem;
+    }
+
+    /* Custom Scrollbar */
+    .list-group::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .list-group::-webkit-scrollbar-thumb {
+        background: #dee2e6;
+        border-radius: 4px;
+    }
+
+    .object-fit-cover {
+        object-fit: cover;
+    }
+</style>
+{% endblock %}

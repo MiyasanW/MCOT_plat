@@ -1,0 +1,695 @@
+{% extends 'rentals/public/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}หน้าแรก | MCOT Enterprise Rental บริการเช่าอุปกรณ์และสตูดิโอครบวงจร{% endblock %}
+
+{% block navbar_class %}navbar-dark-mode{% endblock %}
+
+{% block content %}
+<!-- 1. HERO SECTION (State Enterprise Edition - Brand Colors) -->
+<style>
+    /* State Enterprise Design System (MCOT Brand Theme) */
+    :root {
+        --mcot-purple: #3e206d;
+        --mcot-purple-light: #522e8e;
+        --mcot-orange: #F26522;
+        --mcot-navy: #1a0f2e;
+        --mcot-gold: #d4a24c;
+        --glass-border: rgba(255, 255, 255, 0.2);
+        --glass-surface: rgba(255, 255, 255, 0.05);
+        --glass-highlight: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Hero Background (Parallax + Overlay) */
+    .hero-state-enterprise {
+        position: relative;
+        min-height: 85vh;
+        background: linear-gradient(135deg, rgba(26, 11, 46, 0.9) 0%, rgba(62, 32, 109, 0.85) 100%),
+        url('{% static "rentals/images/hero_bg.png" %}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .hero-state-enterprise::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.4;
+    }
+
+    .brand-bar {
+        height: 6px;
+        background: linear-gradient(90deg, var(--mcot-orange), transparent);
+        width: 100px;
+        margin-bottom: 1.5rem;
+        border-radius: 4px;
+    }
+
+    /* --- GLASSARISTIC UTILITIES --- */
+
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .glass-panel-dark {
+        background: rgba(15, 12, 25, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    /* Floating Stats Strip */
+    .stats-floating-strip {
+        /* margin-top: -80px; Handled by container */
+        /* Overlap Hero */
+        position: relative;
+        z-index: 20;
+        background: rgba(255, 255, 255, 0.1);
+        /* Frosted */
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Service Cards */
+    .card-glass-service {
+        background: rgba(30, 20, 50, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        transition: all 0.4s ease;
+    }
+
+    .card-glass-service:hover {
+        background: rgba(62, 32, 109, 0.4);
+        border-color: var(--mcot-orange);
+        transform: translateY(-10px);
+        box-shadow: 0 0 30px rgba(242, 101, 34, 0.2);
+    }
+
+    /* Product Showcase */
+    .card-product-glass {
+        background: rgba(255, 255, 255, 0.05);
+        border: none;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-product-glass::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 12px;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+    }
+
+    .card-product-glass:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Hover Utilities */
+    .hover-glow-text {
+        transition: color 0.3s ease;
+    }
+
+    .card-glass-service:hover .hover-glow-text {
+        color: var(--mcot-orange) !important;
+        text-shadow: 0 0 10px rgba(242, 101, 34, 0.5);
+    }
+
+    .ls-1 {
+        letter-spacing: 1px;
+    }
+
+    .ls-2 {
+        letter-spacing: 2px;
+    }
+
+    /* --- NEW PREMIUM SERVICES STYLES --- */
+
+    /* Text Glows */
+    .text-glow-orange {
+        color: var(--mcot-orange);
+        text-shadow: 0 0 20px rgba(242, 101, 34, 0.6);
+    }
+
+    .text-gradient-gold {
+        background: linear-gradient(135deg, #fff 30%, #ffd700 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Premium Glass Card Base */
+    .service-card-premium {
+        background: rgba(20, 15, 35, 0.6);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        /* Increased contrast */
+        border-radius: 24px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        /* Default subtle ambient glow */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Top Gradient Border Accent */
+    .service-card-premium::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+        opacity: 0.5;
+    }
+
+    /* Hover State - Lift & Glow */
+    .service-card-premium:hover {
+        transform: translateY(-10px) scale(1.02);
+        background: rgba(30, 25, 50, 0.7);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Color Variations (Permanent Ambient Glow + Hover Intensify) */
+    .glow-purple {
+        box-shadow: 0 0 30px rgba(82, 46, 142, 0.1);
+        /* Ambient */
+        border-color: rgba(130, 80, 255, 0.2);
+    }
+
+    .glow-purple:hover {
+        box-shadow: 0 20px 60px rgba(82, 46, 142, 0.4);
+        border-color: rgba(130, 80, 255, 0.6);
+        background: rgba(45, 30, 80, 0.8);
+    }
+
+    .glow-orange {
+        box-shadow: 0 0 30px rgba(242, 101, 34, 0.1);
+        /* Ambient */
+        border-color: rgba(242, 101, 34, 0.2);
+    }
+
+    .glow-orange:hover {
+        box-shadow: 0 20px 60px rgba(242, 101, 34, 0.4);
+        border-color: rgba(242, 101, 34, 0.6);
+        background: rgba(60, 25, 25, 0.8);
+    }
+
+    .glow-gold {
+        box-shadow: 0 0 30px rgba(212, 162, 76, 0.1);
+        /* Ambient */
+        border-color: rgba(212, 162, 76, 0.2);
+    }
+
+    .glow-gold:hover {
+        box-shadow: 0 20px 60px rgba(212, 162, 76, 0.4);
+        border-color: rgba(212, 162, 76, 0.6);
+        background: rgba(60, 45, 20, 0.8);
+    }
+
+    /* Icon Neon Backdrop */
+    .icon-neon-backdrop {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
+        transition: all 0.3s ease;
+    }
+
+    .icon-neon-backdrop::after {
+        content: '';
+        position: absolute;
+        inset: -5px;
+        /* Larger glow area */
+        border-radius: 50%;
+        filter: blur(30px);
+        /* Increased blur */
+        opacity: 0.8;
+        /* Increased opacity */
+        z-index: -1;
+        transition: all 0.3s ease;
+    }
+
+    .service-card-premium:hover .icon-neon-backdrop {
+        transform: scale(1.1);
+    }
+
+    /* Glass Button with Gradient Border */
+    .btn-glass-glow {
+        position: relative;
+        color: white;
+        border-radius: 50px;
+        padding: 0.6rem 1.8rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(4px);
+
+        /* Gradient Border Trick */
+        background:
+            linear-gradient(rgba(20, 20, 30, 0.4), rgba(20, 20, 30, 0.4)) padding-box,
+            linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.4)) border-box;
+        border: 1px solid transparent;
+
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-glass-glow:hover {
+        /* Brighter gradient on hover */
+        background:
+            linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)) padding-box,
+            linear-gradient(135deg, #fff, var(--mcot-orange)) border-box;
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Background Zoom on Hover */
+    .bg-zoom-hover {
+        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .service-card-premium:hover .bg-zoom-hover {
+        transform: scale(1.1);
+    }
+</style>
+
+<!-- 1. HERO SECTION (Split Layout) -->
+<div class="hero-state-enterprise">
+    <div class="container position-relative" style="z-index: 10;">
+        <div class="row align-items-center gy-5">
+            <!-- LEFT: Hero Content -->
+            <div class="col-lg-7 text-start text-white">
+                <!-- Logo + Official Branding -->
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <img src="{% static 'rentals/images/logo.png' %}" alt="MCOT Logo"
+                        class="bg-white p-2 rounded-3 shadow-lg" style="height: 70px; width: auto;">
+                    <div class="border-start border-white border-opacity-25 ps-3">
+                        <small class="d-block text-white-50 text-uppercase"
+                            style="letter-spacing: 1px; font-size: 0.7rem;">บริษัท อสมท จำกัด (มหาชน)</small>
+                        <span class="fw-bold" style="font-size: 1.1rem;">MCOT Public Company Limited</span>
+                    </div>
+                </div>
+
+                <!-- Brand Accent Bar -->
+                <div class="brand-bar"></div>
+
+                <!-- Headline -->
+                <h1 class="display-4 fw-bold mb-4" style="font-family: 'Kanit', sans-serif; line-height: 1.2;">
+                    บริการเช่าอุปกรณ์<br>
+                    <span
+                        style="color: var(--mcot-orange); text-shadow: 0 2px 10px rgba(242, 101, 34, 0.3);">และสตูดิโอครบวงจร</span>
+                </h1>
+
+                <!-- Subheadline -->
+                <p class="lead text-white-50 mb-5" style="max-width: 600px; line-height: 1.8; font-weight: 300;">
+                    ยกระดับมาตรฐานสื่อสารมวลชน ด้วยบริการจากมืออาชีพของ อสมท
+                    พร้อมสนับสนุนทุกจินตนาการด้วยเทคโนโลยีที่ทันสมัย
+                </p>
+
+                <!-- Actions -->
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'equipment_catalog' %}"
+                        class="btn btn-lg text-white rounded-2 px-4 py-3 fw-bold shadow-lg hover-lift"
+                        style="background: linear-gradient(90deg, var(--mcot-orange), #ff8a50); border: none;">
+                        <i class="fas fa-search me-2"></i> ค้นหาอุปกรณ์
+                    </a>
+                    <a href="{% url 'studios' %}"
+                        class="btn btn-lg btn-outline-light rounded-2 px-4 py-3 fw-bold hover-lift">
+                        <i class="fas fa-building me-2"></i> บริการสตูดิโอ
+                    </a>
+                </div>
+            </div>
+
+            <!-- RIGHT: Contact/Support Card -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-lg text-white"
+                    style="border-radius: 20px; overflow: hidden; background: rgba(30, 20, 60, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);">
+                    <div class="card-body p-4 p-md-5">
+                        <!-- Header -->
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle"
+                                style="width: 50px; height: 50px; background: rgba(242, 101, 34, 0.2); color: var(--mcot-orange);">
+                                <i class="fas fa-headset fa-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0">สอบถามบริการ</h4>
+                                <small class="text-white-50 text-uppercase">Service Inquiry</small>
+                            </div>
+                        </div>
+
+                        <p class="text-white-50 mb-4 fw-light">
+                            ทีมงานมืออาชีพของ อสมท พร้อมให้คำปรึกษาและแนะนำอุปกรณ์ที่เหมาะสมกับโปรเจกต์ของคุณ
+                        </p>
+
+                        <!-- Contact Channels -->
+                        <div class="d-flex flex-column gap-3">
+                            <a href="#"
+                                class="d-flex align-items-center justify-content-between p-3 rounded-3 hover-glass"
+                                style="background: rgba(255,255,255,0.05); text-decoration: none; color: white;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <i class="fab fa-line fa-lg text-success"></i>
+                                    <span>Line Official</span>
+                                </div>
+                                <i class="fas fa-chevron-right text-white-50"></i>
+                            </a>
+                            <a href="tel:022016000"
+                                class="d-flex align-items-center justify-content-between p-3 rounded-3 hover-glass"
+                                style="background: rgba(255,255,255,0.05); text-decoration: none; color: white;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <i class="fas fa-phone-alt fa-lg text-warning"></i>
+                                    <span>02-201-6000</span>
+                                </div>
+                                <i class="fas fa-chevron-right text-white-50"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- 3. SERVICES (Crystal Grid) -->
+<section class="position-relative"
+    style="background: linear-gradient(180deg, #241242 0%, #130a24 100%); padding-bottom: 5rem; padding-top: 8rem;">
+
+    <!-- STATS BRIDGE (Moved Inside for seamless flow) -->
+    <div class="container position-relative" style="margin-top: -12rem; z-index: 50; margin-bottom: 4rem;">
+        <div class="p-4 p-md-5 rounded-4 shadow-lg position-relative overflow-hidden"
+            style="background: rgba(30, 20, 50, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 30px 60px rgba(0,0,0,0.5);">
+
+            <!-- Decoration Glow -->
+            <div class="position-absolute top-0 start-0 w-100 h-100"
+                style="background: linear-gradient(120deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%); pointer-events: none;">
+            </div>
+
+            <!-- Bottom Accent Line -->
+            <div class="position-absolute bottom-0 start-0 w-100"
+                style="height: 2px; background: linear-gradient(90deg, var(--mcot-orange), var(--mcot-purple), transparent);">
+            </div>
+
+            <div class="row align-items-center text-center g-4">
+                <div class="col-6 col-md-3 position-relative">
+                    <h2 class="display-4 fw-bold mb-0"
+                        style="color: white; text-shadow: 0 0 30px rgba(160, 100, 255, 0.4);">
+                        40+
+                    </h2>
+                    <p class="text-white-50 small text-uppercase ls-1 mt-1 mb-0">ปีแห่งประสบการณ์</p>
+                    <!-- Separator -->
+                    <div class="d-none d-md-block position-absolute end-0 top-50 translate-middle-y"
+                        style="width: 1px; height: 40px; background: rgba(255,255,255,0.1);"></div>
+                </div>
+
+                <div class="col-6 col-md-3 position-relative">
+                    <h2 class="display-4 fw-bold mb-0"
+                        style="color: white; text-shadow: 0 0 30px rgba(160, 100, 255, 0.4);">
+                        12
+                    </h2>
+                    <p class="text-white-50 small text-uppercase ls-1 mt-1 mb-0">สตูดิโอมาตรฐาน</p>
+                    <div class="d-none d-md-block position-absolute end-0 top-50 translate-middle-y"
+                        style="width: 1px; height: 40px; background: rgba(255,255,255,0.1);"></div>
+                </div>
+
+                <div class="col-6 col-md-3 position-relative">
+                    <h2 class="display-4 fw-bold mb-0"
+                        style="color: white; text-shadow: 0 0 30px rgba(160, 100, 255, 0.4);">
+                        500+
+                    </h2>
+                    <p class="text-white-50 small text-uppercase ls-1 mt-1 mb-0">รายการอุปกรณ์</p>
+                    <div class="d-none d-md-block position-absolute end-0 top-50 translate-middle-y"
+                        style="width: 1px; height: 40px; background: rgba(255,255,255,0.1);"></div>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <h2 class="display-4 fw-bold mb-0"
+                        style="background: linear-gradient(to bottom, #fff, #ffae88); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px rgba(242,101,34,0.5));">
+                        1K+
+                    </h2>
+                    <p class="text-white-50 small text-uppercase ls-1 mt-1 mb-0">โปรเจกต์ที่สำเร็จ</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="text-center mb-5 position-relative">
+            <!-- Background Glow behind title -->
+            <div class="position-absolute top-50 start-50 translate-middle"
+                style="width: 300px; height: 100px; background: radial-gradient(circle, rgba(62, 32, 109, 0.6) 0%, transparent 70%); filter: blur(40px); pointer-events: none;">
+            </div>
+
+            <h6 class="text-uppercase fw-bold ls-2 mb-2 text-glow-orange">Our Services</h6>
+            <h2 class="fw-bold text-white display-5">
+                บริการครบวงจร <span class="fw-light text-white-50">ระดับมืออาชีพ</span>
+            </h2>
+        </div>
+
+        <div class="row g-4">
+            <!-- Large Card: Studio -->
+            <div class="col-lg-6">
+                <div class="service-card-premium glow-purple h-100">
+                    <div class="row g-0 h-100 align-items-stretch">
+                        <div
+                            class="col-md-7 p-4 p-lg-5 d-flex flex-column justify-content-center position-relative z-2">
+                            <div class="icon-neon-backdrop" style="background: rgba(62, 32, 109, 0.3);">
+                                <i class="fas fa-warehouse fa-2x text-white"></i>
+                                <style>
+                                    .icon-neon-backdrop:nth-child(1)::after {
+                                        background: var(--mcot-purple);
+                                    }
+                                </style>
+                                <!-- Inline style workaround for specific pseudo-element color, or use specific classes -->
+                            </div>
+
+                            <h3 class="fw-bold mb-3 text-white">เช่าสตูดิโอ</h3>
+                            <p class="text-white-50 mb-4 fw-light">
+                                สตูดิโอ 12 ห้อง ขนาดใหญ่-กลาง-เล็ก พร้อมห้องควบคุมและพื้นที่รับรองแขก VIP
+                            </p>
+                            <a href="{% url 'studios' %}" class="btn-glass-glow align-self-start text-decoration-none">
+                                ดูรายละเอียด <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                        <div class="col-md-5 position-relative" style="min-height: 250px;">
+                            <!-- Image with Overlay -->
+                            <div class="position-absolute w-100 h-100"
+                                style="background: url('{% static 'rentals/images/hero_bg.png' %}') center/cover;">
+                            </div>
+                            <div class="position-absolute w-100 h-100"
+                                style="background: linear-gradient(90deg, #140f23 0%, rgba(20, 15, 35, 0.3) 100%);">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medium Card: Equipment -->
+            <div class="col-lg-3 col-md-6">
+                <div class="service-card-premium glow-orange h-100 position-relative">
+
+                    <!-- Background Image Layer -->
+                    <div class="position-absolute w-100 h-100 top-0 start-0 overflow-hidden"
+                        style="border-radius: 24px; z-index: 0;">
+                        <div class="bg-zoom-hover w-100 h-100"
+                            style="background: url('{% static 'rentals/images/hero_bg.png' %}') center/cover;">
+                        </div>
+                    </div>
+
+                    <!-- Gradient Overlay (Orange Tint) -->
+                    <div class="position-absolute w-100 h-100 top-0 start-0"
+                        style="background: linear-gradient(180deg, rgba(242, 101, 34, 0.1) 0%, rgba(30, 20, 50, 0.85) 60%, rgba(20, 15, 30, 0.95) 100%); border-radius: 24px; z-index: 1;">
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-4 text-center d-flex flex-column align-items-center justify-content-center h-100 position-relative"
+                        style="z-index: 2;">
+                        <div class="icon-neon-backdrop" style="background: rgba(242, 101, 34, 0.2);">
+                            <i class="fas fa-camera fa-2x text-white"></i>
+                            <div class="position-absolute w-100 h-100 rounded-circle"
+                                style="background: var(--mcot-orange); filter: blur(30px); opacity: 0.4; z-index: -1;">
+                            </div>
+                        </div>
+
+                        <h4 class="fw-bold mb-2 text-white" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+                            อุปกรณ์ถ่ายทำ</h4>
+                        <p class="text-white-50 small mb-4 fw-light">กล้อง 4K/8K เลนส์ Cinema ไฟ LED ครบวงจร</p>
+                        <a href="{% url 'equipment_catalog' %}" class="btn-glass-glow text-decoration-none">
+                            เลือกดูสินค้า <i class="fas fa-chevron-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medium Card: Vehicles -->
+            <div class="col-lg-3 col-md-6">
+                <div class="service-card-premium glow-gold h-100 position-relative">
+
+                    <!-- Background Image Layer -->
+                    <div class="position-absolute w-100 h-100 top-0 start-0 overflow-hidden"
+                        style="border-radius: 24px; z-index: 0;">
+                        <div class="bg-zoom-hover w-100 h-100"
+                            style="background: url('{% static 'rentals/images/hero_bg.png' %}') center/cover;">
+                        </div>
+                    </div>
+
+                    <!-- Gradient Overlay (Gold Tint) -->
+                    <div class="position-absolute w-100 h-100 top-0 start-0"
+                        style="background: linear-gradient(180deg, rgba(212, 162, 76, 0.1) 0%, rgba(30, 20, 50, 0.85) 60%, rgba(20, 15, 30, 0.95) 100%); border-radius: 24px; z-index: 1;">
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-4 text-center d-flex flex-column align-items-center justify-content-center h-100 position-relative"
+                        style="z-index: 2;">
+                        <div class="icon-neon-backdrop" style="background: rgba(212, 162, 76, 0.2);">
+                            <i class="fas fa-truck fa-2x text-white"></i>
+                            <div class="position-absolute w-100 h-100 rounded-circle"
+                                style="background: var(--mcot-gold); filter: blur(30px); opacity: 0.4; z-index: -1;">
+                            </div>
+                        </div>
+
+                        <h4 class="fw-bold mb-2 text-white" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">รถ OB &
+                            ปั่นไฟ</h4>
+                        <p class="text-white-50 small mb-4 fw-light">รถถ่ายทอดสดนอกสถานที่ พร้อมทีมงานเทคนิค</p>
+                        <a href="#" class="btn-glass-glow text-decoration-none">
+                            ติดต่อสอบถาม <i class="fas fa-chevron-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4. FEATURED PRODUCTS (Glass Showcase) -->
+<section class="py-5" style="background: linear-gradient(180deg, #130a24 0%, #0a0510 100%);">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <h6 class="text-white-50 text-uppercase ls-2 mb-1">New Arrivals</h6>
+                <h3 class="fw-bold text-white display-6">อุปกรณ์แนะนำ</h3>
+            </div>
+            <a href="{% url 'equipment_catalog' %}" class="btn btn-outline-light rounded-pill px-4 border-opacity-25">
+                ดูทั้งหมด <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for item in featured_equipment %}
+            <div class="col-6 col-lg-3">
+                <div class="card h-100 border-0"
+                    style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; overflow: hidden; transition: transform 0.3s ease;">
+                    <div class="position-relative overflow-hidden p-3 pb-0">
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" class="rounded-3 w-100 shadow-sm" alt="{{ item.name }}"
+                            style="height: 180px; object-fit: cover; transition: transform 0.5s ease;">
+                        {% else %}
+                        <div class="rounded-3 d-flex align-items-center justify-content-center text-white-50 w-100"
+                            style="height: 180px; background: rgba(0,0,0,0.3);">
+                            <i class="fas fa-camera fa-2x opacity-25"></i>
+                        </div>
+                        {% endif %}
+                        <span class="badge position-absolute top-0 start-0 m-4 rounded-1 px-2 py-1"
+                            style="background: rgba(242,101,34,0.9); backdrop-filter: blur(4px); font-weight: 500;">
+                            {{ item.category|upper }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="fw-bold text-white text-truncate mb-2">{{ item.name }}</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold fs-5"
+                                style="color: var(--mcot-orange); text-shadow: 0 0 10px rgba(242,101,34,0.2);">
+                                &#3647;{{ item.price|floatformat:0|intcomma }}
+                            </span>
+                            <small class="text-white-50">/ วัน</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5 text-white-50">
+                <i class="fas fa-box-open fa-3x mb-3 opacity-25"></i>
+                <p>ไม่พบข้อมูลสินค้าแนะนำ</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- 5. CTA SECTION (Glass Prism) -->
+<section class="py-5 position-relative d-flex align-items-center justify-content-center"
+    style="background: url('{% static 'rentals/images/hero_bg.png' %}') center/cover fixed; min-height: 400px;">
+    <!-- Deep Purple Overlay -->
+    <div class="position-absolute top-0 start-0 w-100 h-100"
+        style="background: linear-gradient(135deg, rgba(36, 18, 66, 0.95) 0%, rgba(20, 10, 40, 0.9) 100%);">
+    </div>
+
+    <div class="container position-relative z-2">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="p-5 rounded-4 text-center position-relative overflow-hidden"
+                    style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+                    <!-- Glow Effect -->
+                    <div class="position-absolute top-50 start-50 translate-middle"
+                        style="width: 200px; height: 200px; background: var(--mcot-purple); filter: blur(100px); opacity: 0.5; pointer-events: none;">
+                    </div>
+
+                    <div class="position-relative z-3">
+                        <h2 class="fw-bold text-white mb-3 display-6">พร้อมเริ่มงานโปรดักชั่นระดับมืออาชีพ?</h2>
+                        <p class="text-white-50 mb-4 fs-5 fw-light">
+                            ปรึกษาทีมงาน MCOT Rental เพื่อวางแผนและเลือกใช้อุปกรณ์ที่เหมาะสมกับโปรเจกต์ของคุณ
+                        </p>
+                        <a href="{% url 'contact' %}"
+                            class="btn btn-lg rounded-pill px-5 fw-bold text-white shadow-lg hover-scale"
+                            style="background: linear-gradient(90deg, #d4a24c, #b8862e); border: none;">
+                            <i class="fas fa-paper-plane me-2"></i> ขอใบเสนอราคา
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Remove old override styles if any */
+</style>
+{% endblock %}

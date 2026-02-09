@@ -1,0 +1,296 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MCOT Rental Platform{% endblock %}</title>
+
+    <!-- Google Fonts: Inter & Sarabun -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Flatpickr (Date Picker) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+
+    <!-- Tailwind CSS (CDN for Rapid Dev) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <!-- Tailwind Config for Dark Premium Theme -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Sarabun', 'Inter', 'sans-serif'],
+                        display: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        mcot: {
+                            gold: '#C5A047', // Keep for legacy, but we use Orange/Purple now
+                            purple: '#2E1A69', // MCOT Purple
+                            orange: '#F26522', // MCOT Orange
+                            dark: '#0F0F0F',
+                            glass: 'rgba(46, 26, 105, 0.1)', // Purple tint
+                            glass_hover: 'rgba(46, 26, 105, 0.2)', // Purple tint
+                            border: 'rgba(242, 101, 34, 0.2)', // Orange tint
+                        }
+                    },
+                    backdropBlur: {
+                        xs: '2px',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .glass-panel {
+                @apply bg-mcot-glass backdrop-blur-md border border-mcot-border rounded-xl;
+            }
+            .glass-btn {
+                @apply bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-all duration-300 backdrop-blur-sm border border-white/5;
+            }
+            .nav-link {
+                @apply text-gray-400 hover:text-white transition-colors duration-200 text-sm font-medium;
+            }
+            .nav-link.active {
+                @apply text-mcot-orange;
+            }
+        }
+        
+        body {
+            background-color: #0F0F0F; /* Clean dark gray */
+        }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body
+    class="text-gray-200 min-h-screen flex flex-col font-sans antialiased selection:bg-mcot-orange selection:text-white">
+
+    <!-- Utility Bar (Global Corporate Links - Very Low Profile) -->
+    <div class="bg-[#050505] border-b border-white/10 text-[10px] text-gray-500 py-1.5 font-sans">
+        <div class="max-w-[1600px] mx-auto px-4 flex justify-between items-center">
+            <div class="flex gap-4">
+                <span class="hover:text-gray-300 cursor-default"><i class="fas fa-certificate text-mcot-orange"></i> ISO
+                    9001:2015 Certified</span>
+                <span class="hidden sm:inline hover:text-gray-300 cursor-default"><i
+                        class="fas fa-building text-gray-600"></i> Government Enterprise Standard</span>
+            </div>
+            <div class="flex gap-4">
+                <a href="#" class="hover:text-white transition-colors">Corporate Sales</a>
+                <a href="#" class="hover:text-white transition-colors">Vendor Registration</a>
+                <span class="text-gray-700">|</span>
+                <a href="#" class="text-white hover:text-mcot-orange">TH</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Commerce Navbar (Premium Glass V5) -->
+    <!-- Background: Deep Gradient + Blur to remove "Gloom" -->
+    <nav
+        class="sticky top-0 z-50 bg-[#0F0F0F]/80 backdrop-blur-xl border-b border-white/5 shadow-2xl transition-all duration-300">
+        <!-- Brand Gradient Border (Bottom Glow) -->
+        <div
+            class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-mcot-orange/50 to-transparent">
+        </div>
+
+        <div class="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
+            <!-- 1. Logo (Generated Asset - High Quality) -->
+            <a href="/" class="flex items-center gap-3 group flex-shrink-0 hover:opacity-90 transition-opacity">
+                <img src="{% static 'images/logo.png' %}" alt="MCOT Rental"
+                    class="h-10 w-auto object-contain filter drop-shadow-[0_0_10px_rgba(242,101,34,0.3)]">
+            </a>
+
+            <!-- 2. Main Navigation (Right-Aligned + Glow Effects) -->
+            <div class="hidden lg:flex items-center gap-10 ml-auto mr-12">
+                <a href="{% url 'store:home' %}"
+                    class="nav-item text-sm font-bold text-gray-300 hover:text-white transition-all uppercase tracking-wide hover:drop-shadow-[0_0_8px_rgba(242,101,34,0.5)]">หน้าแรก</a>
+                <a href="{% url 'store:catalog' %}"
+                    class="nav-item text-sm font-bold text-gray-300 hover:text-white transition-all uppercase tracking-wide hover:drop-shadow-[0_0_8px_rgba(242,101,34,0.5)]">รายการอุปกรณ์</a>
+                <a href="{% url 'store:studio_list' %}"
+                    class="nav-item text-sm font-bold text-gray-300 hover:text-white transition-all uppercase tracking-wide hover:drop-shadow-[0_0_8px_rgba(46,26,105,0.8)]">จองสตูดิโอ</a>
+                <a href="{% url 'store:about' %}"
+                    class="nav-item text-sm font-bold text-gray-300 hover:text-white transition-all uppercase tracking-wide hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">เกี่ยวกับเรา</a>
+                <a href="{% url 'store:faq' %}"
+                    class="nav-item text-sm font-bold text-gray-300 hover:text-white transition-all uppercase tracking-wide hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">FAQ</a>
+                <a href="{% url 'store:contact' %}"
+                    class="nav-item text-sm font-bold text-gray-300 hover:text-white transition-all uppercase tracking-wide hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">ติดต่อเรา</a>
+            </div>
+
+            <!-- 3. Actions (Account & Cart) -->
+            <div class="flex items-center gap-6 flex-shrink-0">
+                <!-- Phone -->
+                <div class="hidden xl:flex flex-col text-right">
+                    <span class="text-[10px] text-gray-500 uppercase tracking-widest">Support</span>
+                    <span
+                        class="text-mcot-orange font-mono text-sm font-bold drop-shadow-[0_0_5px_rgba(242,101,34,0.5)]">02-201-6000</span>
+                </div>
+
+                <div class="h-8 w-px bg-white/10 hidden xl:block"></div>
+
+                <!-- Account -->
+                {% if user.is_authenticated %}
+                <a href="#"
+                    class="flex items-center gap-2 hover:bg-white/5 px-2 py-1 rounded-lg transition-all group border border-transparent hover:border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                    <div
+                        class="w-9 h-9 bg-gray-900 border border-white/10 rounded-full flex items-center justify-center text-xs font-bold text-white group-hover:border-mcot-orange group-hover:text-mcot-orange transition-colors">
+                        {{ user.username|make_list|first|upper }}
+                    </div>
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}"
+                    class="flex items-center gap-2 text-gray-400 hover:text-white transition-all hover:drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
+                    <i class="fas fa-user-circle text-2xl"></i>
+                    <span class="hidden lg:block text-xs font-bold uppercase tracking-wide">Sign In / Register</span>
+                </a>
+                {% endif %}
+
+                <!-- Cart -->
+                <a href="{% url 'store:cart' %}"
+                    class="btn-cart relative flex items-center gap-2 hover:text-mcot-orange transition-all hover:drop-shadow-[0_0_8px_rgba(242,101,34,0.6)]">
+                    <div class="relative">
+                        <i class="fas fa-shopping-cart text-xl text-gray-400 hover:text-white transition-colors"></i>
+                        <span id="cart-counter"
+                            class="absolute -top-2 -right-2 bg-mcot-orange text-black text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden shadow-lg shadow-orange-500/50">0</span>
+                    </div>
+                </a>
+            </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow w-full relative">
+        {% if messages %}
+        <div class="max-w-[1440px] mx-auto px-6 pt-6">
+            {% for message in messages %}
+            <div
+                class="p-4 border border-mcot-orange/30 bg-mcot-orange/10 text-mcot-orange rounded-lg text-sm flex items-center gap-3">
+                <i class="fas fa-info-circle"></i> {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer (Fat & Functional - Thai) -->
+    <footer class="bg-[#050505] border-t border-white/5 pt-20 pb-10 mt-auto">
+        <div class="max-w-[1440px] mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                <!-- Brand Col -->
+                <div class="space-y-6">
+                    <div>
+                        <span class="font-display font-black text-xl text-white">MCOT</span>
+                        <span class="text-[10px] tracking-widest text-gray-500 uppercase block">Rental Platform</span>
+                    </div>
+                    <p class="text-gray-500 text-sm leading-relaxed font-light">
+                        ผู้ให้บริการเช่าอุปกรณ์ถ่ายทำครบวงจร โดย บมจ. อสมท <br>
+                        มาตรฐานการผลิตระดับประเทศ ยาวนานกว่า 70 ปี
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#"
+                            class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-blue-600 transition-all"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="#"
+                            class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-sky-400 transition-all"><i
+                                class="fab fa-twitter"></i></a>
+                        <a href="#"
+                            class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-red-600 transition-all"><i
+                                class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Product Links -->
+                <div>
+                    <h4 class="text-white font-bold mb-6">บริการของเรา</h4>
+                    <ul class="space-y-3 text-sm text-gray-500 font-light">
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">เช่ากล้องถ่ายภาพยนตร์</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">เลนส์ Anamorphic</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">บริการรถ OB</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">เช่าสตูดิโอขนาดใหญ่</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">สินค้ามาใหม่</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support Links -->
+                <div>
+                    <h4 class="text-white font-bold mb-6">เกี่ยวกับเรา</h4>
+                    <ul class="space-y-3 text-sm text-gray-500 font-light">
+                        <li><a href="{% url 'store:about' %}" class="hover:text-mcot-orange transition-colors">รู้จัก
+                                MCOT Rental</a></li>
+                        <li><a href="{% url 'store:contact' %}"
+                                class="hover:text-mcot-orange transition-colors">ติดต่อเจ้าหน้าที่</a></li>
+                        <li><a href="{% url 'store:faq' %}"
+                                class="hover:text-mcot-orange transition-colors">คำถามที่พบบ่อย (FAQ)</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">เงื่อนไขการให้บริการ</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">นโยบายความเป็นส่วนตัว</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-white font-bold mb-6">สำนักงานใหญ่</h4>
+                    <address class="text-sm text-gray-500 not-italic leading-relaxed mb-4 font-light">
+                        เลขที่ 63/1 ถ.พระราม 9 แขวงห้วยขวาง<br>
+                        เขตห้วยขวาง กรุงเทพฯ 10310
+                    </address>
+                    <p class="text-sm text-white font-bold mb-1">02-201-6000</p>
+                    <p class="text-sm text-mcot-orange">rental@mcot.net</p>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div
+                class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600 font-light">
+                <p>&copy; {% now "Y" %} บมจ. อสมท (MCOT Public Company Limited). สงวนลิขสิทธิ์.</p>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-gray-400">ผังเว็บไซต์</a>
+                    <a href="#" class="hover:text-gray-400">การใช้คุกกี้</a>
+                    <a href="#" class="hover:text-gray-400">ความปลอดภัย</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+
+    <!-- Cart Management Script -->
+    <script>
+        function updateCartCounter() {
+            try {
+                const cart = JSON.parse(localStorage.getItem('mcot_cart') || '[]');
+                const counter = document.getElementById('cart-counter');
+                // Count total items (sum of quantities)
+                const count = cart.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0);
+
+                if (count > 0) {
+                    counter.innerText = count;
+                    counter.classList.remove('hidden');
+                } else {
+                    counter.classList.add('hidden');
+                }
+            } catch (e) {
+                console.error("Error updating cart counter:", e);
+            }
+        }
+
+        // Init on load
+        document.addEventListener('DOMContentLoaded', updateCartCounter);
+
+        // Listen for custom event from other components
+        window.addEventListener('cartUpdated', updateCartCounter);
+    </script>
+</body>
+
+</html>

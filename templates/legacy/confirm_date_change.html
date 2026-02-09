@@ -1,0 +1,57 @@
+{% extends 'rentals/public/base.html' %}
+{% load humanize %}
+
+{% block title %}ยืนยันการเปลี่ยนวันที่ | MCOT Rental{% endblock %}
+{% block body_class %}light-theme{% endblock %}
+
+{% block content %}
+<div class="container py-5 min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="max-width: 500px; width: 100%;">
+        <div class="card-body p-5 text-center">
+
+            <div class="mb-4 text-primary">
+                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center"
+                    style="width: 80px; height: 80px;">
+                    <i class="fas fa-calendar-check fa-3x"></i>
+                </div>
+            </div>
+
+            <h3 class="fw-bold text-dark mb-3">ยืนยันการเปลี่ยนวันที่</h3>
+
+            <div class="d-flex align-items-center justify-content-center gap-3 mb-4">
+                <div class="text-end">
+                    <small class="text-muted d-block">วันที่เดิม</small>
+                    <span class="badge bg-light text-secondary border">{{ old_start_date }}</span>
+                </div>
+                <i class="fas fa-arrow-right text-muted"></i>
+                <div class="text-start">
+                    <small class="text-muted d-block">วันที่ใหม่</small>
+                    <span class="badge bg-primary text-white">{{ new_start_date }}</span>
+                </div>
+            </div>
+
+            <p class="text-muted mb-4" style="font-size: 0.95rem;">
+                ระบบจะทำการ <b>รีเซ็ตตะกร้าสินค้า</b> เพื่อตรวจสอบคิวว่างใหม่ <br>
+                สำหรับการจองในช่วงเวลาที่คุณเลือก
+            </p>
+
+            <form action="{{ form_action }}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" value="{{ quantity }}">
+                <input type="hidden" name="start_date" value="{{ new_start_date }}">
+                <input type="hidden" name="end_date" value="{{ new_end_date }}">
+                <input type="hidden" name="confirm_reset" value="true">
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary rounded-pill btn-lg fw-bold shadow-sm">
+                        ยืนยันการเปลี่ยนวันที่
+                    </button>
+                    <a href="javascript:history.back()" class="btn btn-light rounded-pill btn-lg fw-bold text-muted">
+                        ยกเลิก
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends 'rentals/public/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}ยานพาหนะกองถ่าย | MCOT Rental{% endblock %}
+{% block body_class %}light-theme{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="bg-white border-bottom py-5">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <span
+                    class="badge bg-warning bg-opacity-10 text-warning text-dark rounded-pill px-3 py-2 fw-bold mb-3">OB
+                    & GENERATORS</span>
+                <h1 class="display-4 fw-bold text-dark mb-3">ยานพาหนะกองถ่าย</h1>
+                <p class="lead text-muted mb-0">
+                    รถถ่ายทอดสด (OB) และรถปั่นไฟ พร้อมทีมงานวิศวกรดูแลตลอด 24 ชม.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-light min-vh-100 py-5">
+    <div class="container">
+        <!-- Filter/Tip Section -->
+        <div class="row mb-5 justify-content-center">
+            <div class="col-lg-8 text-center">
+                <div class="bg-white p-4 rounded-4 shadow-sm border-start border-4 border-warning">
+                    <h5 class="fw-bold mb-2 text-dark">บริการงานนอกสถานที่ (Outside Broadcasting)</h5>
+                    <p class="text-muted mb-0 small">
+                        MCOT ให้บริการรถ OB ระดับ Full HD / 4K พร้อมระบบสื่อสารผ่านดาวเทียม
+                        และรถปั่นไฟขนาดใหญ่ (Soundproof) สำหรับกองถ่ายภาพยนตร์และงาน Event
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            {% for product in vehicles %}
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden hover-lift bg-white">
+                    <div class="row g-0">
+                        <!-- Image -->
+                        <div class="col-lg-5 position-relative">
+                            {% if product.image %}
+                            <img src="{{ product.image.url }}" class="w-100 h-100 object-fit-cover"
+                                style="min-height: 300px;" alt="{{ product.name }}">
+                            {% else %}
+                            <div class="bg-light text-muted w-100 h-100 d-flex align-items-center justify-content-center flex-column border-end"
+                                style="min-height: 300px;">
+                                <i class="fas fa-truck fa-3x mb-3 opacity-25"></i>
+                                <span class="text-muted small">Image Coming Soon</span>
+                            </div>
+                            {% endif %}
+
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-warning text-dark shadow-sm fw-bold border border-warning">
+                                    <i class="fas fa-star me-1"></i>MCOT STANDARD
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="col-lg-7">
+                            <div class="card-body p-4 p-md-5 d-flex flex-column h-100">
+                                <div class="mb-2">
+                                    <small class="text-muted text-uppercase fw-bold ls-1">{{
+                                        product.category|default:"VEHICLE" }}</small>
+                                </div>
+                                <h3 class="fw-bold mb-3 text-dark">{{ product.name }}</h3>
+                                <p class="text-secondary mb-4 card-text">
+                                    {% if product.description and product.description != "None" %}
+                                    {{ product.description|truncatewords:40 }}
+                                    {% else %}
+                                    พร้อมทีมงานคนขับและช่างเทคนิคดูแลตลอดการใช้งาน
+                                    มั่นใจได้ในความปลอดภัยและประสิทธิภาพสูงสุด สำหรับงานถ่ายทำทุกรูปแบบ
+                                    {% endif %}
+                                </p>
+
+                                <div class="row g-3 mb-4">
+                                    <div class="col-6 col-md-4">
+                                        <div class="d-flex align-items-center bg-light p-2 rounded-3 border">
+                                            <i class="fas fa-gas-pump text-secondary me-2"></i>
+                                            <small class="fw-bold text-dark">รวมน้ำมัน</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-4">
+                                        <div class="d-flex align-items-center bg-light p-2 rounded-3 border">
+                                            <i class="fas fa-user-hard-hat text-secondary me-2"></i>
+                                            <small class="fw-bold text-dark">พร้อมคนขับ</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-4">
+                                        <div class="d-flex align-items-center bg-light p-2 rounded-3 border">
+                                            <i class="fas fa-clock text-secondary me-2"></i>
+                                            <small class="fw-bold text-dark">Standby 12h</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="mt-auto d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 border-top pt-4">
+                                    <div>
+                                        <small class="d-block text-muted text-uppercase mb-1"
+                                            style="font-size: 0.7rem;">ราคาเช่า/วัน (เริ่มต้น)</small>
+                                        <h3 class="fw-bold m-0 text-primary">&#3647;{{
+                                            product.price|floatformat:0|intcomma
+                                            }}</h3>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'product_detail' product.id %}"
+                                            class="btn btn-dark rounded-pill px-4 py-2 fw-bold shadow-sm hover-scale">
+                                            รายละเอียด / จอง <i class="fas fa-arrow-right ms-2"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 py-5 text-center text-muted">
+                <div class="mb-3 opacity-25">
+                    <i class="fas fa-truck-monster fa-4x"></i>
+                </div>
+                <h5 class="fw-bold">ไม่พบข้อมูลยานพาหนะ</h5>
+                <p class="small text-muted">กำลังอัปเดตข้อมูลรถ OB และรถปั่นไฟชุดใหม่</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .ls-1 {
+        letter-spacing: 1px;
+    }
+
+    .object-fit-cover {
+        object-fit: cover;
+    }
+
+    .hover-lift {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .hover-scale {
+        transition: transform 0.2s;
+    }
+
+    .hover-scale:hover {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}

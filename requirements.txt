@@ -1,0 +1,16 @@
+Django==4.2.27
+asgiref==3.11.0
+sqlparse==0.5.5
+typing_extensions==4.15.0
+pillow==11.3.0
+
+# Admin Interface
+django-unfold==0.18.0  # Modern Tailwind Admin
+
+# Utilities
+django-import-export==3.3.6  # Excel/CSV Import/Export
+django-filter==23.5  # Advanced Filtering
+django-summernote==0.8.20.0  # Rich Text Editor
+django-crispy-forms==2.1  # Better Forms
+crispy-bootstrap5==2024.2
+python-dotenv==1.0.1  # Environment Variables

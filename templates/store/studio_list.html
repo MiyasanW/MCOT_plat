@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Studio | MCOT Rental{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2">Professional Studios</h1>
+            <p class="text-gray-400">High-quality studios for broadcasting, recording, and production</p>
+        </div>
+    </div>
+
+    <!-- Studio Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for studio in studios %}
+        <div
+            class="group relative bg-[#0a0a0a] border border-white/5 rounded-2xl overflow-hidden hover:border-mcot-gold/30 transition-all duration-300 hover:shadow-2xl hover:shadow-mcot-gold/10">
+            <!-- Image (Placeholder) -->
+            <div
+                class="aspect-video bg-gray-900 relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
+                <div class="absolute inset-0 flex items-center justify-center text-gray-700">
+                    <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                </div>
+
+                <!-- Badge -->
+                <div
+                    class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                    <span class="text-xs font-bold text-mcot-gold">Available</span>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6">
+                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-mcot-gold transition-colors">{{
+                    studio.name }}</h3>
+                <p class="text-gray-400 text-sm line-clamp-2 mb-4">{{ studio.description|default:"No description
+                    available." }}</p>
+
+                <div class="flex items-center justify-between mt-auto">
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider">Daily Rate</p>
+                        <p class="text-xl font-bold text-mcot-gold">฿{{ studio.daily_rate|intcomma }}</p>
+                    </div>
+
+                    <a href="{% url 'store:studio_detail' studio.id %}"
+                        class="glass-btn px-4 py-2 text-sm flex items-center gap-2">
+                        View Details
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full py-12 text-center text-gray-500">
+            <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                </path>
+            </svg>
+            <p class="text-lg">No studios available at the moment.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

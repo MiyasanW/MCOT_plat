@@ -1,0 +1,385 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Shopping Cart | MCOT Rental{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2">Shopping Cart</h1>
+            <p class="text-gray-400">Review your equipment and schedule your rental.</p>
+        </div>
+        <a href="{% url 'store:catalog' %}" class="glass-btn text-sm flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18">
+                </path>
+            </svg>
+            Continue Shopping
+        </a>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Cart Items List (Left Side) -->
+        <div class="flex-1">
+            <div id="cart-container" class="space-y-4">
+                <!-- Items will be injected here by JS -->
+                <div class="glass-panel p-8 text-center" id="empty-cart-message">
+                    <div
+                        class="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center mx-auto mb-4 text-gray-500">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Your cart is empty</h3>
+                    <p class="text-gray-400 mb-6">Looks like you haven't added any equipment yet.</p>
+                    <a href="{% url 'store:catalog' %}"
+                        class="border border-mcot-orange text-mcot-orange px-6 py-2 rounded-lg font-bold hover:bg-mcot-orange hover:text-white transition-all inline-block hover:shadow-[0_0_15px_rgba(242,101,34,0.3)]">
+                        Browse Catalog
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout Summary (Right Side) -->
+        <div class="w-full lg:w-96 shrink-0" id="checkout-panel" style="display: none;">
+            <div class="glass-panel p-6 sticky top-24 border border-white/10">
+                <h3 class="text-xl font-bold text-white mb-6 font-display">Booking Details</h3>
+
+                <!-- Date Selection -->
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-gray-400 text-xs uppercase tracking-wider mb-2">Pickup Date</label>
+                        <input type="text" id="start-date"
+                            class="w-full bg-transparent border border-white/20 rounded-lg px-4 py-2.5 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600"
+                            placeholder="Select start date">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-xs uppercase tracking-wider mb-2">Return Date</label>
+                        <input type="text" id="end-date"
+                            class="w-full bg-transparent border border-white/20 rounded-lg px-4 py-2.5 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600"
+                            placeholder="Select end date">
+                    </div>
+                    <div class="text-xs text-gray-500 flex justify-between pt-2">
+                        <span>Duration</span>
+                        <span id="rental-duration" class="text-mcot-orange font-bold">1 Day</span>
+                    </div>
+                </div>
+
+                <div class="border-t border-white/10 my-6"></div>
+
+                <!-- Price Summary -->
+                <div class="space-y-3 mb-6">
+                    <div class="flex justify-between text-gray-400 text-sm">
+                        <span>Daily Rate Subtotal</span>
+                        <span id="daily-subtotal" class="text-white font-medium">฿0</span>
+                    </div>
+                    <div class="flex justify-between text-gray-400 text-sm">
+                        <span>Days</span>
+                        <span id="summary-days" class="text-white font-medium">x 1</span>
+                    </div>
+                    <div class="flex justify-between items-end border-t border-white/10 pt-4 mt-4">
+                        <span class="text-lg font-bold text-white">Total Estimate</span>
+                        <span id="grand-total" class="text-2xl font-bold text-mcot-orange">฿0</span>
+                    </div>
+                </div>
+
+                {% if user.is_authenticated %}
+                <button onclick="processCheckout()"
+                    class="w-full bg-transparent border border-mcot-orange text-mcot-orange hover:bg-mcot-orange hover:text-white font-bold py-3 rounded-lg shadow-[0_0_20px_rgba(242,101,34,0)] hover:shadow-[0_0_20px_rgba(242,101,34,0.3)] transition-all flex items-center justify-center gap-2">
+                    <span>Confirm Booking</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                    </svg>
+                </button>
+                {% else %}
+                <a href="{% url 'login' %}?next={% url 'store:cart' %}"
+                    class="w-full bg-transparent border border-white/20 text-gray-300 hover:border-white hover:text-white font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2">
+                    <span>Login to Book</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1">
+                        </path>
+                    </svg>
+                </a>
+                {% endif %}
+                <p class="text-[10px] text-gray-500 text-center mt-3">By confirming, you verify that the selected dates
+                    are correct.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Configuration & Constants ---
+    const CART_STORAGE_KEY = 'mcot_cart';
+
+    // --- DOM Elements ---
+    const cartContainer = document.getElementById('cart-container');
+    const emptyCartMessage = document.getElementById('empty-cart-message');
+    const checkoutPanel = document.getElementById('checkout-panel');
+    const dailySubtotalEl = document.getElementById('daily-subtotal');
+    const summaryDaysEl = document.getElementById('summary-days');
+    const grandTotalEl = document.getElementById('grand-total');
+    const rentalDurationEl = document.getElementById('rental-duration');
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+
+    // --- State ---
+    let cartItems = [];
+    let rentalDays = 1;
+
+    // --- Initialization ---
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCart();
+        initDatePickers();
+    });
+
+    // --- Date Picker Logic (Flatpickr) ---
+    function initDatePickers() {
+        const today = new Date();
+
+        // Retrieve pre-selected dates from Catalog flow
+        const savedStart = localStorage.getItem('mcot_booking_start');
+        const savedEnd = localStorage.getItem('mcot_booking_end');
+
+        flatpickr("#start-date", {
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            defaultDate: savedStart || today, // Use saved date if available
+            onChange: function (selectedDates, dateStr, instance) {
+                // When start date changes, update end date minDate
+                endDatePicker.set('minDate', dateStr);
+
+                // If end date is now before start date, update it
+                const endDate = endDatePicker.selectedDates[0];
+                if (endDate < selectedDates[0]) {
+                    endDatePicker.setDate(selectedDates[0]);
+                }
+                updateDuration();
+
+                // Clear saved dates to allow manual control henceforth
+                localStorage.removeItem('mcot_booking_start');
+                localStorage.removeItem('mcot_booking_end');
+            }
+        });
+
+        const endDatePicker = flatpickr("#end-date", {
+            minDate: savedStart || "today",
+            dateFormat: "Y-m-d",
+            defaultDate: savedEnd || savedStart || today, // Use saved end
+            onChange: function (selectedDates, dateStr, instance) {
+                updateDuration();
+                localStorage.removeItem('mcot_booking_start');
+                localStorage.removeItem('mcot_booking_end');
+            }
+        });
+
+        // Trigger duration update immediately if dates were pre-filled
+        if (savedStart && savedEnd) {
+            updateDuration();
+        }
+    }
+
+    function updateDuration() {
+        const startStr = startDateInput.value;
+        const endStr = endDateInput.value;
+
+        if (startStr && endStr) {
+            const start = new Date(startStr);
+            const end = new Date(endStr);
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Inclusive count
+
+            rentalDays = diffDays > 0 ? diffDays : 1;
+            rentalDurationEl.innerText = `${rentalDays} Day${rentalDays > 1 ? 's' : ''}`;
+            summaryDaysEl.innerText = `x ${rentalDays}`;
+            calculateTotals();
+        }
+    }
+
+    // --- Cart Management Logic ---
+    function loadCart() {
+        try {
+            const storedCart = localStorage.getItem(CART_STORAGE_KEY);
+            cartItems = storedCart ? JSON.parse(storedCart) : [];
+            renderCart();
+        } catch (e) {
+            console.error("Error loading cart:", e);
+            cartItems = [];
+        }
+    }
+
+    function saveCart() {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+        // Dispatch event so navbar updates immediately
+        window.dispatchEvent(new Event('cartUpdated'));
+    }
+
+    function renderCart() {
+        // Clear current list (except empty message template if we were using one, but here we rebuild)
+        cartContainer.innerHTML = '';
+
+        if (cartItems.length === 0) {
+            cartContainer.appendChild(emptyCartMessage);
+            emptyCartMessage.style.display = 'block';
+            checkoutPanel.style.display = 'none';
+            return;
+        }
+
+        emptyCartMessage.style.display = 'none';
+        checkoutPanel.style.display = 'block';
+
+        cartItems.forEach((item, index) => {
+            itemElement.className = 'glass-panel p-4 flex gap-4 items-center border border-white/10 hover:border-white/20 transition-all';
+            itemElement.innerHTML = `
+                <!-- Product Image -->
+                <div class="w-20 h-20 bg-white/5 rounded-lg overflow-hidden shrink-0 border border-white/10">
+                    ${item.image ? `<img src="${item.image}" class="w-full h-full object-cover">` :
+                    `<div class="w-full h-full flex items-center justify-center text-gray-600"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>`}
+                </div>
+                
+                <!-- Info -->
+                <div class="flex-1">
+                    <h4 class="font-bold text-white text-lg">${item.name}</h4>
+                    <p class="text-mcot-orange">฿${parseFloat(item.price).toLocaleString()} <span class="text-gray-500 text-xs">/ day</span></p>
+                </div>
+
+                <!-- Controls -->
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center bg-transparent rounded-lg border border-white/10">
+                        <button onclick="updateQuantity(${index}, -1)" class="px-3 py-1 hover:text-mcot-orange hover:bg-white/5 transition-colors rounded-l-lg">-</button>
+                        <span class="w-8 text-center text-sm font-medium text-white">${item.quantity}</span>
+                        <button onclick="updateQuantity(${index}, 1)" class="px-3 py-1 hover:text-mcot-orange hover:bg-white/5 transition-colors rounded-r-lg">+</button>
+                    </div>
+                    <button onclick="removeItem(${index})" class="text-gray-500 hover:text-red-400 transition-colors p-2 hover:bg-white/5 rounded-full">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            `;
+            cartContainer.appendChild(itemElement);
+        });
+
+        calculateTotals();
+    }
+
+    function updateQuantity(index, change) {
+        const newQuantity = (parseInt(cartItems[index].quantity) || 0) + change;
+        if (newQuantity > 0) {
+            cartItems[index].quantity = newQuantity;
+            saveCart();
+            renderCart(); // Re-render to update standard logic
+        }
+    }
+
+    function removeItem(index) {
+        if (confirm('Are you sure you want to remove this item?')) {
+            cartItems.splice(index, 1);
+            saveCart();
+            renderCart();
+        }
+    }
+
+    function calculateTotals() {
+        let dailyTotal = 0;
+        cartItems.forEach(item => {
+            dailyTotal += (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1);
+        });
+
+        dailySubtotalEl.innerText = `฿${dailyTotal.toLocaleString()}`;
+
+        const grandTotal = dailyTotal * rentalDays;
+        grandTotalEl.innerText = `฿${grandTotal.toLocaleString()}`;
+    }
+
+    // --- Checkout API Interaction ---
+    async function processCheckout() {
+        const startStr = startDateInput.value;
+        const endStr = endDateInput.value;
+
+        if (!startStr || !endStr) {
+            alert("Please select both Pickup and Return dates.");
+            return;
+        }
+
+        // Prepare Payload
+        const payload = {
+            items: cartItems.map(item => ({
+                id: item.id,
+                quantity: item.quantity,
+                type: 'product' // Default type
+            })),
+            start: startStr,
+            end: endStr
+        };
+
+        try {
+            // Show loading state
+            const btn = document.querySelector('button[onclick="processCheckout()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Processing...';
+            btn.disabled = true;
+
+            // Get CSRF Token
+            const csrftoken = getCookie('csrftoken');
+
+            const response = await fetch("{% url 'store:api_create_booking' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Success!
+                // Clear cart
+                cartItems = [];
+                saveCart();
+
+                // Redirect (Ideally to a tracking page, for now alert + home)
+                alert("Booking created successfully! Reference ID: " + data.booking_id);
+                window.location.href = "{% url 'store:home' %}";
+            } else {
+                // Error from server
+                alert("Booking Failed: " + data.message + (data.errors ? "\n- " + data.errors.join("\n- ") : ""));
+            }
+
+        } catch (e) {
+            console.error("Checkout Error:", e);
+            alert("An error occurred during checkout. Please try again.");
+        } finally {
+            // Reset loading state
+            const btn = document.querySelector('button[onclick="processCheckout()"]');
+            if (btn) {
+                btn.innerHTML = `<span class="flex items-center gap-2"><span>Confirm Booking</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></span>`;
+                btn.disabled = false;
+            }
+        }
+    }
+
+    // Helper to get cookie (Django standard)
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}
