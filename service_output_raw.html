@@ -1,0 +1,666 @@
+
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services | MCOT Rental</title>
+
+    <!-- Google Fonts: Inter & Sarabun -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Flatpickr (Date Picker) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+
+    <!-- Tailwind CSS (CDN for Rapid Dev) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Tailwind Config for Dark Premium Theme -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Sarabun', 'Inter', 'sans-serif'],
+                        display: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        mcot: {
+                            gold: '#C5A047', // Keep for legacy, but we use Orange/Purple now
+                            purple: '#2E1A69', // MCOT Purple
+                            orange: '#F26522', // MCOT Orange
+                            dark: '#0F0F0F',
+                            glass: 'rgba(46, 26, 105, 0.1)', // Purple tint
+                            glass_hover: 'rgba(46, 26, 105, 0.2)', // Purple tint
+                            border: 'rgba(242, 101, 34, 0.2)', // Orange tint
+                        }
+                    },
+                    backdropBlur: {
+                        xs: '2px',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .glass-panel {
+                @apply bg-mcot-glass backdrop-blur-md border border-mcot-border rounded-xl;
+            }
+            .glass-btn {
+                @apply bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-all duration-300 backdrop-blur-sm border border-white/5;
+            }
+            .nav-link {
+                @apply text-gray-400 hover:text-white transition-colors duration-200 text-sm font-medium;
+            }
+            .nav-link.active {
+                @apply text-mcot-orange;
+            }
+        }
+        
+        body {
+            background-color: #2A2A2A; /* Even Lighter Gray */
+        }
+    </style>
+
+    
+</head>
+
+<body
+    class="text-gray-200 min-h-screen flex flex-col font-sans antialiased selection:bg-mcot-orange selection:text-white">
+
+    <!-- Utility Bar (Global Corporate Links - Very Low Profile) -->
+    <div class="bg-[#050505] border-b border-white/10 text-[10px] text-gray-500 py-1.5 font-sans">
+        <div class="max-w-[1600px] mx-auto px-4 flex justify-between items-center">
+            <div class="flex gap-4">
+                <span class="hover:text-gray-300 cursor-default"><i class="fas fa-certificate text-mcot-orange"></i> ISO
+                    9001:2015 Certified</span>
+                <span class="hidden sm:inline hover:text-gray-300 cursor-default"><i
+                        class="fas fa-building text-gray-600"></i> Government Enterprise Standard</span>
+            </div>
+            <div class="flex gap-4">
+                <a href="#" class="hover:text-white transition-colors">Corporate Sales</a>
+                <a href="#" class="hover:text-white transition-colors">Vendor Registration</a>
+                <span class="text-gray-700">|</span>
+                <a href="#" class="text-white hover:text-mcot-orange">TH</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Commerce Navbar (Premium Glass V5) -->
+    <!-- Background: Deep Gradient + Blur to remove "Gloom" -->
+    <!-- Main Commerce Navbar (Premium Glass V5) -->
+    <!-- Background: Deep Gradient + Blur to remove "Gloom" -->
+    <!-- Main Commerce Navbar (Premium Glass V5 - Decorated) -->
+    <nav
+        class="sticky top-0 z-50 bg-[#2A2A2A]/80 backdrop-blur-xl border-b border-white/5 shadow-2xl transition-all duration-300 group/nav">
+
+        <!-- 1. Ambient Gradient Glow (Top) -->
+        <div
+            class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-mcot-orange/50 to-transparent opacity-0 group-hover/nav:opacity-100 transition-opacity duration-700 blur-sm">
+        </div>
+
+        <!-- 2. Bottom Gradient Border (Animated) -->
+        <div
+            class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-mcot-orange/50 to-transparent">
+        </div>
+        <div
+            class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-mcot-purple via-mcot-orange to-mcot-purple opacity-30 animate-pulse">
+        </div>
+
+        <div class="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between relative">
+
+            <!-- Logo (Glow Effect) -->
+            <a href="/" class="flex items-center gap-3 group/logo flex-shrink-0 relative">
+                <div
+                    class="absolute inset-0 bg-mcot-orange/20 blur-xl rounded-full opacity-0 group-hover/logo:opacity-50 transition-opacity duration-500">
+                </div>
+                <img src="/static/images/logo.png" alt="MCOT Rental"
+                    class="h-10 w-auto object-contain relative z-10 transition-transform duration-300 group-hover/logo:scale-105 drop-shadow-[0_0_15px_rgba(242,101,34,0.4)]">
+            </a>
+
+            <!-- Main Navigation (Pill & Glow) -->
+            <div
+                class="hidden lg:flex items-center gap-2 ml-auto mr-12 bg-black/20 p-1 rounded-full border border-white/5 backdrop-blur-md">
+                
+
+                <a href="/"
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden text-gray-400 hover:text-white hover:bg-white/5">
+                    <span class="relative z-10">HOME</span>
+                    
+                </a>
+
+                <a href="/catalog/"
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden text-gray-400 hover:text-white hover:bg-white/5">
+                    <span class="relative z-10">EQUIPMENT</span>
+                    
+                </a>
+
+                <a href="/packages/"
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden text-gray-400 hover:text-white hover:bg-white/5">
+                    <span class="relative z-10">PACKAGES</span>
+                    
+                </a>
+
+                <a href="/studios/"
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden text-gray-400 hover:text-white hover:bg-white/5">
+                    <span class="relative z-10">STUDIOS</span>
+                    
+                </a>
+
+                <a href="/services/"
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+                    <span class="relative z-10">SERVICES</span>
+                    
+                    <div
+                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)] rounded-full">
+                    </div>
+                    
+                </a>
+
+                <!-- Company Dropdown (Alpine.js) -->
+                <div x-data="{ open: false }" class="relative group/dropdown" @mouseenter="open = true"
+                    @mouseleave="open = false">
+                    <button
+                        class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden text-gray-400 hover:text-white hover:bg-white/5 flex items-center gap-1">
+                        <span class="relative z-10">ABOUT</span>
+                        <i class="fas fa-chevron-down text-[10px] transition-transform duration-300"
+                            :class="{'rotate-180': open}"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 translate-y-2"
+                        x-transition:enter-end="opacity-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="opacity-100 translate-y-0"
+                        x-transition:leave-end="opacity-0 translate-y-2"
+                        class="absolute top-full right-0 mt-2 w-48 bg-[#1e1e1e] border border-white/10 rounded-xl shadow-xl overflow-hidden backdrop-blur-xl z-50">
+
+                        <a href="/about/"
+                            class="block px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
+                            About Us
+                        </a>
+                        <a href="/faq/"
+                            class="block px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
+                            Help Center (FAQ)
+                        </a>
+                        <a href="/contact/"
+                            class="block px-4 py-3 text-sm text-mcot-orange font-bold hover:text-white hover:bg-mcot-orange/20 transition-colors">
+                            Contact Us
+                        </a>
+                    </div>
+                </div>
+
+                
+            </div>
+
+            <!-- 3. Actions (Account & Cart) -->
+            <div class="flex items-center gap-6 flex-shrink-0">
+                <!-- Phone (Permanent Glow) -->
+                <div class="hidden xl:flex flex-col text-right group cursor-pointer">
+                    <span class="text-[10px] text-mcot-orange uppercase tracking-widest font-bold">Support 24/7</span>
+                    <span
+                        class="text-white font-mono text-sm font-bold text-mcot-orange drop-shadow-[0_0_8px_rgba(242,101,34,0.8)]">02-201-6000</span>
+                </div>
+
+                <div class="h-8 w-px bg-white/10 hidden xl:block"></div>
+
+                <!-- Account (Permanent Button Style) -->
+                
+                <a href="/accounts/login/"
+                    class="flex items-center gap-2 bg-mcot-orange/20 hover:bg-mcot-orange/30 border border-mcot-orange/50 px-4 py-2 rounded-full transition-all group shadow-[0_0_15px_rgba(242,101,34,0.3)] hover:shadow-[0_0_20px_rgba(242,101,34,0.5)]">
+                    <i class="fas fa-user text-sm text-mcot-orange group-hover:text-white transition-colors"></i>
+                    <span
+                        class="hidden lg:block text-xs font-bold uppercase tracking-wide text-white group-hover:text-white transition-colors">Sign
+                        In / Register</span>
+                </a>
+                
+
+                <!-- Cart (Pulse Effect) -->
+                <a href="/cart/"
+                    class="btn-cart relative flex items-center gap-2 hover:text-mcot-orange transition-all group">
+                    <div
+                        class="relative w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/5 group-hover:border-mcot-orange/50 group-hover:shadow-[0_0_15px_rgba(242,101,34,0.3)] transition-all">
+                        <i
+                            class="fas fa-shopping-cart text-sm text-gray-400 group-hover:text-white transition-colors"></i>
+                        <span id="cart-counter"
+                            class="absolute -top-1 -right-1 bg-mcot-orange text-black text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden shadow-lg shadow-orange-500/50 animate-bounce">0</span>
+                    </div>
+                </a>
+            </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow w-full relative">
+        
+
+        
+<!-- Minimal Header -->
+<div class="bg-[#1C1C1E] border-b border-white/5 pt-12 pb-8">
+    <div class="max-w-[1400px] mx-auto px-6">
+        <h1 class="text-4xl text-white font-display font-bold tracking-tight mb-2">Production Services</h1>
+        <p class="text-gray-400 text-sm max-w-xl">Comprehensive broadcast solutions.</p>
+    </div>
+</div>
+
+<div class="min-h-screen bg-[#141414] text-gray-300">
+    <div class="max-w-[1400px] mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+        <!-- Sidebar -->
+        <div class="lg:col-span-3">
+            <div class="sticky top-24 space-y-8">
+                <div>
+                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Contents</h3>
+                    <nav class="flex flex-col space-y-1">
+                        <a href="#vehicles"
+                            class="group flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/5 transition-colors border-l-2 border-transparent hover:border-blue-500">
+                            <span class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">OB
+                                Vehicles</span>
+                            <span class="text-xs text-gray-600 group-hover:text-blue-400">5</span>
+                        </a>
+                        <a href="#crew"
+                            class="group flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/5 transition-colors border-l-2 border-transparent hover:border-mcot-orange">
+                            <span
+                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Technical
+                                Crew</span>
+                            <span class="text-xs text-gray-600 group-hover:text-mcot-orange">3</span>
+                        </a>
+                        <a href="#post"
+                            class="group flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/5 transition-colors border-l-2 border-transparent hover:border-purple-500">
+                            <span
+                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Post
+                                Production</span>
+                            <span class="text-xs text-gray-600 group-hover:text-purple-400">2</span>
+                        </a>
+                        <a href="#transmission"
+                            class="group flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/5 transition-colors border-l-2 border-transparent hover:border-green-500">
+                            <span
+                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Transmission</span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="lg:col-span-9 space-y-20">
+
+            <!-- 1. OB Vehicles -->
+            <section id="vehicles" class="scroll-mt-24">
+                <h2 class="text-2xl text-white mb-4">Broadcast Mobile Units</h2>
+                
+                <div class="grid grid-cols-1 gap-6">
+                    
+                    <div
+                        class="bg-[#1C1C1E] border border-white/5 rounded-xl overflow-hidden hover:border-white/10 transition-colors flex flex-col md:flex-row">
+                        <div class="md:w-1/3 aspect-video bg-black/40 relative">
+                            
+                            <div class="w-full h-full flex items-center justify-center text-gray-600">
+                                <i class="fas fa-shuttle-van text-3xl"></i>
+                            </div>
+                            
+                        </div>
+                        <div class="p-6 md:w-2/3 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-xl font-bold text-white mb-2">OB Truck 4K (6 Cameras)</h3>
+                                <div class="text-gray-400 text-sm mb-4">
+                                    Full HD/4K OB Van with 6 camera channels, extensive monitoring, and replay server.
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs text-gray-500 uppercase">Daily Rate</span>
+                                    <span class="text-xl font-bold text-white font-mono">฿45000.00</span>
+                                </div>
+                                <button
+                                    class="px-6 py-2 border border-white/20 hover:bg-white hover:text-black text-white text-xs font-bold uppercase tracking-wider rounded transition-colors">Book</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div
+                        class="bg-[#1C1C1E] border border-white/5 rounded-xl overflow-hidden hover:border-white/10 transition-colors flex flex-col md:flex-row">
+                        <div class="md:w-1/3 aspect-video bg-black/40 relative">
+                            
+                            <div class="w-full h-full flex items-center justify-center text-gray-600">
+                                <i class="fas fa-shuttle-van text-3xl"></i>
+                            </div>
+                            
+                        </div>
+                        <div class="p-6 md:w-2/3 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-xl font-bold text-white mb-2">Generator Truck 100kW</h3>
+                                <div class="text-gray-400 text-sm mb-4">
+                                    Silent generator truck for on-location power supply.
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs text-gray-500 uppercase">Daily Rate</span>
+                                    <span class="text-xl font-bold text-white font-mono">฿12000.00</span>
+                                </div>
+                                <button
+                                    class="px-6 py-2 border border-white/20 hover:bg-white hover:text-black text-white text-xs font-bold uppercase tracking-wider rounded transition-colors">Book</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div
+                        class="bg-[#1C1C1E] border border-white/5 rounded-xl overflow-hidden hover:border-white/10 transition-colors flex flex-col md:flex-row">
+                        <div class="md:w-1/3 aspect-video bg-black/40 relative">
+                            
+                            <div class="w-full h-full flex items-center justify-center text-gray-600">
+                                <i class="fas fa-shuttle-van text-3xl"></i>
+                            </div>
+                            
+                        </div>
+                        <div class="p-6 md:w-2/3 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-xl font-bold text-white mb-2">ชุดถ่ายทอด OB  3  กล้อง + SW+บันทึก (8  ชม.) (ช่างกล้อง,SW,ช่างเสียง,CCU)</h3>
+                                <div class="text-gray-400 text-sm mb-4">
+                                    เฉพาะกรุงเทพและปริมณฑล
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs text-gray-500 uppercase">Daily Rate</span>
+                                    <span class="text-xl font-bold text-white font-mono">฿45000.00</span>
+                                </div>
+                                <button
+                                    class="px-6 py-2 border border-white/20 hover:bg-white hover:text-black text-white text-xs font-bold uppercase tracking-wider rounded transition-colors">Book</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div
+                        class="bg-[#1C1C1E] border border-white/5 rounded-xl overflow-hidden hover:border-white/10 transition-colors flex flex-col md:flex-row">
+                        <div class="md:w-1/3 aspect-video bg-black/40 relative">
+                            
+                            <div class="w-full h-full flex items-center justify-center text-gray-600">
+                                <i class="fas fa-shuttle-van text-3xl"></i>
+                            </div>
+                            
+                        </div>
+                        <div class="p-6 md:w-2/3 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-xl font-bold text-white mb-2">ชุดถ่ายทอด OB  3  กล้อง + SW+บันทึก (8  ชม.)  (ผู้ช่วยกล้อง,เสียง,CCU)</h3>
+                                <div class="text-gray-400 text-sm mb-4">
+                                    เฉพาะกรุงเทพและปริมณฑล
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs text-gray-500 uppercase">Daily Rate</span>
+                                    <span class="text-xl font-bold text-white font-mono">฿35000.00</span>
+                                </div>
+                                <button
+                                    class="px-6 py-2 border border-white/20 hover:bg-white hover:text-black text-white text-xs font-bold uppercase tracking-wider rounded transition-colors">Book</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div
+                        class="bg-[#1C1C1E] border border-white/5 rounded-xl overflow-hidden hover:border-white/10 transition-colors flex flex-col md:flex-row">
+                        <div class="md:w-1/3 aspect-video bg-black/40 relative">
+                            
+                            <div class="w-full h-full flex items-center justify-center text-gray-600">
+                                <i class="fas fa-shuttle-van text-3xl"></i>
+                            </div>
+                            
+                        </div>
+                        <div class="p-6 md:w-2/3 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-xl font-bold text-white mb-2">OB Van Unit (Standard)</h3>
+                                <div class="text-gray-400 text-sm mb-4">
+                                    Standard OB Van
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs text-gray-500 uppercase">Daily Rate</span>
+                                    <span class="text-xl font-bold text-white font-mono">฿15000.00</span>
+                                </div>
+                                <button
+                                    class="px-6 py-2 border border-white/20 hover:bg-white hover:text-black text-white text-xs font-bold uppercase tracking-wider rounded transition-colors">Book</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+            </section>
+
+            <!-- 2. Technical Crew (Table View) -->
+            <section id="crew" class="scroll-mt-24">
+                <h2 class="text-2xl text-white mb-4">Technical Crew</h2>
+                <div class="bg-[#1C1C1E] border border-white/5 rounded-xl overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr
+                                class="bg-white/5 text-gray-400 text-xs uppercase tracking-wider border-b border-white/5">
+                                <th class="py-4 px-6 font-medium">Position</th>
+                                <th class="py-4 px-6 font-medium text-right">Daily Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="py-4 px-6">
+                                    <span class="block text-white font-bold text-sm">Camera Operator</span>
+                                </td>
+                                <td class="py-4 px-6 text-right">
+                                    <span class="font-mono text-mcot-orange font-bold">฿5500.00</span>
+                                </td>
+                            </tr>
+                            
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="py-4 px-6">
+                                    <span class="block text-white font-bold text-sm">Sound Engineer</span>
+                                </td>
+                                <td class="py-4 px-6 text-right">
+                                    <span class="font-mono text-mcot-orange font-bold">฿4500.00</span>
+                                </td>
+                            </tr>
+                            
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="py-4 px-6">
+                                    <span class="block text-white font-bold text-sm">Gaffer</span>
+                                </td>
+                                <td class="py-4 px-6 text-right">
+                                    <span class="font-mono text-mcot-orange font-bold">฿4000.00</span>
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 3. Post Production (Table View) -->
+            <section id="post" class="scroll-mt-24">
+                <h2 class="text-2xl text-white mb-4">Post Production</h2>
+                <div class="bg-[#1C1C1E] border border-white/5 rounded-xl overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr
+                                class="bg-white/5 text-gray-400 text-xs uppercase tracking-wider border-b border-white/5">
+                                <th class="py-4 px-6 font-medium">Service Name</th>
+                                <th class="py-4 px-6 font-medium text-right">Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="py-4 px-6 text-white font-medium text-sm">เครื่องตัดต่อ MAC</td>
+                                <td class="py-4 px-6 text-right font-mono text-white">฿5000.00</td>
+                            </tr>
+                            
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="py-4 px-6 text-white font-medium text-sm">เครื่องตัดต่อ PC</td>
+                                <td class="py-4 px-6 text-right font-mono text-white">฿3000.00</td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 4. Transmission (Table View) -->
+            <section id="transmission" class="scroll-mt-24">
+                <h2 class="text-2xl text-white mb-4">Transmission</h2>
+                <div class="bg-[#1C1C1E] border border-white/5 rounded-xl overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr
+                                class="bg-white/5 text-gray-400 text-xs uppercase tracking-wider border-b border-white/5">
+                                <th class="py-4 px-6 font-medium">Service</th>
+                                <th class="py-4 px-6 font-medium text-right">Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="py-4 px-6">
+                                    <div class="text-white font-bold text-sm">Test LiveU Unit</div>
+                                </td>
+                                <td class="py-4 px-6 text-right font-mono text-white">฿15000.00</td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </div>
+</div>
+
+    </main>
+
+    <!-- Footer (Fat & Functional - Thai) -->
+    <footer class="bg-[#202020] border-t border-white/5 pt-20 pb-10 mt-auto">
+
+        <div class="max-w-[1440px] mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                <!-- Brand Col -->
+                <div class="space-y-6">
+                    <div>
+                        <span class="font-display font-black text-xl text-white">MCOT</span>
+                        <span class="text-[10px] tracking-widest text-gray-500 uppercase block">Rental
+                            Platform</span>
+                    </div>
+                    <p class="text-gray-500 text-sm leading-relaxed font-light">
+                        ผู้ให้บริการเช่าอุปกรณ์ถ่ายทำครบวงจร โดย บมจ. อสมท <br>
+                        มาตรฐานการผลิตระดับประเทศ ยาวนานกว่า 70 ปี
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#"
+                            class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-blue-600 transition-all"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="#"
+                            class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-sky-400 transition-all"><i
+                                class="fab fa-twitter"></i></a>
+                        <a href="#"
+                            class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-red-600 transition-all"><i
+                                class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Product Links -->
+                <div>
+                    <h4 class="text-white font-bold mb-6">บริการของเรา</h4>
+                    <ul class="space-y-3 text-sm text-gray-500 font-light">
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">เช่ากล้องถ่ายภาพยนตร์</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">เลนส์ Anamorphic</a>
+                        </li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">บริการรถ OB</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">เช่าสตูดิโอขนาดใหญ่</a>
+                        </li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">สินค้ามาใหม่</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support Links -->
+                <div>
+                    <h4 class="text-white font-bold mb-6">เกี่ยวกับเรา</h4>
+                    <ul class="space-y-3 text-sm text-gray-500 font-light">
+                        <li><a href="/about/" class="hover:text-mcot-orange transition-colors">รู้จัก
+                                MCOT Rental</a></li>
+                        <li><a href="/contact/"
+                                class="hover:text-mcot-orange transition-colors">ติดต่อเจ้าหน้าที่</a></li>
+                        <li><a href="/faq/"
+                                class="hover:text-mcot-orange transition-colors">คำถามที่พบบ่อย (FAQ)</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">เงื่อนไขการให้บริการ</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">นโยบายความเป็นส่วนตัว</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-white font-bold mb-6">สำนักงานใหญ่</h4>
+                    <address class="text-sm text-gray-500 not-italic leading-relaxed mb-4 font-light">
+                        เลขที่ 63/1 ถ.พระราม 9 แขวงห้วยขวาง<br>
+                        เขตห้วยขวาง กรุงเทพฯ 10310
+                    </address>
+                    <p class="text-sm text-white font-bold mb-1">02-201-6000</p>
+                    <p class="text-sm text-mcot-orange">rental@mcot.net</p>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div
+                class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600 font-light">
+                <p>&copy; 2026 บมจ. อสมท (MCOT Public Company Limited). สงวนลิขสิทธิ์.</p>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-gray-400">ผังเว็บไซต์</a>
+                    <a href="#" class="hover:text-gray-400">การใช้คุกกี้</a>
+                    <a href="#" class="hover:text-gray-400">ความปลอดภัย</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    
+
+    <!-- Cart Management Script -->
+    <script>
+        function updateCartCounter() {
+            try {
+                const cart = JSON.parse(localStorage.getItem('mcot_cart') || '[]');
+                const counter = document.getElementById('cart-counter');
+                // Count total items (sum of quantities)
+                const count = cart.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0);
+
+                if (count > 0) {
+                    counter.innerText = count;
+                    counter.classList.remove('hidden');
+                } else {
+                    counter.classList.add('hidden');
+                }
+            } catch (e) {
+                console.error("Error updating cart counter:", e);
+            }
+        }
+
+        // Init on load
+        document.addEventListener('DOMContentLoaded', updateCartCounter);
+
+        // Listen for custom event from other components
+        window.addEventListener('cartUpdated', updateCartCounter);
+    </script>
+</body>
+
+</html>

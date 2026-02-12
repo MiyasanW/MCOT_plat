@@ -6,14 +6,56 @@ from datetime import datetime
 import json
 
 from django.shortcuts import render, get_object_or_404
-from apps.store.models import Product, ProductCategory, Booking, BookingItem, Studio, BookingStudio
+from apps.store.models import Product, ProductCategory, Booking, BookingItem, Studio, BookingStudio, Package, PackageItem, ProductionVehicle, Staff
 from apps.store.services.availability import AvailabilityService
 
 def home(request):
     """
     หน้าแรก (Home Page)
     """
-    return render(request, 'pages/home.html')
+    # 1. Hero Product (Featured)
+    featured_product = Product.objects.filter(is_active=True, is_featured=True).first()
+    if not featured_product:
+        # Fallback if no featured product
+        featured_product = Product.objects.filter(is_active=True).order_by('-price').first()
+
+    # 2. New Arrivals (Latest 4)
+    new_arrivals = Product.objects.filter(is_active=True).order_by('-created_at', '-id')[:4]
+
+    # 3. Facility Status (Live Data)
+    today = timezone.now().date()
+    
+    # A. Pickup Queue (Based on today's bookings)
+    bookings_today_count = Booking.objects.filter(start_time__date=today).count()
+    if bookings_today_count < 3:
+        queue_status = {'label': 'Low Traffic', 'color': 'green'}
+    elif bookings_today_count < 7:
+        queue_status = {'label': 'Medium Traffic', 'color': 'yellow'}
+    else:
+        queue_status = {'label': 'High Traffic', 'color': 'red'}
+
+    # B. Studio Status
+    studios = Studio.objects.all()
+    studio_statuses = []
+    for studio in studios:
+        is_booked = BookingStudio.objects.filter(
+            studio=studio,
+            booking__start_time__date__lte=today,
+            booking__end_time__date__gte=today,
+            booking__status__in=['approved', 'active']
+        ).exists()
+        studio_statuses.append({
+            'name': studio.name,
+            'is_occupied': is_booked
+        })
+
+    context = {
+        'featured_product': featured_product,
+        'new_arrivals': new_arrivals,
+        'queue_status': queue_status,
+        'studio_statuses': studio_statuses,
+    }
+    return render(request, 'pages/home.html', context)
 
 def about(request):
     """About Us page"""
@@ -35,17 +77,19 @@ def catalog(request):
     category_slug = request.GET.get('category')
     search_query = request.GET.get('q')
     
-    products = Product.objects.filter(is_active=True).select_related('category')
+    from .filters import ProductFilter
+
+    # Initial Queryset
+    queryset = Product.objects.filter(is_active=True).select_related('category')
     
-    # Filter Logic
-    # Filter Logic
+    # Apply Filter (Category & Search)
+    product_filter = ProductFilter(request.GET, queryset=queryset)
+    products = product_filter.qs
+    
+    # Get Active Category object for display context
     active_category = None
     if category_slug:
         active_category = get_object_or_404(ProductCategory, slug=category_slug)
-        products = products.filter(category=active_category)
-        
-    if search_query:
-        products = products.filter(name__icontains=search_query)
 
     # --- Date Availability Filtering ---
     # รับค่าวันที่จาก Query Parameter (เช่น ?start_date=2024-02-01&end_date=2024-02-02)
@@ -84,9 +128,18 @@ def catalog(request):
         except ValueError:
             pass 
 
+    # Separate Categories for Sidebar
+    service_slugs = ['vehicle', 'crew']
+    studio_slugs = ['studio'] # If any exist as products
+    
+    all_categories = ProductCategory.objects.all().order_by('name')
+    service_categories = all_categories.filter(slug__in=service_slugs)
+    equipment_categories = all_categories.exclude(slug__in=service_slugs + studio_slugs)
+
     context = {
         'products': products,
-        'categories': ProductCategory.objects.all(),
+        'equipment_categories': equipment_categories,
+        'service_categories': service_categories,
         'active_category': active_category,
         'search_query': search_query,
         'selected_start_date': filter_start_date_str,
@@ -123,6 +176,39 @@ def studio_detail(request, studio_id):
         'studio': studio
     }
     return render(request, 'store/studio_detail.html', context)
+
+def package_list(request):
+    """
+    หน้าแสดงรายการแพ็คเกจ (Package List)
+    """
+    packages = Package.objects.filter(is_active=True)
+    return render(request, 'store/package_list.html', {'packages': packages})
+
+def package_detail(request, package_id):
+    """
+    หน้าละเอียดแพ็คเกจ (Package Detail)
+    """
+    package = get_object_or_404(Package, pk=package_id)
+    return render(request, 'store/package_detail.html', {'package': package})
+
+def service_list(request):
+    """
+    หน้าแสดงบริการ (Services: Crew Only for now)
+    Redesigned: Vehicles moved to Packages
+    """
+    # 2. Crew (Staff)
+    staffs = Staff.objects.filter(is_active=True).select_related('position')
+
+    # 3. Post Production
+    post_prod = Product.objects.filter(category__name='Post Production', is_active=True)
+    
+    context = {
+        'staffs': staffs,
+        'post_prod': post_prod,
+        'st_count': staffs.count(),
+        'pp_count': post_prod.count(),
+    }
+    return render(request, 'store/service_list.html', context)
 
 def product_detail(request, product_id):
     """
@@ -244,6 +330,9 @@ def create_booking_api(request):
         new_booking = Booking.objects.create(
             customer_name=request.user.get_full_name() or request.user.username,
             created_by=request.user,
+            project_name=payload.get('project_name'),
+            phone=payload.get('phone'),
+            note=payload.get('note'),
             start_time=booking_start,
             end_time=booking_end,
             status='draft'

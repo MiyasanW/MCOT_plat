@@ -5,7 +5,7 @@ typing_extensions==4.15.0
 pillow==11.3.0
 
 # Admin Interface
-django-unfold==0.18.0  # Modern Tailwind Admin
+django-simpleui==2024.1.25  # Vue+ElementUI Admin Theme
 
 # Utilities
 django-import-export==3.3.6  # Excel/CSV Import/Export

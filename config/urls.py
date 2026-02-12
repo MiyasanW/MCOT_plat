@@ -22,5 +22,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')), # Auth URLs (login, logout, password_reset)
+    path('summernote/', include('django_summernote.urls')),
     path('', include('apps.store.urls')),  # Store App URLs
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

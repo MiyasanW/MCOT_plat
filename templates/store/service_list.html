@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Services | MCOT Rental{% endblock %}
+
+{% block content %}
+<!-- Page Background (Dark Grey) -->
+<div class="min-h-screen bg-[#1c1c1e] text-gray-300 font-sans selection:bg-mcot-orange selection:text-black">
+
+    <!-- Industrial Header (Matched) -->
+    <div class="bg-[#353535] border-b border-white/10 py-8 mb-8">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-end gap-6">
+            <div>
+                <div class="flex items-center gap-2 text-xs text-gray-500 uppercase mb-2">
+                    <a href="{% url 'store:home' %}" class="hover:text-white">Home</a> <i
+                        class="fas fa-chevron-right text-[8px]"></i>
+                    <span class="text-mcot-orange">Services</span>
+                </div>
+                <h1 class="text-3xl font-bold text-white font-display">
+                    Production Services
+                </h1>
+                <p class="text-gray-400 text-sm mt-1">Crew and Post-Production Services.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-[1400px] mx-auto px-6 md:px-12 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+        <!-- Sidebar -->
+        <div class="lg:col-span-3">
+            <div class="sticky top-24 space-y-8">
+                <div>
+                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Categories</h3>
+                    <nav class="flex flex-col space-y-2">
+                        <a href="#crew"
+                            class="group flex items-center justify-between px-4 py-3 rounded hover:bg-[#353535] transition-colors border border-transparent hover:border-white/10">
+                            <span class="text-sm font-medium text-gray-400 group-hover:text-white">Technical Crew</span>
+                            <span class="text-xs bg-white/5 px-2 py-0.5 rounded text-gray-500">{{ st_count }}</span>
+                        </a>
+                        <a href="#post"
+                            class="group flex items-center justify-between px-4 py-3 rounded hover:bg-[#353535] transition-colors border border-transparent hover:border-white/10">
+                            <span class="text-sm font-medium text-gray-400 group-hover:text-white">Post
+                                Production</span>
+                            <span class="text-xs bg-white/5 px-2 py-0.5 rounded text-gray-500">{{ pp_count }}</span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="lg:col-span-9 space-y-16">
+
+            <!-- 1. Crew Section -->
+            <section id="crew" class="scroll-mt-24">
+                <div class="flex items-center gap-4 mb-6">
+                    <h2 class="text-lg font-bold text-white font-display">Technical Crew</h2>
+                    <div class="h-px bg-white/10 flex-1"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for person in staffs %}
+                    <div
+                        class="bg-[#353535] border border-white/10 p-4 rounded hover:border-mcot-orange/50 transition-colors flex items-center gap-4 group">
+                        <div
+                            class="w-12 h-12 rounded-full bg-black/20 flex items-center justify-center text-gray-400 group-hover:text-white transition-colors">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold text-sm group-hover:text-mcot-orange transition-colors">
+                                {{ person.name }}
+                            </h4>
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">
+                                {{ person.position.name }}
+                            </span>
+                        </div>
+                        <div class="ml-auto text-right">
+                            <span class="block text-[10px] text-gray-500">Rate</span>
+                            <span class="text-sm font-mono text-white font-bold">
+                                ฿{{ person.daily_rate|intcomma }}
+                            </span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div
+                        class="col-span-full py-8 text-center text-gray-500 bg-[#353535]/50 rounded border border-white/5">
+                        <p>No crew members available at the moment.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- 2. Post Production -->
+            <section id="post" class="scroll-mt-24">
+                <div class="flex items-center gap-4 mb-6">
+                    <h2 class="text-lg font-bold text-white font-display">Post Production</h2>
+                    <div class="h-px bg-white/10 flex-1"></div>
+                </div>
+
+                <div class="bg-[#353535] border border-white/10 rounded overflow-hidden">
+                    <div class="divide-y divide-white/5">
+                        {% for item in post_prod %}
+                        <div class="p-4 flex items-center justify-between hover:bg-white/5 transition-colors group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-8 h-8 rounded bg-black/20 flex items-center justify-center text-gray-500">
+                                    <i class="fas fa-film text-xs"></i>
+                                </div>
+                                <span
+                                    class="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
+                                    {{ item.name }}
+                                </span>
+                            </div>
+                            <span class="font-mono text-sm font-bold text-white">
+                                ฿{{ item.price|intcomma }}
+                            </span>
+                        </div>
+                        {% empty %}
+                        <div class="p-8 text-center text-gray-500">
+                            <p>No post-production services available.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

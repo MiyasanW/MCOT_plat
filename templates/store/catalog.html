@@ -67,18 +67,58 @@
         <aside class="w-full md:w-64 shrink-0 space-y-8">
             <!-- Categories -->
             <div class="border border-white/10 bg-[#353535]">
+
+                <!-- 1. Studios Section -->
                 <h3
-                    class="bg-[#404040] px-4 py-3 text-xs font-bold text-white uppercase tracking-wider border-b border-white/10">
-                    Categories
+                    class="bg-[#404040] px-4 py-3 text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 flex items-center gap-2">
+                    <i class="fas fa-door-open text-mcot-orange"></i> Studios
                 </h3>
-                <ul class="divide-y divide-white/5">
+                <ul class="divide-y divide-white/5 border-b border-white/10">
+                    <li>
+                        <a href="{% url 'store:studio_list' %}"
+                            class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors [color-scheme:dark]">
+                            <span>All Studios</span>
+                            <i class="fas fa-chevron-right text-[10px]"></i>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- 2. Equipment Section -->
+                <h3
+                    class="bg-[#404040] px-4 py-3 text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 flex items-center gap-2">
+                    <i class="fas fa-video text-mcot-orange"></i> Equipment
+                </h3>
+                <ul class="divide-y divide-white/5 border-b border-white/10">
                     <li>
                         <a href="{% url 'store:catalog' %}"
-                            class="flex items-center justify-between px-4 py-2.5 text-sm {% if not active_category %}text-white bg-white/5 border-l-2 border-mcot-orange{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %} transition-colors [color-scheme:dark]">
+                            class="flex items-center justify-between px-4 py-2.5 text-sm {% if not active_category and not search_query %}text-white bg-white/5 border-l-2 border-mcot-orange{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %} transition-colors [color-scheme:dark]">
                             <span>All Equipment</span>
                         </a>
                     </li>
-                    {% for cat in categories %}
+                    {% for cat in equipment_categories %}
+                    <li>
+                        <a href="{% url 'store:catalog' %}?category={{ cat.slug }}"
+                            class="flex items-center justify-between px-4 py-2.5 text-sm {% if active_category.id == cat.id %}text-white bg-white/5 border-l-2 border-mcot-orange{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %} transition-colors [color-scheme:dark]">
+                            <span>{{ cat.name }}</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <!-- 3. Services Section -->
+                <h3
+                    class="bg-[#404040] px-4 py-3 text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 flex items-center gap-2">
+                    <i class="fas fa-tools text-mcot-orange"></i> Services
+                </h3>
+                <ul class="divide-y divide-white/5">
+                    <li>
+                        <a href="{% url 'store:service_list' %}"
+                            class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors [color-scheme:dark]">
+                            <span>Service Overview</span>
+                            <i class="fas fa-chevron-right text-[10px]"></i>
+                        </a>
+                    </li>
+                    {% for cat in service_categories %}
                     <li>
                         <a href="{% url 'store:catalog' %}?category={{ cat.slug }}"
                             class="flex items-center justify-between px-4 py-2.5 text-sm {% if active_category.id == cat.id %}text-white bg-white/5 border-l-2 border-mcot-orange{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %} transition-colors [color-scheme:dark]">

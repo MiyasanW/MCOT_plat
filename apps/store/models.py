@@ -50,6 +50,8 @@ class Product(models.Model):
     quantity = models.IntegerField(default=1, verbose_name="จำนวนทั้งหมด")
     turnaround_time = models.DurationField(default=timedelta(hours=1), verbose_name="เวลาในการเตรียมของ (Buffer Time)", help_text="เวลาที่ต้องเว้นว่างหลังคืนของ เพื่อเช็ค/ทำความสะอาด")
     is_active = models.BooleanField(default=True, verbose_name="เปิดให้เช่า")
+    is_featured = models.BooleanField(default=False, verbose_name="แนะนำ (Featured)")
+    created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name="วันที่เพิ่ม")
 
     class Meta: verbose_name_plural = "ทรัพยากร - สินค้า (Product)"
     def __str__(self): return self.name
@@ -151,9 +153,14 @@ class Booking(models.Model):
     ]
     
     # Customer Info
-    customer_name = models.CharField(max_length=200)
+    customer_name = models.CharField(max_length=200, verbose_name="ชื่อลูกค้า") # E.g. Contact Person
     created_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True)
     
+    # Project Info (New)
+    project_name = models.CharField(max_length=200, verbose_name="ชื่อโปรเจค/งาน", blank=True, null=True)
+    phone = models.CharField(max_length=20, verbose_name="เบอร์โทรศัพท์ติดต่อ", blank=True, null=True)
+    note = models.TextField(verbose_name="หมายเหตุ", blank=True, null=True)
+
     # Timeline
     start_time = models.DateTimeField(verbose_name="เริ่มใช้")
     end_time = models.DateTimeField(verbose_name="สิ้นสุด")

@@ -19,8 +19,11 @@
     <!-- Tailwind CSS (CDN for Rapid Dev) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Flatpickr JS -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <!-- Tailwind Config for Dark Premium Theme -->
     <script>
@@ -100,71 +103,168 @@
     <!-- Background: Deep Gradient + Blur to remove "Gloom" -->
     <!-- Main Commerce Navbar (Premium Glass V5) -->
     <!-- Background: Deep Gradient + Blur to remove "Gloom" -->
+    <!-- Main Commerce Navbar (Premium Glass V5 - Decorated) -->
     <nav
-        class="sticky top-0 z-50 bg-[#2A2A2A]/80 backdrop-blur-xl border-b border-white/5 shadow-2xl transition-all duration-300">
-        <!-- Brand Gradient Border (Bottom Glow) -->
+        class="sticky top-0 z-50 bg-[#2A2A2A]/80 backdrop-blur-xl border-b border-white/5 shadow-2xl transition-all duration-300 group/nav">
+
+        <!-- 1. Ambient Gradient Glow (Top) -->
+        <div
+            class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-mcot-orange/50 to-transparent opacity-0 group-hover/nav:opacity-100 transition-opacity duration-700 blur-sm">
+        </div>
+
+        <!-- 2. Bottom Gradient Border (Animated) -->
         <div
             class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-mcot-orange/50 to-transparent">
         </div>
+        <div
+            class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-mcot-purple via-mcot-orange to-mcot-purple opacity-30 animate-pulse">
+        </div>
 
-        <div class="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
-            <!-- 1. Logo (Generated Asset - High Quality) -->
-            <a href="/" class="flex items-center gap-3 group flex-shrink-0 hover:opacity-90 transition-opacity">
+        <div class="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between relative">
+
+            <!-- Logo (Glow Effect) -->
+            <a href="/" class="flex items-center gap-3 group/logo flex-shrink-0 relative">
+                <div
+                    class="absolute inset-0 bg-mcot-orange/20 blur-xl rounded-full opacity-0 group-hover/logo:opacity-50 transition-opacity duration-500">
+                </div>
                 <img src="{% static 'images/logo.png' %}" alt="MCOT Rental"
-                    class="h-10 w-auto object-contain filter drop-shadow-[0_0_10px_rgba(242,101,34,0.3)]">
+                    class="h-10 w-auto object-contain relative z-10 transition-transform duration-300 group-hover/logo:scale-105 drop-shadow-[0_0_15px_rgba(242,101,34,0.4)]">
             </a>
 
-            <!-- 2. Main Navigation (Right-Aligned + Glow Effects) -->
-            <div class="hidden lg:flex items-center gap-10 ml-auto mr-12">
+            <!-- Main Navigation (Pill & Glow) -->
+            <div
+                class="hidden lg:flex items-center gap-2 ml-auto mr-12 bg-black/20 p-1 rounded-full border border-white/5 backdrop-blur-md">
+                {% with request.resolver_match.url_name as url_name %}
+
                 <a href="{% url 'store:home' %}"
-                    class="nav-item text-sm font-bold text-gray-300 hover:text-white transition-all uppercase tracking-wide hover:drop-shadow-[0_0_8px_rgba(242,101,34,0.5)]">หน้าแรก</a>
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if url_name == 'home' %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
+                    <span class="relative z-10">HOME</span>
+                    {% if url_name == 'home' %}
+                    <div
+                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-mcot-orange shadow-[0_0_10px_rgba(242,101,34,0.8)] rounded-full">
+                    </div>
+                    {% endif %}
+                </a>
+
                 <a href="{% url 'store:catalog' %}"
-                    class="nav-item text-sm font-bold text-gray-300 hover:text-white transition-all uppercase tracking-wide hover:drop-shadow-[0_0_8px_rgba(242,101,34,0.5)]">รายการอุปกรณ์</a>
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'catalog' in url_name %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
+                    <span class="relative z-10">EQUIPMENT</span>
+                    {% if 'catalog' in url_name %}
+                    <div
+                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] rounded-full">
+                    </div>
+                    {% endif %}
+                </a>
+
+                <a href="{% url 'store:package_list' %}"
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'package' in url_name %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
+                    <span class="relative z-10">PACKAGES</span>
+                    {% if 'package' in url_name %}
+                    <div
+                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-mcot-orange shadow-[0_0_10px_rgba(242,101,34,0.8)] rounded-full">
+                    </div>
+                    {% endif %}
+                </a>
+
                 <a href="{% url 'store:studio_list' %}"
-                    class="nav-item text-sm font-bold text-gray-300 hover:text-white transition-all uppercase tracking-wide hover:drop-shadow-[0_0_8px_rgba(46,26,105,0.8)]">จองสตูดิโอ</a>
-                <a href="{% url 'store:about' %}"
-                    class="nav-item text-sm font-bold text-gray-300 hover:text-white transition-all uppercase tracking-wide hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">เกี่ยวกับเรา</a>
-                <a href="{% url 'store:faq' %}"
-                    class="nav-item text-sm font-bold text-gray-300 hover:text-white transition-all uppercase tracking-wide hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">FAQ</a>
-                <a href="{% url 'store:contact' %}"
-                    class="nav-item text-sm font-bold text-gray-300 hover:text-white transition-all uppercase tracking-wide hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">ติดต่อเรา</a>
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'studio' in url_name %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
+                    <span class="relative z-10">STUDIOS</span>
+                    {% if 'studio' in url_name %}
+                    <div
+                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.8)] rounded-full">
+                    </div>
+                    {% endif %}
+                </a>
+
+                <a href="{% url 'store:service_list' %}"
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'service' in url_name %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
+                    <span class="relative z-10">SERVICES</span>
+                    {% if 'service' in url_name %}
+                    <div
+                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)] rounded-full">
+                    </div>
+                    {% endif %}
+                </a>
+
+                <!-- Company Dropdown (Alpine.js) -->
+                <div x-data="{ open: false }" class="relative group/dropdown" @mouseenter="open = true"
+                    @mouseleave="open = false">
+                    <button
+                        class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden text-gray-400 hover:text-white hover:bg-white/5 flex items-center gap-1">
+                        <span class="relative z-10">ABOUT</span>
+                        <i class="fas fa-chevron-down text-[10px] transition-transform duration-300"
+                            :class="{'rotate-180': open}"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 translate-y-2"
+                        x-transition:enter-end="opacity-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="opacity-100 translate-y-0"
+                        x-transition:leave-end="opacity-0 translate-y-2"
+                        class="absolute top-full right-0 mt-2 w-48 bg-[#1e1e1e] border border-white/10 rounded-xl shadow-xl overflow-hidden backdrop-blur-xl z-50">
+
+                        <a href="{% url 'store:about' %}"
+                            class="block px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
+                            About Us
+                        </a>
+                        <a href="{% url 'store:faq' %}"
+                            class="block px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
+                            Help Center (FAQ)
+                        </a>
+                        <a href="{% url 'store:contact' %}"
+                            class="block px-4 py-3 text-sm text-mcot-orange font-bold hover:text-white hover:bg-mcot-orange/20 transition-colors">
+                            Contact Us
+                        </a>
+                    </div>
+                </div>
+
+                {% endwith %}
             </div>
 
             <!-- 3. Actions (Account & Cart) -->
             <div class="flex items-center gap-6 flex-shrink-0">
-                <!-- Phone -->
-                <div class="hidden xl:flex flex-col text-right">
-                    <span class="text-[10px] text-gray-500 uppercase tracking-widest">Support</span>
+                <!-- Phone (Permanent Glow) -->
+                <div class="hidden xl:flex flex-col text-right group cursor-pointer">
+                    <span class="text-[10px] text-mcot-orange uppercase tracking-widest font-bold">Support 24/7</span>
                     <span
-                        class="text-mcot-orange font-mono text-sm font-bold drop-shadow-[0_0_5px_rgba(242,101,34,0.5)]">02-201-6000</span>
+                        class="text-white font-mono text-sm font-bold text-mcot-orange drop-shadow-[0_0_8px_rgba(242,101,34,0.8)]">02-201-6000</span>
                 </div>
 
                 <div class="h-8 w-px bg-white/10 hidden xl:block"></div>
 
-                <!-- Account -->
+                <!-- Account (Permanent Button Style) -->
                 {% if user.is_authenticated %}
-                <a href="#"
-                    class="flex items-center gap-2 hover:bg-white/5 px-2 py-1 rounded-lg transition-all group border border-transparent hover:border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                <a href="{% url 'admin:index' %}"
+                    class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full transition-all group border border-white/10 hover:border-mcot-orange shadow-[0_0_10px_rgba(255,255,255,0.05)]">
                     <div
-                        class="w-9 h-9 bg-gray-900 border border-white/10 rounded-full flex items-center justify-center text-xs font-bold text-white group-hover:border-mcot-orange group-hover:text-mcot-orange transition-colors">
+                        class="w-6 h-6 bg-gray-900 border border-white/10 rounded-full flex items-center justify-center text-[10px] font-bold text-white group-hover:text-mcot-orange transition-colors">
                         {{ user.username|make_list|first|upper }}
                     </div>
+                    <span class="text-xs font-bold text-white group-hover:text-mcot-orange transition-colors hidden lg:block">
+                        {{ user.username }}
+                    </span>
                 </a>
                 {% else %}
                 <a href="{% url 'login' %}"
-                    class="flex items-center gap-2 text-gray-400 hover:text-white transition-all hover:drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
-                    <i class="fas fa-user-circle text-2xl"></i>
-                    <span class="hidden lg:block text-xs font-bold uppercase tracking-wide">Sign In / Register</span>
+                    class="flex items-center gap-2 bg-mcot-orange/20 hover:bg-mcot-orange/30 border border-mcot-orange/50 px-4 py-2 rounded-full transition-all group shadow-[0_0_15px_rgba(242,101,34,0.3)] hover:shadow-[0_0_20px_rgba(242,101,34,0.5)]">
+                    <i class="fas fa-user text-sm text-mcot-orange group-hover:text-white transition-colors"></i>
+                    <span
+                        class="hidden lg:block text-xs font-bold uppercase tracking-wide text-white group-hover:text-white transition-colors">Sign
+                        In / Register</span>
                 </a>
                 {% endif %}
 
-                <!-- Cart -->
+                <!-- Cart (Pulse Effect) -->
                 <a href="{% url 'store:cart' %}"
-                    class="btn-cart relative flex items-center gap-2 hover:text-mcot-orange transition-all hover:drop-shadow-[0_0_8px_rgba(242,101,34,0.6)]">
-                    <div class="relative">
-                        <i class="fas fa-shopping-cart text-xl text-gray-400 hover:text-white transition-colors"></i>
+                    class="btn-cart relative flex items-center gap-2 hover:text-mcot-orange transition-all group">
+                    <div
+                        class="relative w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/5 group-hover:border-mcot-orange/50 group-hover:shadow-[0_0_15px_rgba(242,101,34,0.3)] transition-all">
+                        <i
+                            class="fas fa-shopping-cart text-sm text-gray-400 group-hover:text-white transition-colors"></i>
                         <span id="cart-counter"
-                            class="absolute -top-2 -right-2 bg-mcot-orange text-black text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden shadow-lg shadow-orange-500/50">0</span>
+                            class="absolute -top-1 -right-1 bg-mcot-orange text-black text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden shadow-lg shadow-orange-500/50 animate-bounce">0</span>
                     </div>
                 </a>
             </div>

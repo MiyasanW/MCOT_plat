@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 
 {% block title %}MCOT Rental - Professional Broadcast Equipment{% endblock %}
@@ -70,30 +71,35 @@
         <div class="col-span-12 lg:col-span-8 space-y-6">
 
             <!-- Hero Banner (Functional) -->
-            <div class="relative h-[320px] bg-[#151515] border border-white/10 overflow-hidden flex">
+            <!-- Hero Banner (Functional) -->
+            {% if featured_product %}
+            <div class="relative h-[320px] bg-[#151515] border border-white/10 overflow-hidden flex group">
                 <div class="w-1/2 p-10 flex flex-col justify-center z-10 relative">
                     <span
-                        class="inline-block px-2 py-1 bg-mcot-orange text-black text-[10px] font-bold uppercase tracking-widest mb-4 w-fit">In
-                        Stock Now</span>
-                    <h1 class="text-4xl font-bold text-white mb-2 font-display leading-tight">ARRI ALEXA 35</h1>
-                    <p class="text-gray-400 text-sm mb-6 leading-relaxed">
-                        Elevate your cinematography with 17 stops of dynamic range. <br>
-                        Native 4K, 120fps. Available for immediate rental.
+                        class="inline-block px-2 py-1 bg-mcot-orange text-black text-[10px] font-bold uppercase tracking-widest mb-4 w-fit">Featured</span>
+                    <h1 class="text-4xl font-bold text-white mb-2 font-display leading-tight truncate">{{ featured_product.name }}</h1>
+                    <p class="text-gray-400 text-sm mb-6 leading-relaxed line-clamp-2">
+                        {{ featured_product.description|striptags|truncatewords:20 }}
                     </p>
                     <div class="flex gap-4">
-                        <a href="{% url 'store:catalog' %}"
-                            class="px-6 py-2 bg-white text-black text-xs font-bold uppercase hover:bg-gray-200 transition-colors">Check
-                            Availability</a>
-                        <a href="#"
-                            class="px-6 py-2 border border-white/30 text-white text-xs font-bold uppercase hover:bg-white/10 transition-colors">Full
-                            Specs</a>
+                        <a href="{% url 'store:product_detail' featured_product.id %}"
+                            class="px-6 py-2 bg-white text-black text-xs font-bold uppercase hover:bg-gray-200 transition-colors">Rent Now</a>
+                        <a href="{% url 'store:product_detail' featured_product.id %}"
+                            class="px-6 py-2 border border-white/30 text-white text-xs font-bold uppercase hover:bg-white/10 transition-colors">View Specs</a>
                     </div>
                 </div>
-                <div
-                    class="w-2/3 absolute right-0 top-0 h-full bg-[url('https://www.arri.com/resource/blob/282246/3860bb4d642e5572911634b29bb85973/arri-alexa-35-camera-data.jpg')] bg-cover bg-center mask-image-linear-l">
+                <div class="w-2/3 absolute right-0 top-0 h-full mask-image-linear-l flex items-center justify-center bg-black">
+                    {% if featured_product.image %}
+                    <img src="{{ featured_product.image.url }}" class="h-full object-contain opacity-80 group-hover:scale-105 transition-transform duration-700">
+                    {% else %}
+                    <div class="text-gray-700">
+                        <i class="fas fa-image text-9xl opacity-20"></i>
+                    </div>
+                    {% endif %}
                     <div class="absolute inset-0 bg-gradient-to-r from-[#151515] via-[#151515]/50 to-transparent"></div>
                 </div>
             </div>
+            {% endif %}
 
             <!-- New Arrivals (Dense Grid) -->
             <div>
@@ -107,83 +113,49 @@
                 </div>
 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <!-- Card 1 -->
+                    {% for product in new_arrivals %}
                     <div
-                        class="bg-[#151515] border border-white/10 hover:border-mcot-orange/50 transition-colors p-3 group">
+                        class="bg-[#151515] border border-white/10 hover:border-mcot-orange/50 transition-colors p-3 group relative">
+                        <a href="{% url 'store:product_detail' product.id %}" class="absolute inset-0 z-10"></a>
+                        
                         <div
                             class="aspect-[4/3] bg-black mb-3 relative overflow-hidden flex items-center justify-center">
+                            {% if product.is_featured or forloop.first %}
                             <span
-                                class="absolute top-1 left-1 bg-blue-600 text-white text-[9px] px-1.5 py-0.5 font-bold uppercase">New</span>
-                            <img src="https://media.istockphoto.com/id/1661559332/photo/video-production-behind-the-scenes-making-of-tv-commercial-movie-film-crew-team-lightmen.jpg?s=612x612&w=0&k=20&c=JuuYhEM7t592D_H7u791KkP-l2tqKKAeN7gY06lM28U="
-                                class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                                class="absolute top-1 left-1 bg-blue-600 text-white text-[9px] px-1.5 py-0.5 font-bold uppercase z-20">New</span>
+                            {% endif %}
+                            
+                            {% if product.image %}
+                            <img src="{{ product.image.url }}"
+                                class="w-full h-full object-contain p-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                            {% else %}
+                            <div class="w-full h-full flex items-center justify-center text-gray-700">
+                                <i class="fas fa-camera text-2xl"></i>
+                            </div>
+                            {% endif %}
                         </div>
-                        <h4 class="text-xs font-bold text-white mb-1 truncate">Sony FX6 Cinema Line</h4>
-                        <div class="flex flex-col gap-0.5 text-[10px] text-gray-500 mb-2 font-mono">
-                            <span>Sens: Full-Frame 4K</span>
-                            <span>Mnt: E-Mount</span>
+                        
+                        <h4 class="text-xs font-bold text-white mb-1 truncate">{{ product.name }}</h4>
+                        <div class="flex flex-col gap-0.5 text-[10px] text-gray-500 mb-2 font-mono h-8 overflow-hidden">
+                            {% for spec in product.key_specs %}
+                            <span>{{ spec }}</span>
+                            {% empty %}
+                            <span>{{ product.category.name }}</span>
+                            {% endfor %}
                         </div>
+                        
                         <div class="flex justify-between items-center border-t border-white/10 pt-2">
-                            <span class="text-white font-bold text-sm">฿2,500</span>
-                            <button class="text-gray-400 hover:text-white"><i class="fas fa-cart-plus"></i></button>
+                            <span class="text-white font-bold text-sm">฿{{ product.price|intcomma }}</span>
+                            <button class="text-gray-400 hover:text-white z-20 relative" onclick="window.location.href='{% url 'store:product_detail' product.id %}'">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
                         </div>
                     </div>
-
-                    <!-- Card 2 -->
-                    <div
-                        class="bg-[#151515] border border-white/10 hover:border-mcot-orange/50 transition-colors p-3 group">
-                        <div
-                            class="aspect-[4/3] bg-black mb-3 relative overflow-hidden flex items-center justify-center">
-                            <img src="https://media.istockphoto.com/id/1153359682/photo/studio-spotlight.jpg?s=612x612&w=0&k=20&c=Nl5Mht8K9r5qXZ80t5iU9iKj_Kqj2x_1K5l9X1X1X1X="
-                                class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
-                        </div>
-                        <h4 class="text-xs font-bold text-white mb-1 truncate">Aputure LS 600d Pro</h4>
-                        <div class="flex flex-col gap-0.5 text-[10px] text-gray-500 mb-2 font-mono">
-                            <span>Output: 600W LED</span>
-                            <span>Temp: 5600K</span>
-                        </div>
-                        <div class="flex justify-between items-center border-t border-white/10 pt-2">
-                            <span class="text-white font-bold text-sm">฿1,800</span>
-                            <button class="text-gray-400 hover:text-white"><i class="fas fa-cart-plus"></i></button>
-                        </div>
+                    {% empty %}
+                    <div class="col-span-full py-8 text-center text-gray-500 text-sm">
+                        No products available.
                     </div>
-
-                    <!-- Card 3 -->
-                    <div
-                        class="bg-[#151515] border border-white/10 hover:border-mcot-orange/50 transition-colors p-3 group">
-                        <div
-                            class="aspect-[4/3] bg-black mb-3 relative overflow-hidden flex items-center justify-center">
-                            <img src="https://media.istockphoto.com/id/1329528578/photo/camera-lens.jpg?s=612x612&w=0&k=20&c=2x2x2x2x2x2x2x2x2x2x2x2x2x2x2x2x2x2x2x2x2="
-                                class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
-                        </div>
-                        <h4 class="text-xs font-bold text-white mb-1 truncate">Canon CN-E 50mm T1.3</h4>
-                        <div class="flex flex-col gap-0.5 text-[10px] text-gray-500 mb-2 font-mono">
-                            <span>Mnt: EF-Mount</span>
-                            <span>Iris: T1.3</span>
-                        </div>
-                        <div class="flex justify-between items-center border-t border-white/10 pt-2">
-                            <span class="text-white font-bold text-sm">฿1,500</span>
-                            <button class="text-gray-400 hover:text-white"><i class="fas fa-cart-plus"></i></button>
-                        </div>
-                    </div>
-
-                    <!-- Card 4 -->
-                    <div
-                        class="bg-[#151515] border border-white/10 hover:border-mcot-orange/50 transition-colors p-3 group">
-                        <div
-                            class="aspect-[4/3] bg-black mb-3 relative overflow-hidden flex items-center justify-center">
-                            <img src="https://media.istockphoto.com/id/1182582878/photo/audio-mixer.jpg?s=612x612&w=0&k=20&c=1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1="
-                                class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
-                        </div>
-                        <h4 class="text-xs font-bold text-white mb-1 truncate">Sound Devices 833</h4>
-                        <div class="flex flex-col gap-0.5 text-[10px] text-gray-500 mb-2 font-mono">
-                            <span>Ch: 6 Preamps</span>
-                            <span>Rec: SSD/SD</span>
-                        </div>
-                        <div class="flex justify-between items-center border-t border-white/10 pt-2">
-                            <span class="text-white font-bold text-sm">฿2,200</span>
-                            <button class="text-gray-400 hover:text-white"><i class="fas fa-cart-plus"></i></button>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -218,22 +190,28 @@
                     class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 border-b border-white/10 pb-2">
                     Facility Status</h4>
                 <div class="space-y-3">
+                    <!-- Dynamic Pickup Queue -->
                     <div class="flex justify-between items-center">
-                        <span class="text-xs text-white">Rental Desk</span>
-                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        <span class="text-xs text-white">Pickup Queue</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-gray-400 uppercase">{{ queue_status.label }}</span>
+                            <span class="w-2 h-2 rounded-full bg-{{ queue_status.color }}-500 {% if queue_status.color == 'red' %}animate-pulse{% endif %}"></span>
+                        </div>
                     </div>
+                    
+                    <!-- Dynamic Studio Status -->
+                    {% for studio in studio_statuses %}
                     <div class="flex justify-between items-center">
-                        <span class="text-xs text-white">Maintenance</span>
-                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        <span class="text-xs text-white">{{ studio.name }}</span>
+                        {% if studio.is_occupied %}
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse" title="Occupied"></span>
+                        {% else %}
+                        <span class="w-2 h-2 rounded-full bg-green-500" title="Available"></span>
+                        {% endif %}
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-white">Studio 1</span>
-                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-white">Studio 2</span>
-                        <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
-                    </div>
+                    {% empty %}
+                    <div class="text-[10px] text-gray-500 italic">No studios configured.</div>
+                    {% endfor %}
                 </div>
             </div>
 

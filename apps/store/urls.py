@@ -13,6 +13,9 @@ urlpatterns = [
     path('cart/', views.cart, name='cart'),
     path('studios/', views.studio_list, name='studio_list'),
     path('studios/<int:studio_id>/', views.studio_detail, name='studio_detail'),
+    path('packages/', views.package_list, name='package_list'),
+    path('packages/<int:package_id>/', views.package_detail, name='package_detail'),
+    path('services/', views.service_list, name='service_list'),
     path('products/<int:product_id>/', views.product_detail, name='product_detail'),
     
     # API endpoints (Core Functions)
