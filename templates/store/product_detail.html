@@ -145,10 +145,36 @@
                                 </div>
                             </div>
 
+                            <!-- Quantity & Availability -->
+                            <div class="mb-6">
+                                <div class="flex items-center justify-between mb-2">
+                                    <label class="text-xs text-gray-500 uppercase font-bold tracking-wider">Quantity</label>
+                                    <span class="text-xs font-bold {% if available_qty > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                                        {% if available_qty > 0 %}
+                                        In Stock: {{ available_qty }}
+                                        {% else %}
+                                        Out of Stock
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="flex items-center bg-[#1A1A1A] rounded-lg border border-white/10 p-1">
+                                    <button onclick="adjustQty(-1)" class="w-12 h-12 flex items-center justify-center hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors" {% if available_qty == 0 %}disabled{% endif %}>
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" id="quantity-input" value="1" min="1" max="{{ available_qty }}" 
+                                        class="flex-1 bg-transparent text-center text-white font-bold focus:outline-none appearance-none"
+                                        readonly>
+                                    <button onclick="adjustQty(1)" class="w-12 h-12 flex items-center justify-center hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors" {% if available_qty == 0 %}disabled{% endif %}>
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
                             <button
-                                onclick="addToCartAndCheckout('{{ product.id }}', '{{ product.name|escapejs }}', {{ product.price|default:0 }}, '{% if product.image %}{{ product.image.url }}{% endif %}')"
-                                class="w-full py-5 rounded-2xl font-bold text-base uppercase tracking-widest transition-all transform hover:-translate-y-1 hover:shadow-2xl flex items-center justify-center gap-3 group {% if is_available %}bg-mcot-orange text-white hover:bg-white hover:text-black shadow-[0_10px_30px_rgba(242,101,34,0.3)]{% else %}bg-[#404040] text-gray-500 cursor-not-allowed{% endif %}">
-                                {% if is_available %}
+                                onclick="addToCartAndCheckout('{{ product.id }}', '{{ product.name|escapejs }}', {{ product.price|default:0 }}, '{% if product.image %}{{ product.image.url }}{% endif %}', {{ available_qty|default:0 }})"
+                                class="w-full py-5 rounded-2xl font-bold text-base uppercase tracking-widest transition-all transform hover:-translate-y-1 hover:shadow-2xl flex items-center justify-center gap-3 group {% if is_available and available_qty > 0 %}bg-mcot-orange text-white hover:bg-white hover:text-black shadow-[0_10px_30px_rgba(242,101,34,0.3)]{% else %}bg-[#404040] text-gray-500 cursor-not-allowed{% endif %}"
+                                {% if not is_available or available_qty == 0 %}disabled{% endif %}>
+                                {% if is_available and available_qty > 0 %}
                                 <span>Add to Quote</span>
                                 <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                                 {% else %}
@@ -156,6 +182,12 @@
                                 {% endif %}
                             </button>
 
+                            {% if available_qty == 0 and is_available %}
+                            <p class="text-center text-xs text-red-400 mt-4 font-bold bg-red-400/10 py-2 rounded-lg">
+                                <i class="fas fa-exclamation-circle mr-1"></i> Out of stock for selected dates
+                            </p>
+                            {% endif %}
+                            
                             {% if not is_available %}
                             <p class="text-center text-xs text-red-400 mt-4 font-bold bg-red-400/10 py-2 rounded-lg">
                                 <i class="fas fa-exclamation-circle mr-1"></i> Dates fully booked
@@ -194,6 +226,7 @@
 </div>
 
 <style>
+    /* ... existing styles ... */
     .description-content ul {
         list-style-type: none;
         padding-left: 0;
@@ -222,20 +255,51 @@
         font-weight: 600;
         margin-right: 0.25rem;
     }
+    
+    /* Remove number arrows */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    }
 </style>
 
 <script>
-    function addToCartAndCheckout(id, name, price, image) {
+    function adjustQty(change) {
+        const input = document.getElementById('quantity-input');
+        const max = parseInt(input.getAttribute('max')) || 99;
+        let val = parseInt(input.value) || 1;
+        
+        val += change;
+        if(val < 1) val = 1;
+        if(val > max) val = max;
+        
+        input.value = val;
+    }
+
+    function addToCartAndCheckout(id, name, price, image, maxStock) {
         if (event.target.closest('button').disabled) return;
 
         try {
+            const qty = parseInt(document.getElementById('quantity-input').value) || 1;
             let cart = JSON.parse(localStorage.getItem('mcot_cart') || '[]');
             const existingIndex = cart.findIndex(item => item.id == id);
 
+            let currentInCart = 0;
             if (existingIndex > -1) {
-                cart[existingIndex].quantity = (parseInt(cart[existingIndex].quantity) || 0) + 1;
+                currentInCart = parseInt(cart[existingIndex].quantity) || 0;
+            }
+
+            if (currentInCart + qty > maxStock) {
+                alert(`Cannot add more. You already have ${currentInCart} in cart, and stock is ${maxStock}.`);
+                return;
+            }
+
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity = currentInCart + qty;
+                cart[existingIndex].max_stock = maxStock; // Update stock info
             } else {
-                cart.push({ id, name, price, image, quantity: 1 });
+                cart.push({ id, name, price, image, quantity: qty, max_stock: maxStock });
             }
 
             localStorage.setItem('mcot_cart', JSON.stringify(cart));

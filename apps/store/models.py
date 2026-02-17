@@ -4,6 +4,7 @@ from django.db.models import Q
 from django.utils import timezone
 from simple_history.models import HistoricalRecords
 from datetime import timedelta
+from django.contrib.auth.models import User
 
 # --- 1. Dynamic Configuration Models ---
 class ProductCategory(models.Model):
@@ -23,7 +24,30 @@ class StaffPosition(models.Model):
     class Meta: verbose_name_plural = "ตั้งค่า - ตำแหน่งพนักงาน"
 
 # --- 2. Resource Models ---
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    phone = models.CharField(max_length=20, verbose_name="เบอร์โทรศัพท์", blank=True, null=True)
+    
+    def __str__(self): return f"Profile of {self.user.username}"
+
+# Signal to auto-create profile
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    try:
+        instance.profile.save()
+    except Profile.DoesNotExist:
+        Profile.objects.create(user=instance)
+
 class Staff(models.Model):
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='staff_profile', verbose_name="บัญชีผู้ใช้ (System User)")
     name = models.CharField(max_length=200, verbose_name="ชื่อพนักงาน")
     position = models.ForeignKey(StaffPosition, on_delete=models.SET_NULL, null=True, verbose_name="ตำแหน่ง")
     daily_rate = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="ค่าแรงต่อวัน (Specific Rate)")
@@ -106,12 +130,13 @@ class Equipment(models.Model):
     
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='items', verbose_name="สินค้าหลัก", null=True)
     serial_number = models.CharField(max_length=100, unique=True, verbose_name="Serial Number")
+    inventory_number = models.CharField(max_length=100, unique=True, blank=True, null=True, verbose_name="เลขครุภัณฑ์")
     asset_tag = models.CharField(max_length=50, unique=True, blank=True, null=True, verbose_name="รหัสทรัพย์สิน (QR/Barcode)")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available', verbose_name="สถานะ")
     
     history = HistoricalRecords()
     class Meta: verbose_name_plural = "ทรัพยากร - อุปกรณ์รายชิ้น (Asset)"
-    def __str__(self): return f"{self.product.name} ({self.asset_tag or self.serial_number})"
+    def __str__(self): return f"{self.product.name} ({self.inventory_number or self.serial_number})"
 
 class Studio(models.Model):
     name = models.CharField(max_length=200, verbose_name="ชื่อสตูดิโอ")
@@ -161,12 +186,33 @@ class Booking(models.Model):
     phone = models.CharField(max_length=20, verbose_name="เบอร์โทรศัพท์ติดต่อ", blank=True, null=True)
     note = models.TextField(verbose_name="หมายเหตุ", blank=True, null=True)
 
+    # Coordinator
+    coordinator = models.ForeignKey(
+        Staff,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='coordinated_bookings',
+        verbose_name="ผู้ประสานงาน"
+    )
+
     # Timeline
     start_time = models.DateTimeField(verbose_name="เริ่มใช้")
     end_time = models.DateTimeField(verbose_name="สิ้นสุด")
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    # Payment Info (New)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="ยอดรวมทั้งหมด")
+    deposit_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="ยอดมัดจำ (30%)")
+    payment_slip = models.ImageField(upload_to='payment_slips/', blank=True, null=True, verbose_name="สลิปโอนเงิน")
+    PAYMENT_STATUS_CHOICES = [
+        ('unpaid', 'ยังไม่จ่าย (Unpaid)'),
+        ('pending', 'รอตรวจสอบ (Pending Verification)'),
+        ('paid', 'จ่ายแล้ว (Paid)'),
+        ('refunded', 'คืนเงิน (Refunded)'),
+    ]
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='unpaid', verbose_name="สถานะการชำระเงิน")
     
     # Relationships (Using Through Models for Price Snapshot)
     products = models.ManyToManyField(Product, through='BookingItem', blank=True)

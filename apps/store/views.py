@@ -1,13 +1,17 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
+from django.db import transaction
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 
-from django.shortcuts import render, get_object_or_404
-from apps.store.models import Product, ProductCategory, Booking, BookingItem, Studio, BookingStudio, Package, PackageItem, ProductionVehicle, Staff
+from django.shortcuts import render, get_object_or_404, redirect
+from apps.store.models import Product, ProductCategory, Booking, BookingItem, Studio, BookingStudio, Package, PackageItem, ProductionVehicle, Staff, Notification
 from apps.store.services.availability import AvailabilityService
+from apps.store.services.pricing_service import PricingService
+from decimal import Decimal
+from django.contrib.auth.models import Group
 
 def home(request):
     """
@@ -60,6 +64,12 @@ def home(request):
 def about(request):
     """About Us page"""
     return render(request, 'pages/corporate/about.html')
+
+def terms(request):
+    """
+    หน้าเงื่อนไขการใช้งาน (Terms of Service)
+    """
+    return render(request, 'pages/terms.html')
 
 def contact(request):
     """Contact Us page"""
@@ -234,14 +244,16 @@ def product_detail(request, product_id):
         end_dt = datetime.combine(end_date, datetime.max.time())
         
         is_available, _ = AvailabilityService.check_availability(product, start_dt, end_dt)
+        available_qty = AvailabilityService.get_available_quantity(product, start_dt, end_dt)
     except ValueError:
-        pass
+        available_qty = 0
 
     context = {
         'product': product,
         'selected_start_date': start_date_str,
         'selected_end_date': end_date_str,
-        'is_available': is_available
+        'is_available': is_available,
+        'available_qty': available_qty
     }
     return render(request, 'store/product_detail.html', context)
 
@@ -294,8 +306,109 @@ def check_availability_api(request):
     except Exception as e:
         return JsonResponse({"available": False, "message": f"Server Error: {str(e)}"}, status=500)
 
+@require_POST
+def check_cart_availability_api(request):
+    """
+    API สำหรับเช็คความพร้อมของสินค้าในตะกร้า (Batch Check)
+    รับ JSON:
+    {
+        "start": "2024-02-01",
+        "end": "2024-02-02",
+        "items": [
+            {"id": 1, "quantity": 2, "type": "product"},
+            {"id": "studio_1", "quantity": 1, "type": "studio"}
+        ]
+    }
+    """
+    try:
+        payload = json.loads(request.body)
+        start_date_str = payload.get('start')
+        end_date_str = payload.get('end')
+        items = payload.get('items', [])
+
+        if not (start_date_str and end_date_str):
+            return JsonResponse({"valid": False, "message": "Missing dates"}, status=400)
+
+        # Parse Dates
+        try:
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+            start_dt = datetime.combine(start_date, datetime.min.time())
+            end_dt = datetime.combine(end_date, datetime.max.time())
+        except ValueError:
+            return JsonResponse({"valid": False, "message": "Invalid Date Format"}, status=400)
+
+        conflicts = []
+        
+        for item in items:
+            item_id = item.get('id')
+            qty = int(item.get('quantity', 1))
+            item_type = item.get('type', 'product')
+            
+            # 1. Product
+            if item_type == 'product' or (isinstance(item_id, int)):
+                 try:
+                    product = Product.objects.get(pk=item_id)
+                    is_avail, msg = AvailabilityService.check_availability(product, start_dt, end_dt, qty)
+                    
+                    if not is_avail:
+                        # Get remaining stock for helpful message
+                        remaining = AvailabilityService.get_available_quantity(product, start_dt, end_dt)
+                        conflicts.append({
+                            "id": item_id,
+                            "name": product.name,
+                            "message": f"เหลือเพียง {remaining} ชิ้น (คุณต้องการ {qty})",
+                            "remaining": remaining,
+                            "type": "product"
+                        })
+                 except Product.DoesNotExist:
+                     pass
+
+            # 2. Studio
+            elif item_type == 'studio' or str(item_id).startswith('studio_'):
+                s_id = str(item_id).replace('studio_', '')
+                try:
+                    studio = Studio.objects.get(pk=s_id)
+                    is_valid, _ = AvailabilityService.check_resource_overlap('studios', studio, start_dt, end_dt)
+                    if not is_valid:
+                         conflicts.append({
+                            "id": item_id,
+                            "name": studio.name,
+                            "message": "ไม่ว่างในช่วงเวลานี้",
+                            "remaining": 0,
+                            "type": "studio"
+                        })
+                except Studio.DoesNotExist:
+                    pass
+
+            # 3. Package
+            elif item_type == 'package' or str(item_id).startswith('pkg_'):
+                p_id = str(item_id).replace('pkg_', '')
+                try:
+                    pkg = Package.objects.get(pk=p_id)
+                    is_valid, msg = AvailabilityService.check_package_availability(pkg, start_dt, end_dt, qty)
+                    if not is_valid:
+                         conflicts.append({
+                            "id": item_id,
+                            "name": pkg.name,
+                            "message": msg,
+                            "remaining": 0, # Logic complex for package
+                            "type": "package"
+                        })
+                except Package.DoesNotExist:
+                    pass
+
+        return JsonResponse({
+            "valid": len(conflicts) == 0,
+            "conflicts": conflicts
+        })
+
+    except Exception as e:
+        return JsonResponse({"valid": False, "message": str(e)}, status=500)
+
 @login_required
 @require_POST
+@transaction.atomic
 def create_booking_api(request):
     """
     API สำหรับสร้างการจอง (Core Booking Logic)
@@ -307,6 +420,14 @@ def create_booking_api(request):
     }
     """
     try:
+        # 0. Spam Prevention (Rate Limit: 1 Booking / 30s)
+        cutoff_time = timezone.now() - timedelta(seconds=30)
+        if Booking.objects.filter(created_by=request.user, created_at__gte=cutoff_time).exists():
+             return JsonResponse({
+                "success": False, 
+                "message": "กรุณารอสักครู่ (Cool Down 30s) ก่อนทำการจองรายการถัดไป"
+            }, status=429)
+
         payload = json.loads(request.body)
         cart_items = payload.get('items', [])
         start_date_str = payload.get('start')
@@ -340,6 +461,10 @@ def create_booking_api(request):
 
         error_messages = []
         
+        # Sort items to prevent deadlocks
+        # (Assuming mixed types, we sort by a composite key string)
+        # cart_items.sort(key=lambda x: str(x.get('id'))) 
+
         # 3. วนลูปสร้างรายการสินค้า (Booking Items) และตัดสต็อก
         for item_data in cart_items:
             # Handle item type (Product vs Studio)
@@ -351,7 +476,9 @@ def create_booking_api(request):
             if item_type == 'studio' or str(raw_id).startswith('studio_'):
                 # Extract ID if prefixed
                 studio_id = str(raw_id).replace('studio_', '')
-                studio_obj = get_object_or_404(Studio, pk=studio_id)
+                
+                # Lock Studio Row
+                studio_obj = get_object_or_404(Studio.objects.select_for_update(), pk=studio_id)
 
                 # Check Studio Availability
                 is_valid, conflict = AvailabilityService.check_resource_overlap(
@@ -369,10 +496,38 @@ def create_booking_api(request):
                     price_at_booking=studio_obj.daily_rate
                 )
 
+            # Case 2: Package
+            elif item_type == 'package' or str(raw_id).startswith('pkg_'):
+                 # Extract ID if prefixed
+                pkg_id = str(raw_id).replace('pkg_', '')
+                
+                # Lock Package Row
+                package_obj = get_object_or_404(Package.objects.select_for_update(), pk=pkg_id)
+                
+                # Check Package Availability
+                is_valid, msg = AvailabilityService.check_package_availability(
+                    package_obj, booking_start, booking_end, qty_requested
+                )
+                
+                if not is_valid:
+                    error_messages.append(msg)
+                    continue
+
+                # Create BookingPackage
+                BookingPackage.objects.create(
+                    booking=new_booking,
+                    package=package_obj,
+                    quantity=qty_requested,
+                    price_at_booking=package_obj.price
+                )
+
             # Case 2: Product (Default)
             else:
                 product_id = raw_id
-                product_obj = get_object_or_404(Product, id=product_id)
+                
+                # --- CRITICAL: LOCK PRODUCT ROW ---
+                # This prevents other transactions from processing this product until we commit/rollback
+                product_obj = get_object_or_404(Product.objects.select_for_update(), id=product_id)
                 
                 # Check Product Availability
                 is_valid, msg = AvailabilityService.check_availability(
@@ -392,20 +547,165 @@ def create_booking_api(request):
                 )
             
         if error_messages:
-            # หากมีสินค้าบางตัวจองไม่ได้ ให้ยกเลิกทั้งบิล (Rollback) (หรือจะ Partial ก็ได้ แล้วแต่ business)
-            # ในที่นี้เลือก Rollback เพื่อความปลอดภัย
-            new_booking.delete()
+            # Raise exception to forcing Rollback (Django Atomic handles this automatically if exception raised, 
+            # but since we caught exceptions earlier or just have logic errors, we can just return error and let Atomic rollback? 
+            # ideally we should raise an exception or set manual rollback.
+            # But simple return in atomic block might commit what's done?
+            # NO: In atomic block, if we return normally, it commits.
+            # So we MUST raise an exception OR set rollback.
+            transaction.set_rollback(True)
+            
             return JsonResponse({
                 "success": False, 
-                "message": "สินค้าบางรายการไม่เพียงพอ", 
+                "message": "สินค้าบางรายการถูกจองตัดหน้า", 
                 "errors": error_messages
-            }, status=400)
-            
+            }, status=409) # 409 Conflict
+        # 4. Calculate Totals & Deposit
+        total = PricingService.calculate_booking_total(new_booking)
+        new_booking.total_price = total
+        new_booking.deposit_amount = PricingService.calculate_deposit(total) # 30%
+        new_booking.save()
+
+        # 5. ยืนยัน Transaction Success
         return JsonResponse({
             "success": True, 
-            "booking_id": new_booking.id, 
-            "message": "สร้างการจองสำเร็จ"
+            "booking_id": new_booking.id,
+            "message": "Booking Created Successfully"
         })
         
     except Exception as e:
         return JsonResponse({"success": False, "message": f"Server Error: {str(e)}"}, status=500)
+
+
+@login_required
+def my_bookings(request):
+    """
+    หน้า Dashboard ของลูกค้า — แสดงรายการจองทั้งหมดของ User ปัจจุบัน
+    """
+    bookings = Booking.objects.filter(created_by=request.user).order_by('-created_at').prefetch_related(
+        'items__product', 'booked_studios__studio', 'booked_packages__package'
+    )
+    
+    # คำนวณ total สำหรับแต่ละ booking
+    for booking in bookings:
+        item_total = sum(
+            item.price_at_booking * item.quantity 
+            for item in booking.items.all()
+        )
+        studio_total = sum(
+            bs.price_at_booking 
+            for bs in booking.booked_studios.all()
+        )
+        package_total = sum(
+            bp.price_at_booking * bp.quantity 
+            for bp in booking.booked_packages.all()
+        )
+        
+        # จำนวนวัน
+        days = max(1, (booking.end_time.date() - booking.start_time.date()).days + 1)
+        booking.calculated_total = (item_total + studio_total + package_total) * days
+        booking.num_days = days
+    
+    context = {
+        'bookings': bookings,
+    }
+    return render(request, 'booking/my_bookings.html', context)
+
+
+@login_required
+@require_POST
+def cancel_booking_api(request, booking_id):
+    """
+    API สำหรับยกเลิกการจอง (เฉพาะ draft/pending เท่านั้น)
+    ตรวจสอบว่า User เป็นเจ้าของ Booking จริงก่อนยกเลิก (Object-Level Permission)
+    """
+    try:
+        booking = get_object_or_404(Booking, pk=booking_id, created_by=request.user)
+        
+        if booking.status not in ('draft', 'pending'):
+            return JsonResponse({
+                "success": False, 
+                "message": "ไม่สามารถยกเลิกได้ — การจองนี้ได้รับการอนุมัติแล้ว"
+            }, status=400)
+        
+        booking.status = 'cancelled'
+        booking.save()
+        
+        return JsonResponse({
+            "success": True, 
+            "message": f"ยกเลิกการจอง #{booking.id} เรียบร้อยแล้ว"
+        })
+        
+    except Exception as e:
+        return JsonResponse({"success": False, "message": f"Server Error: {str(e)}"}, status=500)
+
+
+# Authentication
+from django.contrib.auth import login
+from .forms import UserRegisterForm
+
+def register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('store:home')
+    else:
+        form = UserRegisterForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+@login_required
+def booking_detail(request, booking_id):
+    """
+    หน้าละเอียดการจอง & อัปโหลดสลิป
+    """
+    booking = get_object_or_404(Booking, id=booking_id)
+    
+    # Permission Check: Owner or Staff (Web Admin)
+    # Note: Staff/Admin should check via Admin Panel mostly, but this view is for User
+    if booking.created_by != request.user and not request.user.is_staff:
+        return redirect('store:home') # Forbidden
+        
+    return render(request, 'booking/detail.html', {'booking': booking})
+
+@login_required
+@require_POST
+def upload_slip_api(request, booking_id):
+    """
+    API สำหรับอัปโหลดสลิปโอนเงิน Update Booking -> Pending
+    """
+    booking = get_object_or_404(Booking, id=booking_id, created_by=request.user)
+    
+    if 'slip' not in request.FILES:
+         return JsonResponse({'success': False, 'message': 'No file uploaded'}, status=400)
+         
+    slip_file = request.FILES['slip']
+    
+    # Basic Validation (Image)
+    if not slip_file.content_type.startswith('image/'):
+        return JsonResponse({'success': False, 'message': 'File must be an image'}, status=400)
+
+    try:
+        booking.payment_slip = slip_file
+        booking.payment_status = 'pending'
+        booking.save()
+        
+        # Admin Notification
+        try:
+            admin_group = Group.objects.get(name='web_admin')
+            admins = admin_group.user_set.all()
+            for admin in admins:
+                Notification.objects.create(
+                    recipient=admin,
+                    message=f"💰 New Slip Uploaded: Booking #{booking.id}",
+                    link=f"/admin/store/booking/{booking.id}/change/",
+                    notification_type='info'
+                )
+        except Group.DoesNotExist:
+            print("Warning: 'web_admin' group not found. detailed notification skipped.")
+            
+        return JsonResponse({'success': True, 'message': 'Slip uploaded successfully. Waiting for verification.'})
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)

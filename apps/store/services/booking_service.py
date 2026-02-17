@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import transaction
-from rentals.models import Booking, BookingItem, Notification
+from apps.store.models import Booking, BookingItem, Notification
 from .notify import send_line_notify
 
 
@@ -48,7 +48,7 @@ class BookingService:
         try:
             with transaction.atomic():
                 # DOUBLE CHECK: ตรวจสอบสต็อกอีกครั้งใน Transaction เพื่อกัน Race Condition
-                from rentals.services.availability import AvailabilityService
+                from apps.store.services.availability import AvailabilityService
                 is_valid, error_msg = AvailabilityService.validate_cart(cart, booking_data['start_time'], booking_data['end_time'])
                 
                 if not is_valid:
@@ -58,7 +58,7 @@ class BookingService:
                 
                 # สร้างรายการสินค้าใน Booking (จาก Cart)
                 # รองรับการจองทั้งแบบสินค้าเดี่ยวและแพ็คเกจ
-                from rentals.models import BookingPackage
+                from apps.store.models import BookingPackage
 
                 for item in cart:
                     if item.get('type') == 'package':

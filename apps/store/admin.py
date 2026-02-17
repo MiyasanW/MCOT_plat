@@ -2,40 +2,158 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User, Group
 from django.contrib.admin import ModelAdmin
-# from unfold.admin import ModelAdmin  <-- Removed
 from simple_history.admin import SimpleHistoryAdmin
 from import_export.admin import ImportExportModelAdmin
+from django.utils.html import format_html
+from django.urls import reverse
 from .models import (
-    Staff, Product, ProductionVehicle, Equipment, Studio, Booking, Package, 
+    Staff, Product, ProductionVehicle, Equipment, Studio, Booking, Package,
     IssueReport, Notification, ProductCategory, StaffPosition,
-    BookingItem, BookingStudio, BookingStaff, BookingPackage
+    BookingItem, BookingStudio, BookingStaff, BookingPackage,
+    Profile
 )
 
+
+# =============================================================================
+# Helper: ตรวจ Role ของ User
+# =============================================================================
+def is_web_admin(user):
+    """Check if user is strictly in web_admin group"""
+    return user.groups.filter(name='web_admin').exists()
+
+def is_staff_role(user):
+    """Check if user is strictly in staff group"""
+    return user.groups.filter(name='staff').exists()
+
+
+# =============================================================================
+# INLINES — แสดงรายการอุปกรณ์/สตูดิโอ/ทีมงาน/แพ็คเกจ ในหน้า Booking
+# =============================================================================
+class ProfileInline(admin.StackedInline):
+    model = Profile
+    can_delete = False
+    verbose_name_plural = 'Customer Profile'
+    fk_name = 'user'
+
+class BookingItemInline(admin.TabularInline):
+    model = BookingItem
+    extra = 1
+    autocomplete_fields = ['product']
+    fields = ['product', 'quantity', 'price_at_booking']
+    readonly_fields = ['price_at_booking']
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:  # Adding new — hide price (will auto-fill)
+            return ['price_at_booking']
+        return ['price_at_booking']
+
+
+class BookingStudioInline(admin.TabularInline):
+    model = BookingStudio
+    extra = 0
+    autocomplete_fields = ['studio']
+    fields = ['studio', 'price_at_booking']
+    readonly_fields = ['price_at_booking']
+
+
+class BookingStaffInline(admin.TabularInline):
+    model = BookingStaff
+    extra = 0
+    autocomplete_fields = ['staff']
+    fields = ['staff', 'daily_rate_at_booking']
+    readonly_fields = ['daily_rate_at_booking']
+
+
+class BookingPackageInline(admin.TabularInline):
+    model = BookingPackage
+    extra = 0
+    autocomplete_fields = ['package']
+    fields = ['package', 'quantity', 'price_at_booking']
+    readonly_fields = ['price_at_booking']
+
+
+# =============================================================================
+# LOOKUP MODELS — search_fields สำหรับ autocomplete
+# =============================================================================
 @admin.register(ProductCategory)
 class ProductCategoryAdmin(ModelAdmin):
     list_display = ['name', 'slug']
     prepopulated_fields = {'slug': ('name',)}
+    search_fields = ['name']
+
 
 @admin.register(StaffPosition)
 class StaffPositionAdmin(ModelAdmin):
     list_display = ['name', 'base_daily_rate']
+    search_fields = ['name']
 
+
+# =============================================================================
+# AUTH — User/Group
+# =============================================================================
 admin.site.unregister(User)
 admin.site.unregister(Group)
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    pass
+    inlines = (ProfileInline,)
+    list_display = ('username', 'email', 'first_name', 'last_name', 'get_phone', 'is_staff')
+    
+    def get_phone(self, obj):
+        return obj.profile.phone if hasattr(obj, 'profile') else '-'
+    get_phone.short_description = 'Phone'
+
+    # Protect User Management
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user)
+    
+    def has_add_permission(self, request):
+        return request.user.is_superuser or is_web_admin(request.user)
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user)
+    
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser # Only Superuser can delete users
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or is_web_admin(request.user)
+
+@admin.register(Profile)
+class ProfileAdmin(ModelAdmin):
+    list_display = ['user', 'phone']
+    search_fields = ['user__username', 'user__email', 'phone']
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or is_web_admin(request.user)
 
 @admin.register(Group)
 class GroupAdmin(ModelAdmin):
-    pass
+    def has_module_permission(self, request):
+        return request.user.is_superuser or is_web_admin(request.user)
 
+
+# =============================================================================
+# RESOURCE MODELS — Product, Studio, Staff, Equipment, Vehicle
+# =============================================================================
 @admin.register(Staff)
 class StaffAdmin(SimpleHistoryAdmin):
     list_display = ['name', 'position', 'phone', 'is_active']
     search_fields = ['name', 'phone']
     list_filter = ['position', 'is_active']
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user)
+    
+    def has_add_permission(self, request):
+        return request.user.is_superuser or is_web_admin(request.user)
+    
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user)
+
 
 from django_summernote.admin import SummernoteModelAdmin
 
@@ -46,85 +164,299 @@ class ProductAdmin(SummernoteModelAdmin, ImportExportModelAdmin):
     list_filter = ['category', 'is_active']
     summernote_fields = ('description',)
 
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user)
+    
+    def has_add_permission(self, request):
+        return request.user.is_superuser or is_web_admin(request.user)
+    
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user)
+
+
 @admin.register(ProductionVehicle)
 class ProductionVehicleAdmin(ModelAdmin):
     list_display = ['name', 'price', 'quantity', 'is_active']
     search_fields = ['name']
 
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user)
+    
+    def has_add_permission(self, request):
+        return request.user.is_superuser or is_web_admin(request.user)
+    
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user)
+
+
 @admin.register(Equipment)
 class EquipmentAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
-    list_display = ['product', 'serial_number', 'status']
-    search_fields = ['serial_number', 'product__name']
-    list_filter = ['status']
+    list_display = ['product', 'serial_number', 'inventory_number', 'asset_tag', 'status']
+    search_fields = ['serial_number', 'inventory_number', 'asset_tag', 'product__name']
+    list_filter = ['status', 'product']
     autocomplete_fields = ['product']
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user)
+    
+    def has_add_permission(self, request):
+        return request.user.is_superuser or is_web_admin(request.user)
+    
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user)
+
 
 @admin.register(Studio)
 class StudioAdmin(ModelAdmin):
     list_display = ['name', 'daily_rate']
     search_fields = ['name']
 
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user)
+    
+    def has_add_permission(self, request):
+        return request.user.is_superuser or is_web_admin(request.user)
+    
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user)
+
+
+# =============================================================================
+# BOOKING ADMIN — หัวใจหลัก (ปรับให้ใช้ง่าย)
+# =============================================================================
 @admin.register(Booking)
 class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
-    list_display = ['id', 'customer_name', 'status_badge', 'total_price_display', 'start_time', 'action_buttons']
+    # --- List View ---
+    list_display = ['id', 'customer_name', 'project_name', 'coordinator', 'status_badge', 'payment_status', 'payment_slip_preview',
+                     'total_price_display', 'start_time', 'end_time']
     list_display_links = ['id', 'customer_name']
-    search_fields = ['customer_name', 'customer_phone', 'id']
-    list_filter = ['status', 'created_at']
+    search_fields = ['customer_name', 'project_name', 'phone', 'id']
+    search_help_text = 'ค้นหาด้วย ชื่อลูกค้า, ชื่อโปรเจค, เบอร์โทร, หรือ เลขที่จอง'
+    list_filter = ['status', 'payment_status', 'coordinator', 'created_at']
     date_hierarchy = 'start_time'
-    
-    # Unfold Actions / Buttons
-    actions_list = [] # Add custom buttons here if needed
+    autocomplete_fields = ['coordinator']
 
-    def action_buttons(self, obj):
-        from django.utils.html import format_html
-        from django.urls import reverse
-        
-        url = reverse('admin:store_booking_change', args=[obj.pk])
-        return format_html(
-            '<a class="button" href="{}" style="background-color: #409EFF; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-weight: bold;">View / Edit</a>',
-            url
-        )
-    action_buttons.short_description = "Actions"
-    action_buttons.allow_tags = True
+    # --- Inlines ---
+    inlines = [BookingItemInline, BookingStudioInline, BookingStaffInline, BookingPackageInline]
 
+    # --- Batch Actions ---
+    actions = ['action_approve', 'action_confirm_payment', 'action_cancel', 'action_mark_active', 'action_mark_completed']
+
+    @admin.action(description='💰 ยืนยันการชำระเงิน (Confirm Payment)')
+    def action_confirm_payment(self, request, queryset):
+        if not (request.user.is_superuser or is_web_admin(request.user)):
+             self.message_user(request, '❌ คุณไม่มีสิทธิ์', level='error')
+             return
+        updated = queryset.filter(payment_status='pending').update(payment_status='paid')
+        self.message_user(request, f'💰 ยืนยันการชำระเงินแล้ว {updated} รายการ')
+
+    @admin.action(description='✅ อนุมัติ (Approve)')
+    def action_approve(self, request, queryset):
+        if not (request.user.is_superuser or is_web_admin(request.user)):
+            self.message_user(request, '❌ คุณไม่มีสิทธิ์อนุมัติ', level='error')
+            return
+        updated = queryset.filter(status__in=['draft', 'pending']).update(status='approved')
+        self.message_user(request, f'✅ อนุมัติแล้ว {updated} รายการ')
+
+    @admin.action(description='❌ ยกเลิก (Cancel)')
+    def action_cancel(self, request, queryset):
+        if not (request.user.is_superuser or is_web_admin(request.user)):
+            self.message_user(request, '❌ คุณไม่มีสิทธิ์ยกเลิก', level='error')
+            return
+        updated = queryset.exclude(status__in=['completed', 'cancelled']).update(status='cancelled')
+        self.message_user(request, f'❌ ยกเลิกแล้ว {updated} รายการ')
+
+    @admin.action(description='▶ เริ่มใช้งาน (Active)')
+    def action_mark_active(self, request, queryset):
+        updated = queryset.filter(status='approved').update(status='active')
+        self.message_user(request, f'▶ เปิดใช้งานแล้ว {updated} รายการ')
+
+    @admin.action(description='✔ คืนของครบ (Completed)')
+    def action_mark_completed(self, request, queryset):
+        updated = queryset.filter(status='active').update(status='completed')
+        self.message_user(request, f'✔ คืนของครบแล้ว {updated} รายการ')
+
+    # --- Group-based Permissions ---
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
+
+    def has_add_permission(self, request):
+        return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
+
+    def has_change_permission(self, request, obj=None):
+        # Staff can edit (but fields are limited by get_readonly_fields)
+        return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
+
+    def has_delete_permission(self, request, obj=None):
+        # Only Superuser/WebAdmin can delete
+        return request.user.is_superuser or is_web_admin(request.user)
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
+
+    # --- Custom columns ---
+    @admin.display(description='Total Price', ordering='id')
     def total_price_display(self, obj):
-        return f"฿{obj.calculate_total_price():,.2f}"
-    total_price_display.short_description = "Total Price"
-    total_price_display.admin_order_field = 'total_price'
+        try:
+            total = obj.calculate_total_price()
+            return format_html(
+                '<span style="font-weight:bold; color:#F26522;">฿{:,.2f}</span>',
+                total
+            )
+        except Exception:
+            return '—'
 
+    @admin.display(description='Payment Slip')
+    def payment_slip_preview(self, obj):
+        if obj.payment_slip:
+            return format_html(
+                '<a href="{}" target="_blank"><img src="{}" style="height:50px; border-radius:4px; border:1px solid #ccc;"></a>',
+                obj.payment_slip.url,
+                obj.payment_slip.url
+            )
+        return '-'
+
+    @admin.display(description='รูปสลิปขนาดใหญ่ (Large Preview)')
+    def payment_slip_large_preview(self, obj):
+        if obj.payment_slip:
+            return format_html(
+                '<a href="{}" target="_blank">'
+                '<img src="{}" style="max-height:400px; max-width:100%; border-radius:8px; border:1px solid #555; box-shadow:0 4px 15px rgba(0,0,0,0.3);">'
+                '</a><br><span style="color:#aaa; font-size:12px;">(คลิกที่รูปเพื่อดูขนาดเต็ม)</span>',
+                obj.payment_slip.url,
+                obj.payment_slip.url
+            )
+        return '—'
+
+    @admin.display(description='Status')
     def status_badge(self, obj):
-        # Unfold specific: Use internal styling classes/logic if available, 
-        # or simplified badge logic. 
-        # Unfold automatically styles choices if configured, but we can customize:
         colors = {
-            'pending': 'warning',
-            'approved': 'success',
-            'rejected': 'danger',
-            'completed': 'info',
-            'cancelled': 'danger',
+            'draft': ('#FFC107', '#000'),
+            'pending': ('#2196F3', '#fff'),
+            'approved': ('#4CAF50', '#fff'),
+            'active': ('#FF9800', '#fff'),
+            'completed': ('#9E9E9E', '#fff'),
+            'cancelled': ('#f44336', '#fff'),
         }
-        color = colors.get(obj.status, 'secondary')
-        # Return simple status context for Unfold to render, or raw HTML if needed.
-        # For Unfold ModelAdmin, it often handles choices automatically.
-        # Let's try leveraging the display decorator from Unfold if we had it, 
-        # but standard Django html is safer for now.
-        return obj.get_status_display()
-    
-    # Using Unfold's label capability if supported, otherwise standard.
-    status_badge.short_description = "Status"
-    # To actually make it a badge in Unfold, we usually define it in list_display_links or use specific Unfold methods.
-    # But let's stick to standard ModelAdmin for now and see how Unfold themes it.
+        bg, fg = colors.get(obj.status, ('#666', '#fff'))
+        return format_html(
+            '<span style="background:{}; color:{}; padding:4px 10px; border-radius:12px; '
+            'font-size:11px; font-weight:bold; white-space:nowrap;">{}</span>',
+            bg, fg, obj.get_status_display()
+        )
 
+    # --- ซ่อน batch actions จาก staff ที่ไม่มีสิทธิ์ ---
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if not (request.user.is_superuser or is_web_admin(request.user)):
+            # Staff: เห็นแค่ mark_active และ mark_completed
+            actions.pop('action_approve', None)
+            actions.pop('action_cancel', None)
+            actions.pop('action_confirm_payment', None)
+        return actions
+
+    # --- Fieldsets (จัดกลุ่ม) ---
+    def get_fieldsets(self, request, obj=None):
+        base_fieldsets = [
+            ('📋 ข้อมูลลูกค้า', {
+                'fields': ('customer_name', 'phone', 'project_name'),
+            }),
+            ('👤 ผู้ประสานงาน', {
+                'fields': ('coordinator',),
+            }),
+            ('📅 ระยะเวลา', {
+                'fields': ('start_time', 'end_time'),
+            }),
+            ('💰 การชำระเงิน', {
+                'fields': ('total_price', 'deposit_amount', 'payment_status', 'payment_slip', 'payment_slip_large_preview'),
+            }),
+            ('📝 หมายเหตุ', {
+                'fields': ('note',),
+                'classes': ('collapse',),  # ย่อได้
+            }),
+        ]
+
+        # Staff ธรรมดา: ซ่อน status + created_by
+        if request.user.is_superuser or is_web_admin(request.user):
+            base_fieldsets.insert(0, ('⚡ สถานะ', {
+                'fields': ('status', 'created_by', 'created_at'),
+            }))
+        else:
+            # Staff เห็น status เป็น readonly แต่ไม่เห็น created_by
+            base_fieldsets.append(('สถานะ', {
+                'fields': ('status',),
+            }))
+
+        return base_fieldsets
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly = ['created_at', 'total_price', 'deposit_amount', 'payment_slip_large_preview'] # Automation fields
+
+        if not (request.user.is_superuser or is_web_admin(request.user)):
+            # Staff: แก้ status, payment, coordinator ไม่ได้
+            readonly += ['status', 'coordinator', 'payment_status', 'payment_slip']
+
+        if obj:  # Editing existing
+            readonly += ['created_by']
+
+        return readonly
+
+
+# =============================================================================
+# PACKAGE, ISSUE REPORT, NOTIFICATION
+# =============================================================================
 @admin.register(Package)
 class PackageAdmin(ModelAdmin):
     list_display = ['name', 'price', 'is_highlight', 'is_active']
     list_filter = ['is_highlight', 'is_active']
+    search_fields = ['name']
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user)
+    
+    def has_add_permission(self, request):
+        return request.user.is_superuser or is_web_admin(request.user)
+    
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser or is_web_admin(request.user)
+
 
 @admin.register(IssueReport)
 class IssueReportAdmin(SimpleHistoryAdmin):
     list_display = ['title', 'priority', 'status', 'reporter', 'created_at']
     list_filter = ['priority', 'status']
-    
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or is_web_admin(request.user)
+
+
 @admin.register(Notification)
 class NotificationAdmin(ModelAdmin):
     list_display = ['recipient', 'message', 'is_read', 'created_at']
     list_filter = ['is_read', 'notification_type']
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or is_web_admin(request.user)
+
+
+# =============================================================================
+# ADMIN SITE CONFIG
+# =============================================================================
+admin.site.site_header = 'MCOT Rental — ระบบจัดการ'
+admin.site.site_title = 'MCOT Rental Admin'
+admin.site.index_title = 'หน้าแรก'

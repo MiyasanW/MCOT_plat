@@ -2,7 +2,7 @@ from django.utils import timezone
 from datetime import timedelta, datetime
 from django.db.models import Count, Q, Sum
 from django.contrib.auth.models import User
-from rentals.models import Booking, Equipment, Studio, Staff, Product, Notification
+from apps.store.models import Booking, Equipment, Studio, Staff, Product, Notification
 from django.contrib.admin.models import LogEntry
 import json
 import logging

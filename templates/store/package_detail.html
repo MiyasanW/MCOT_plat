@@ -163,8 +163,8 @@
                     id: itemId,
                     name: name,
                     price: price,
-                    type: 'package', // Add type metadata
-                    image: '', // Placeholder
+                    type: 'package',
+                    image: '{% if package.image %}{{ package.image.url }}{% endif %}',
                     quantity: 1
                 });
             }

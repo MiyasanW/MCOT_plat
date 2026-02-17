@@ -1,5 +1,5 @@
 from decimal import Decimal
-from rentals.models import Booking
+from apps.store.models import Booking
 
 class DocumentService:
     """
