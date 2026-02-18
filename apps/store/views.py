@@ -1,15 +1,18 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST, require_GET
 from django.db import transaction
+from django.db.models import Q
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
 import json
 
 from django.shortcuts import render, get_object_or_404, redirect
-from apps.store.models import Product, ProductCategory, Booking, BookingItem, Studio, BookingStudio, Package, PackageItem, ProductionVehicle, Staff, Notification
+from apps.store.models import Product, ProductCategory, Booking, BookingItem, Studio, BookingStudio, Package, PackageItem, ProductionVehicle, Staff, Notification, Equipment
 from apps.store.services.availability import AvailabilityService
 from apps.store.services.pricing_service import PricingService
+from apps.store.services.notification_service import NotificationService
+from django.template.loader import get_template
 from decimal import Decimal
 from django.contrib.auth.models import Group
 
@@ -408,171 +411,58 @@ def check_cart_availability_api(request):
 
 @login_required
 @require_POST
-@transaction.atomic
 def create_booking_api(request):
     """
-    API สำหรับสร้างการจอง (Core Booking Logic)
-    รับ JSON Data:
-    {
-        "items": [{"id": 1, "quantity": 2}],
-        "start": "2024-02-01",
-        "end": "2024-02-02"
-    }
+    API สำหรับสร้าง Booking จาก Cart (Refactored to use BookingService)
     """
     try:
-        # 0. Spam Prevention (Rate Limit: 1 Booking / 30s)
-        cutoff_time = timezone.now() - timedelta(seconds=30)
-        if Booking.objects.filter(created_by=request.user, created_at__gte=cutoff_time).exists():
-             return JsonResponse({
-                "success": False, 
-                "message": "กรุณารอสักครู่ (Cool Down 30s) ก่อนทำการจองรายการถัดไป"
-            }, status=429)
-
+        import json
         payload = json.loads(request.body)
         cart_items = payload.get('items', [])
-        start_date_str = payload.get('start')
-        end_date_str = payload.get('end')
         
-        # 1. แปลงวันที่ (Parse Dates & Force Full Day)
+        # Prepare Data
+        booking_data = {
+            'customer_name': payload.get('customer_name') or (request.user.get_full_name() if request.user.is_authenticated else 'Guest'),
+            'customer_email': payload.get('customer_email') or (request.user.email if request.user.is_authenticated else ''),
+            'customer_phone': payload.get('phone'),
+            'project_name': payload.get('project_name'),
+            'note': payload.get('note'),
+            'start_time': None,
+            'end_time': None
+        }
+
+        # Parse Dates
         try:
-            start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
-            end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
-        except ValueError:
-             return JsonResponse({"success": False, "message": "Format วันที่ผิด (ใช้ YYYY-MM-DD)"}, status=400)
-
-        # Force Full Day Range
-        booking_start = datetime.combine(start_date, datetime.min.time())
-        booking_end = datetime.combine(end_date, datetime.max.time())
-        
-        if booking_start > booking_end:
-            return JsonResponse({"success": False, "message": "วันเวลาไม่ถูกต้อง (วันกลับต้องหลังหรือวันเดียวกับวันรับ)"}, status=400)
-
-        # 2. สร้างใบจองสถานะ Draft (Booking Header)
-        new_booking = Booking.objects.create(
-            customer_name=request.user.get_full_name() or request.user.username,
-            created_by=request.user,
-            project_name=payload.get('project_name'),
-            phone=payload.get('phone'),
-            note=payload.get('note'),
-            start_time=booking_start,
-            end_time=booking_end,
-            status='draft'
-        )
-
-        error_messages = []
-        
-        # Sort items to prevent deadlocks
-        # (Assuming mixed types, we sort by a composite key string)
-        # cart_items.sort(key=lambda x: str(x.get('id'))) 
-
-        # 3. วนลูปสร้างรายการสินค้า (Booking Items) และตัดสต็อก
-        for item_data in cart_items:
-            # Handle item type (Product vs Studio)
-            item_type = item_data.get('type', 'product')
-            raw_id = item_data.get('id')
-            qty_requested = int(item_data.get('quantity', 1))
-
-            # Case 1: Studio
-            if item_type == 'studio' or str(raw_id).startswith('studio_'):
-                # Extract ID if prefixed
-                studio_id = str(raw_id).replace('studio_', '')
-                
-                # Lock Studio Row
-                studio_obj = get_object_or_404(Studio.objects.select_for_update(), pk=studio_id)
-
-                # Check Studio Availability
-                is_valid, conflict = AvailabilityService.check_resource_overlap(
-                    'studios', studio_obj, booking_start, booking_end
-                )
-                
-                if not is_valid:
-                    error_messages.append(f"สตูดิโอ '{studio_obj.name}' ไม่ว่างในช่วงเวลานี้")
-                    continue
-
-                # Create BookingStudio
-                BookingStudio.objects.create(
-                    booking=new_booking,
-                    studio=studio_obj,
-                    price_at_booking=studio_obj.daily_rate
-                )
-
-            # Case 2: Package
-            elif item_type == 'package' or str(raw_id).startswith('pkg_'):
-                 # Extract ID if prefixed
-                pkg_id = str(raw_id).replace('pkg_', '')
-                
-                # Lock Package Row
-                package_obj = get_object_or_404(Package.objects.select_for_update(), pk=pkg_id)
-                
-                # Check Package Availability
-                is_valid, msg = AvailabilityService.check_package_availability(
-                    package_obj, booking_start, booking_end, qty_requested
-                )
-                
-                if not is_valid:
-                    error_messages.append(msg)
-                    continue
-
-                # Create BookingPackage
-                BookingPackage.objects.create(
-                    booking=new_booking,
-                    package=package_obj,
-                    quantity=qty_requested,
-                    price_at_booking=package_obj.price
-                )
-
-            # Case 2: Product (Default)
-            else:
-                product_id = raw_id
-                
-                # --- CRITICAL: LOCK PRODUCT ROW ---
-                # This prevents other transactions from processing this product until we commit/rollback
-                product_obj = get_object_or_404(Product.objects.select_for_update(), id=product_id)
-                
-                # Check Product Availability
-                is_valid, msg = AvailabilityService.check_availability(
-                    product_obj, booking_start, booking_end, qty_requested
-                )
-                
-                if not is_valid:
-                    error_messages.append(msg)
-                    continue
-                
-                # Create BookingItem
-                BookingItem.objects.create(
-                    booking=new_booking,
-                    product=product_obj,
-                    quantity=qty_requested,
-                    price_at_booking=product_obj.price
-                )
+            from django.utils.dateparse import parse_datetime
+            booking_data['start_time'] = parse_datetime(payload.get('start'))
+            booking_data['end_time'] = parse_datetime(payload.get('end'))
+        except:
+            return JsonResponse({"success": False, "message": "Invalid Date Format"}, status=400)
             
-        if error_messages:
-            # Raise exception to forcing Rollback (Django Atomic handles this automatically if exception raised, 
-            # but since we caught exceptions earlier or just have logic errors, we can just return error and let Atomic rollback? 
-            # ideally we should raise an exception or set manual rollback.
-            # But simple return in atomic block might commit what's done?
-            # NO: In atomic block, if we return normally, it commits.
-            # So we MUST raise an exception OR set rollback.
-            transaction.set_rollback(True)
-            
+        # Call Service (No Transaction Here, Service handles it)
+        from apps.store.services.booking_service import BookingService
+        
+        try:
+            booking = BookingService.create_booking_from_cart(
+                cart=cart_items,
+                booking_data=booking_data,
+                user=request.user
+            )
+
             return JsonResponse({
-                "success": False, 
-                "message": "สินค้าบางรายการถูกจองตัดหน้า", 
-                "errors": error_messages
-            }, status=409) # 409 Conflict
-        # 4. Calculate Totals & Deposit
-        total = PricingService.calculate_booking_total(new_booking)
-        new_booking.total_price = total
-        new_booking.deposit_amount = PricingService.calculate_deposit(total) # 30%
-        new_booking.save()
+                "success": True, 
+                "booking_id": booking.id,
+                "message": "Booking Created Successfully"
+            })
+            
+        except ValueError as e:
+            return JsonResponse({"success": False, "message": str(e)}, status=400)
+        except Exception as e:
+            # Service might raise other exceptions for DB errors
+            return JsonResponse({"success": False, "message": f"System Error: {str(e)}"}, status=500)
 
-        # 5. ยืนยัน Transaction Success
-        return JsonResponse({
-            "success": True, 
-            "booking_id": new_booking.id,
-            "message": "Booking Created Successfully"
-        })
-        
+    except json.JSONDecodeError:
+        return JsonResponse({"success": False, "message": "Invalid JSON"}, status=400)
     except Exception as e:
         return JsonResponse({"success": False, "message": f"Server Error: {str(e)}"}, status=500)
 
@@ -709,3 +599,94 @@ def upload_slip_api(request, booking_id):
         
     except Exception as e:
         return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+@login_required
+def equipment_history_search(request):
+    """
+    หน้าค้นหาประวัติอุปกรณ์ (Search Equipment History)
+    """
+    # Requires Staff/Admin
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect('store:home')
+
+    query = request.GET.get('q')
+    product_id = request.GET.get('product')
+    equipments = None
+    
+    if query:
+        # Search by Serial, Inventory Number, Asset Tag, OR Product Name
+        equipments = Equipment.objects.filter(
+            Q(serial_number__icontains=query) | 
+            Q(inventory_number__icontains=query) |
+            Q(asset_tag__icontains=query) |
+            Q(product__name__icontains=query)
+        )
+    elif product_id:
+        # Filter by specific Product
+        equipments = Equipment.objects.filter(product_id=product_id)
+
+    # If exact match found (1 item), redirect to detail
+    if equipments and equipments.count() == 1:
+        return redirect('store:equipment_history_detail', equipment_id=equipments.first().id)
+            
+    products = Product.objects.filter(is_active=True).order_by('name')
+    return render(request, 'inventory/history_search.html', {
+        'equipments': equipments, 
+        'query': query,
+        'products': products,
+        'selected_product': int(product_id) if product_id else None
+    })
+
+@login_required
+def equipment_history_detail(request, equipment_id):
+    """
+    หน้าแสดงประวัติการใช้งานอุปกรณ์ (Equipment History Detail)
+    """
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect('store:home')
+
+    equipment = get_object_or_404(Equipment, id=equipment_id)
+    
+    # ดึงประวัติจาก BookingItem โดยเรียงจากล่าสุดไปเก่าสุด
+    history_items = BookingItem.objects.filter(equipment=equipment).select_related('booking').order_by('-booking__start_time')
+
+    context = {
+        'equipment': equipment,
+        'history_items': history_items
+    }
+    return render(request, 'inventory/history_detail.html', context)
+
+@login_required
+def download_booking_pdf(request, booking_id):
+    """
+    Generate PDF Equipment Sheet for Staff
+    """
+    # Permission check: Staff only
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect('store:home')
+
+    booking = get_object_or_404(Booking, id=booking_id)
+    items = BookingItem.objects.filter(booking=booking).select_related('product', 'equipment')
+
+    template_path = 'booking/pdf/equipment_sheet.html'
+    context = {'booking': booking, 'items': items}
+
+    # Fallback to HTML Print due to xhtml2pdf installation issues
+    return render(request, template_path, context)
+
+@login_required
+def download_quotation_pdf(request, booking_id):
+    """
+    Generate PDF Quotation for Customer
+    """
+    booking = get_object_or_404(Booking, id=booking_id)
+
+    # Permission check: Owner or Staff can download
+    if booking.created_by != request.user and not (request.user.is_staff or request.user.is_superuser):
+        return redirect('store:home')
+
+    items = BookingItem.objects.filter(booking=booking).select_related('product', 'equipment')
+    context = {'booking': booking, 'items': items}
+    
+    return render(request, 'booking/pdf/quotation.html', context)
+

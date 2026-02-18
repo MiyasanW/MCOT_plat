@@ -21,6 +21,9 @@ urlpatterns = [
     path('services/', views.service_list, name='service_list'),
     path('products/<int:product_id>/', views.product_detail, name='product_detail'),
     
+    path('staff/history/', views.equipment_history_search, name='equipment_history_search'),
+    path('staff/history/<int:equipment_id>/', views.equipment_history_detail, name='equipment_history_detail'),
+    
     # API endpoints (Core Functions)
     path('api/check-availability/', views.check_availability_api, name='api_check_availability'),
     path('api/check-cart/', views.check_cart_availability_api, name='api_check_cart_availability'),
@@ -36,4 +39,6 @@ urlpatterns = [
     path('my-bookings/', views.my_bookings, name='my_bookings'),
     path('booking/<int:booking_id>/', views.booking_detail, name='booking_detail'),
     path('api/booking/<int:booking_id>/upload-slip/', views.upload_slip_api, name='api_upload_slip'),
+    path('api/booking/<int:booking_id>/pdf/', views.download_booking_pdf, name='download_booking_pdf'),
+    path('api/booking/<int:booking_id>/quotation/', views.download_quotation_pdf, name='download_quotation_pdf'),
 ]

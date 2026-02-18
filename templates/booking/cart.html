@@ -86,15 +86,24 @@
                         <!-- Project Info -->
                         <div class="space-y-4 border-t border-white/10 pt-6">
                             <div>
-                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">ชื่อโปรเจค / งาน</label>
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">ชื่อผู้ติดต่อ / องค์กร (Name / Org)</label>
+                                <input type="text" id="customer-name" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" value="{{ user.get_full_name|default:user.username }}" placeholder="ระบุชื่อผู้ติดต่อ...">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">อีเมล (Email)</label>
+                                <input type="email" id="customer-email" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" value="{{ user.email }}" placeholder="example@org.com">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">เบอร์โทรศัพท์ติดต่อ (Phone)</label>
+                                <input type="tel" id="contact-phone" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm mb-1" value="{{ user.profile.phone|default:'' }}" placeholder="08x-xxx-xxxx">
+                                <p class="text-[10px] text-gray-500">*จำเป็นต้องระบุ</p>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">ชื่อโปรเจค / งาน (Project)</label>
                                 <input type="text" id="project-name" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" placeholder="เช่น ถ่ายทำรายการ...">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">เบอร์โทรศัพท์ติดต่อ</label>
-                                <input type="tel" id="contact-phone" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" value="{{ user.profile.phone|default:'' }}" placeholder="08x-xxx-xxxx">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">หมายเหตุเพิ่มเติม</label>
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">หมายเหตุเพิ่มเติม (Note)</label>
                                 <textarea id="booking-note" rows="2" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" placeholder="ระบุความต้องการเพิ่มเติม..."></textarea>
                             </div>
                         </div>
@@ -494,6 +503,8 @@
             })),
             start: startStr,
             end: endStr,
+            customer_name: document.getElementById('customer-name').value,
+            customer_email: document.getElementById('customer-email').value,
             project_name: document.getElementById('project-name').value,
             phone: document.getElementById('contact-phone').value,
             note: document.getElementById('booking-note').value
@@ -517,7 +528,9 @@
                 cartItems = [];
                 saveCart();
                 alert("จองสำเร็จ! รหัสใบจอง #" + data.booking_id);
-                window.location.href = "{% url 'store:home' %}";
+                // Redirect to Booking Detail
+                const baseUrl = "{% url 'store:booking_detail' 999999 %}";
+                window.location.href = baseUrl.replace('999999', data.booking_id);
             } else {
                 alert("จองไม่สำเร็จ: " + data.message);
                 if(data.errors) alert(data.errors.join("\n"));

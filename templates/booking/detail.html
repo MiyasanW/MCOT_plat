@@ -112,6 +112,15 @@
 
             <!-- Right: Payment -->
             <div class="lg:col-span-1 space-y-6">
+                
+                <!-- Helper Buttons -->
+                 <div class="glass-panel p-4 rounded-xl border border-white/10 text-center">
+                    <a href="{% url 'store:download_quotation_pdf' booking.id %}" target="_blank" class="block w-full bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-bold transition-all mb-2">
+                        <i class="fas fa-file-invoice-dollar mr-2"></i> ดาวน์โหลดใบเสนอราคา
+                    </a>
+                    <p class="text-xs text-gray-400">ใช้สำหรับทำเรื่องเบิกจ่าย หรือยืนยันการจอง</p>
+                </div>
+
                 <!-- Summary -->
                 <div class="glass-panel p-6 rounded-2xl border border-white/10">
                     <h2 class="text-xl font-bold text-white mb-4">สรุปยอดเงิน</h2>
@@ -141,7 +150,22 @@
                                     <p class="text-gray-400 text-xs mt-1">คุณสามารถอัปโหลดสลิปใหม่ได้หากต้องการแก้ไข</p>
                                 </div>
                             {% else %}
-                                <!-- QR Code -->
+                                <!-- Expiration Timer -->
+                                {% if booking.expires_at and not booking.is_expired %}
+                                <div class="bg-red-500/10 p-4 rounded-xl text-center border border-red-500/20 mb-4">
+                                    <div class="text-red-400 font-bold text-sm mb-1">⏰ กรุณาชำระเงินภายใน</div>
+                                    <div id="countdown" class="text-2xl font-mono text-white font-bold" data-expire="{{ booking.expires_at|date:'Y-m-d H:i:s' }}">--:--:--</div>
+                                </div>
+                                {% elif booking.is_expired %}
+                                <div class="bg-red-500/10 p-4 rounded-xl text-center border border-red-500/20 mb-4">
+                                    <i class="fas fa-times-circle text-2xl text-red-500 mb-2"></i>
+                                    <h3 class="text-red-500 font-bold">หมดเวลาชำระเงิน</h3>
+                                    <p class="text-gray-400 text-xs mt-1">ใบจองนี้ถูกยกเลิกแล้ว</p>
+                                </div>
+                                {% endif %}
+
+                                <!-- QR Code (Hide if expired) -->
+                                {% if not booking.is_expired %}
                                 <div class="bg-white p-4 rounded-xl text-center mb-4">
                                     <div class="w-full aspect-square bg-gray-200 rounded-lg flex items-center justify-center mb-2">
                                         <i class="fas fa-qrcode text-6xl text-gray-400"></i>
@@ -149,6 +173,7 @@
                                     <p class="text-black font-bold text-sm">Scan เพื่อชำระมัดจำ</p>
                                     <p class="text-mcot-orange font-bold text-lg">฿{{ booking.deposit_amount|intcomma }}</p>
                                 </div>
+                                {% endif %}
                             {% endif %}
 
                             <!-- Upload Form (Always show unless paid) -->
@@ -236,5 +261,41 @@ async function uploadSlip() {
         btn.innerHTML = 'แจ้งชำระเงิน <i class="fas fa-file-upload ml-2"></i>';
     }
 }
+
+// Countdown Logic
+document.addEventListener('DOMContentLoaded', function() {
+    const timer = document.getElementById('countdown');
+    if (!timer) return;
+
+    const expireStr = timer.dataset.expire; // "YYYY-MM-DD HH:MM:SS"
+    if (!expireStr) return;
+
+    const expireTime = new Date(expireStr).getTime();
+
+    function updateTimer() {
+        const now = new Date().getTime();
+        const distance = expireTime - now;
+
+        if (distance < 0) {
+            timer.innerHTML = "EXPIRED";
+            timer.classList.add('text-red-500');
+            // Optionally reload to show expired status
+            if (distance > -5000) window.location.reload(); 
+            return;
+        }
+
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        timer.innerHTML = 
+            (hours < 10 ? "0" + hours : hours) + ":" + 
+            (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+            (seconds < 10 ? "0" + seconds : seconds);
+    }
+
+    setInterval(updateTimer, 1000);
+    updateTimer();
+});
 </script>
 {% endblock %}

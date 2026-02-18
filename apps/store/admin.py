@@ -35,17 +35,45 @@ class ProfileInline(admin.StackedInline):
     verbose_name_plural = 'Customer Profile'
     fk_name = 'user'
 
+
+class StudioHistoryInline(admin.TabularInline):
+    """Read-only inline to show usage history in Studio Admin"""
+    model = BookingStudio
+    fk_name = 'studio'
+    extra = 0
+    can_delete = False
+    fields = ['booking_link', 'price_at_booking']
+    readonly_fields = ['booking_link', 'price_at_booking']
+    verbose_name = "ประวัติการใช้งาน (Usage History)"
+    verbose_name_plural = "🕒 ประวัติการใช้งาน (Usage History)"
+
+    def has_add_permission(self, request, obj=None): return False
+
+    @admin.display(description='Booking')
+    def booking_link(self, obj):
+        return format_html(
+            '<a href="{}">#{} - {}</a><br><span style="color:#666; font-size:11px;">{} - {}</span>',
+            reverse('admin:store_booking_change', args=[obj.booking.id]),
+            obj.booking.id,
+            obj.booking.customer_name,
+            obj.booking.start_time.strftime('%d/%m/%Y'),
+            obj.booking.end_time.strftime('%d/%m/%Y')
+        )
+
+# --- REFACTORED BOOKING ITEM INLINE ---
 class BookingItemInline(admin.TabularInline):
     model = BookingItem
     extra = 1
-    autocomplete_fields = ['product']
-    fields = ['product', 'quantity', 'price_at_booking']
+    autocomplete_fields = ['product', 'equipment']
+    fields = ['product', 'quantity', 'price_at_booking', 'equipment', 'status', 'returned_at', 'notes']
     readonly_fields = ['price_at_booking']
+    
+    verbose_name = "รายการสินค้า & เบิกจ่าย (Items & Assignment)"
+    verbose_name_plural = "🛒 รายการสินค้าและจับคู่อุปกรณ์ (Items & Equipment)"
 
     def get_readonly_fields(self, request, obj=None):
-        if obj is None:  # Adding new — hide price (will auto-fill)
-            return ['price_at_booking']
-        return ['price_at_booking']
+        base = ['price_at_booking']
+        return base
 
 
 class BookingStudioInline(admin.TabularInline):
@@ -197,10 +225,31 @@ class ProductionVehicleAdmin(ModelAdmin):
 
 @admin.register(Equipment)
 class EquipmentAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
-    list_display = ['product', 'serial_number', 'inventory_number', 'asset_tag', 'status']
+    # Added 'usage_count' and 'last_used' to list display
+    list_display = ['product', 'serial_number', 'inventory_number', 'status', 'usage_count', 'last_used']
+    # Added inventory_number to search fields
+    search_fields = ['serial_number', 'inventory_number', 'asset_tag', 'product__name']
     search_fields = ['serial_number', 'inventory_number', 'asset_tag', 'product__name']
     list_filter = ['status', 'product']
     autocomplete_fields = ['product']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs
+
+    @admin.display(description='ใช้งาน (ครั้ง)')
+    def usage_count(self, obj):
+        # Count from BookingItem directly (where equipment is assigned)
+        return obj.bookingitem_set.count()
+
+    @admin.display(description='ใช้งานล่าสุด')
+    def last_used(self, obj):
+        # Last booking item using this equipment
+        # Order by booking__start_time to get the latest usage
+        last = obj.bookingitem_set.select_related('booking').order_by('-booking__start_time').first()
+        if last:
+            return f"{last.booking.start_time.strftime('%d/%m/%Y')} (#{last.booking.id})"
+        return "-"
 
     def has_view_permission(self, request, obj=None):
         return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
@@ -217,8 +266,21 @@ class EquipmentAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
 
 @admin.register(Studio)
 class StudioAdmin(ModelAdmin):
-    list_display = ['name', 'daily_rate']
+    list_display = ['name', 'daily_rate', 'usage_count', 'last_used']
     search_fields = ['name']
+    inlines = [StudioHistoryInline]
+
+    @admin.display(description='ใช้งาน (ครั้ง)')
+    def usage_count(self, obj):
+        return obj.bookingstudio_set.count()
+
+    @admin.display(description='ใช้งานล่าสุด')
+    def last_used(self, obj):
+        # Sort by booking start_time via the related booking
+        last = obj.bookingstudio_set.select_related('booking').order_by('-booking__start_time').first()
+        if last:
+            return f"{last.booking.start_time.strftime('%d/%m/%Y')} (#{last.booking.id})"
+        return "-"
 
     def has_view_permission(self, request, obj=None):
         return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
@@ -249,6 +311,7 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
     autocomplete_fields = ['coordinator']
 
     # --- Inlines ---
+    # BookingItemInline now has equipment fields
     inlines = [BookingItemInline, BookingStudioInline, BookingStaffInline, BookingPackageInline]
 
     # --- Batch Actions ---
@@ -265,16 +328,16 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
     @admin.action(description='✅ อนุมัติ (Approve)')
     def action_approve(self, request, queryset):
         if not (request.user.is_superuser or is_web_admin(request.user)):
-            self.message_user(request, '❌ คุณไม่มีสิทธิ์อนุมัติ', level='error')
-            return
+             self.message_user(request, '❌ คุณไม่มีสิทธิ์อนุมัติ', level='error')
+             return
         updated = queryset.filter(status__in=['draft', 'pending']).update(status='approved')
         self.message_user(request, f'✅ อนุมัติแล้ว {updated} รายการ')
 
     @admin.action(description='❌ ยกเลิก (Cancel)')
     def action_cancel(self, request, queryset):
         if not (request.user.is_superuser or is_web_admin(request.user)):
-            self.message_user(request, '❌ คุณไม่มีสิทธิ์ยกเลิก', level='error')
-            return
+             self.message_user(request, '❌ คุณไม่มีสิทธิ์ยกเลิก', level='error')
+             return
         updated = queryset.exclude(status__in=['completed', 'cancelled']).update(status='cancelled')
         self.message_user(request, f'❌ ยกเลิกแล้ว {updated} รายการ')
 
@@ -382,9 +445,12 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
             ('💰 การชำระเงิน', {
                 'fields': ('total_price', 'deposit_amount', 'payment_status', 'payment_slip', 'payment_slip_large_preview'),
             }),
+            ('📄 เอกสาร (Documents)', {
+                'fields': ('print_equipment_sheet', 'print_quotation'),
+            }),
             ('📝 หมายเหตุ', {
                 'fields': ('note',),
-                'classes': ('collapse',),  # ย่อได้
+                # 'classes': ('collapse',),  <-- เอาออกเพื่อให้แสดงเลย
             }),
         ]
 
@@ -402,7 +468,7 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
         return base_fieldsets
 
     def get_readonly_fields(self, request, obj=None):
-        readonly = ['created_at', 'total_price', 'deposit_amount', 'payment_slip_large_preview'] # Automation fields
+        readonly = ['created_at', 'total_price', 'deposit_amount', 'payment_slip_large_preview', 'print_equipment_sheet', 'print_quotation'] # Automation fields
 
         if not (request.user.is_superuser or is_web_admin(request.user)):
             # Staff: แก้ status, payment, coordinator ไม่ได้
@@ -412,6 +478,27 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
             readonly += ['created_by']
 
         return readonly
+
+    @admin.display(description='🖨️ ใบจ่ายงาน (Equipment Sheet)')
+    def print_equipment_sheet(self, obj):
+        if not obj or not obj.id:
+            return '-'
+        url = reverse('store:download_booking_pdf', args=[obj.id])
+        return format_html(
+            '<a class="button" href="{}" target="_blank" style="background-color:#6c757d; color:white; padding:8px 15px; border-radius:4px; text-decoration:none;">🖨️ Print PDF</a>',
+            url
+        )
+
+    @admin.display(description='📄 ใบเสนอราคา (Quotation)')
+    def print_quotation(self, obj):
+        if not obj or not obj.id:
+            return '-'
+        url = reverse('store:download_quotation_pdf', args=[obj.id])
+        return format_html(
+            '<a class="button" href="{}" target="_blank" style="background-color:#17a2b8; color:white; padding:8px 15px; border-radius:4px; text-decoration:none;">📄 Download Quote</a>',
+            url
+        )
+
 
 
 # =============================================================================

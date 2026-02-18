@@ -150,17 +150,7 @@
                     {% endif %}
                 </a>
 
-                {% if user.is_staff %}
-                <a href="{% url 'store:calendar' %}"
-                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'calendar' in url_name %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
-                    <span class="relative z-10">CALENDAR</span>
-                    {% if 'calendar' in url_name %}
-                    <div
-                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-mcot-orange shadow-[0_0_10px_rgba(242,101,34,0.8)] rounded-full">
-                    </div>
-                    {% endif %}
-                </a>
-                {% endif %}
+                <!-- Staff Calendar Removed from Main Nav -->
 
                 <a href="{% url 'store:catalog' %}"
                     class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'catalog' in url_name %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
@@ -241,6 +231,15 @@
 
             <!-- 3. Actions (Account & Cart) -->
             <div class="flex items-center gap-6 flex-shrink-0">
+                <!-- Staff Calendar Button (Prominent) -->
+                {% if user.is_staff %}
+                <a href="{% url 'store:calendar' %}" 
+                   class="hidden md:flex items-center gap-2 bg-mcot-purple hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-bold transition-all shadow-lg hover:shadow-purple-500/50 border border-white/10">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>STAFF CALENDAR</span>
+                </a>
+                {% endif %}
+
                 <!-- Phone (Permanent Glow) -->
                 <div class="hidden xl:flex flex-col text-right group cursor-pointer">
                     <span class="text-[10px] text-mcot-orange uppercase tracking-widest font-bold">Support 24/7</span>

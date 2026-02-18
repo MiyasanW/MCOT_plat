@@ -179,6 +179,7 @@ class Booking(models.Model):
     
     # Customer Info
     customer_name = models.CharField(max_length=200, verbose_name="ชื่อลูกค้า") # E.g. Contact Person
+    customer_email = models.EmailField(verbose_name="อีเมลลูกค้า (Contact Email)", blank=True, null=True)
     created_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True)
     
     # Project Info (New)
@@ -214,6 +215,15 @@ class Booking(models.Model):
     ]
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='unpaid', verbose_name="สถานะการชำระเงิน")
     
+    # Expiration (New)
+    expires_at = models.DateTimeField(null=True, blank=True, verbose_name="หมดอายุการจอง (ชำระเงินภายใน)")
+
+    @property
+    def is_expired(self):
+        if self.status in ['pending', 'draft'] and self.payment_status == 'unpaid' and self.expires_at:
+            return timezone.now() > self.expires_at
+        return False
+    
     # Relationships (Using Through Models for Price Snapshot)
     products = models.ManyToManyField(Product, through='BookingItem', blank=True)
     studios = models.ManyToManyField(Studio, through='BookingStudio', blank=True)
@@ -230,10 +240,23 @@ class Booking(models.Model):
 
 # --- 4. Intermediary (Through) Models with Snapshots ---
 class BookingItem(models.Model):
+    STATUS_CHOICES = [
+        ('picked', 'รับของแล้ว (Picked Up)'),
+        ('returned', 'คืนของแล้ว (Returned)'),
+        ('missing', 'สูญหาย (Missing)'),
+        ('damaged', 'ชำรุด (Damaged)'),
+    ]
+
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.PROTECT)  # Prevent product deletion
     quantity = models.PositiveIntegerField(default=1)
     price_at_booking = models.DecimalField(max_digits=10, decimal_places=2, help_text="ราคาต่อชิ้น ณ วันจอง")
+
+    # Inventory Assignment Fields
+    equipment = models.ForeignKey(Equipment, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="อุปกรณ์ที่ระบุ (Optional)")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='picked', blank=True, verbose_name="สถานะคืน")
+    returned_at = models.DateTimeField(null=True, blank=True, verbose_name="เวลาที่คืน")
+    notes = models.TextField(blank=True, null=True, verbose_name="หมายเหตุ (สภาพตอนคืน)")
 
     def save(self, *args, **kwargs):
         if not self.price_at_booking and self.product:
@@ -253,11 +276,12 @@ class BookingStudio(models.Model):
 class BookingStaff(models.Model):
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='booked_staff')
     staff = models.ForeignKey(Staff, on_delete=models.PROTECT)
-    daily_rate_at_booking = models.DecimalField(max_digits=10, decimal_places=2, help_text="ค่าแรงต่อวัน ณ วันจอง")
+    daily_rate_at_booking = models.DecimalField(max_digits=10, decimal_places=2)
 
     def save(self, *args, **kwargs):
         if not self.daily_rate_at_booking and self.staff:
-            self.daily_rate_at_booking = self.staff.daily_rate
+            # หาเรทจาก position หรือ default
+            self.daily_rate_at_booking = self.staff.position.base_daily_rate if self.staff.position else 0
         super().save(*args, **kwargs)
 
 class BookingPackage(models.Model):
@@ -280,4 +304,3 @@ class Notification(models.Model):
     is_read = models.BooleanField(default=False)
     notification_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='info')
     created_at = models.DateTimeField(auto_now_add=True)
-

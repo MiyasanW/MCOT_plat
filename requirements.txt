@@ -14,3 +14,4 @@ django-summernote==0.8.20.0  # Rich Text Editor
 django-crispy-forms==2.1  # Better Forms
 crispy-bootstrap5==2024.2
 python-dotenv==1.0.1  # Environment Variables
+xhtml2pdf==0.2.16
