@@ -1,0 +1,328 @@
+{% extends 'rentals/public/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}เช่าอุปกรณ์ถ่ายทำ | MCOT Rental{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="position-relative bg-dark text-white overflow-hidden">
+    <div class="position-absolute top-0 start-0 w-100 h-100"
+        style="background: radial-gradient(circle at 80% 20%, #2c2a38 0%, #1a1a1a 100%); opacity: 1;"></div>
+
+    <div class="container position-relative py-5 my-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span
+                    class="badge bg-primary bg-opacity-25 text-primary-light border border-primary border-opacity-50 fw-bold mb-3 px-3 py-2 rounded-pill text-uppercase letter-spacing-2">
+                    <i class="fas fa-camera me-2"></i>Professional Gear
+                </span>
+                <h1 class="display-3 fw-bold mb-3">คลังอุปรณ์<span class="text-gradient-primary">คุณภาพสูง</span></h1>
+                <p class="lead text-white-50 mb-4" style="max-width: 600px;">
+                    ครบครันด้วยกล้อง เลนส์ ไฟ และอุปกรณ์เสริมระดับ High-End พร้อมทีมงานดูแลรักษาอย่างดีเยี่ยม
+                </p>
+            </div>
+            <div class="col-lg-4 text-end d-none d-lg-block">
+                <i class="fas fa-film text-white opacity-10" style="font-size: 15rem; transform: rotate(15deg);"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Bar Section -->
+<div class="container position-relative z-index-10" style="margin-top: -3rem;">
+    <div class="card border-0 shadow-lg rounded-4 p-4 mb-5">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-muted text-uppercase"><i
+                        class="far fa-calendar-alt me-1"></i> เริ่มต้น (Start)</label>
+                <input type="date" name="start_date" class="form-control bg-light border-0"
+                    value="{{ search_start_date|date:'Y-m-d' }}" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-muted text-uppercase"><i
+                        class="far fa-calendar-check me-1"></i> สิ้นสุด (End)</label>
+                <input type="date" name="end_date" class="form-control bg-light border-0"
+                    value="{{ search_end_date|date:'Y-m-d' }}" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-bold text-muted text-uppercase"><i class="fas fa-search me-1"></i>
+                    ค้นหา (Search)</label>
+                <input type="text" name="q" class="form-control bg-light border-0" placeholder="ชื่ออุปกรณ์, ยี่ห้อ..."
+                    value="{{ request.GET.q }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm">
+                    <i class="fas fa-filter me-1"></i> เช็คสถานะ
+                </button>
+            </div>
+            <input type="hidden" name="category" value="{{ request.GET.category }}">
+        </form>
+    </div>
+</div>
+
+<div class="bg-light min-vh-100 pb-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Sidebar Filters (Categories Only) -->
+            <div class="col-lg-3">
+                <div class="card border-0 shadow-sm rounded-4 sticky-top z-1" style="top: 2rem;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold mb-0"><i class="fas fa-tags me-2 text-primary"></i> หมวดหมู่</h5>
+                            {% if request.GET.category %}
+                            <a href="?q={{ request.GET.q }}&start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}"
+                                class="text-danger small text-decoration-none">
+                                <i class="fas fa-times"></i> ล้าง
+                            </a>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex flex-column gap-2">
+                            <!-- All Category Link -->
+                            <a href="?category=&q={{ request.GET.q }}&start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}"
+                                class="custom-radio-card text-decoration-none {% if not request.GET.category %}active{% endif %}">
+                                <div class="d-flex align-items-center">
+                                    <span class="icon-box me-3"><i class="fas fa-th-large"></i></span>
+                                    <span class="fw-bold text-dark">แสดงทั้งหมด</span>
+                                </div>
+                            </a>
+
+                            {% for code, name in categories %}
+                            <a href="?category={{ code }}&q={{ request.GET.q }}&start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}"
+                                class="custom-radio-card text-decoration-none {% if request.GET.category == code %}active{% endif %}">
+                                <div class="d-flex align-items-center">
+                                    <span class="icon-box me-3">
+                                        {% if code == 'camera' %}<i class="fas fa-camera"></i>
+                                        {% elif code == 'lens' %}<i class="fas fa-circle-notch"></i>
+                                        {% elif code == 'lighting' %}<i class="fas fa-lightbulb"></i>
+                                        {% elif code == 'sound' %}<i class="fas fa-microphone"></i>
+                                        {% elif code == 'grip' %}<i class="fas fa-columns"></i>
+                                        {% elif code == 'vehicle' %}<i class="fas fa-truck-moving"></i>
+                                        {% else %}<i class="fas fa-box"></i>{% endif %}
+                                    </span>
+                                    <span class="fw-bold text-dark">{{ name }}</span>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!-- Product Grid -->
+<div class="col-lg-9">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="fw-bold text-dark mb-0">รายการสินค้า ({{ equipment_list|length }})</h5>
+
+        <div class="dropdown">
+            <button
+                class="btn btn-white border shadow-sm rounded-pill dropdown-toggle px-4 text-secondary small fw-bold"
+                type="button" data-bs-toggle="dropdown">
+                เรียงตาม: ล่าสุด
+            </button>
+            <ul class="dropdown-menu border-0 shadow-lg rounded-4 p-2">
+                <li><a class="dropdown-item rounded-3 small fw-bold" href="#">ล่าสุด</a></li>
+                <li><a class="dropdown-item rounded-3 small fw-bold" href="#">ราคา: ต่ำ-สูง</a></li>
+                <li><a class="dropdown-item rounded-3 small fw-bold" href="#">ราคา: สูง-ต่ำ</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        {% for product in equipment_list %}
+        <div class="col-md-6 col-xl-4">
+            <div class="card border-0 shadow-sm h-100 hover-up bg-white rounded-4 overflow-hidden group">
+                <!-- Image -->
+                <div class="position-relative overflow-hidden" style="height: 220px;">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}"
+                        class="h-100 w-100 object-fit-cover transition-zoom group-hover-zoom" alt="{{ product.name }}">
+                    {% else %}
+                    <div class="bg-light h-100 w-100 d-flex align-items-center justify-content-center text-muted">
+                        <div class="text-center">
+                            <i class="fas fa-camera fa-2x mb-2 opacity-25"></i>
+                            <p class="small m-0 opacity-50">No Image</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Status Badge (Absolute) -->
+                    <div class="position-absolute top-0 end-0 p-3">
+                        {% if product.calculated_remaining is not None %}
+                        {% if product.calculated_remaining > 0 %}
+                        <span
+                            class="badge bg-success-subtle text-success border border-success-subtle rounded-pill shadow-sm">
+                            <i class="fas fa-check-circle me-1"></i> ว่าง {{ product.calculated_remaining }}
+                        </span>
+                        {% else %}
+                        <span
+                            class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill shadow-sm">
+                            <i class="fas fa-times-circle me-1"></i> เต็ม
+                        </span>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="{{ product.get_icon_class }} text-primary me-2 small"></i>
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">
+                            {{ product.get_category_display }}
+                        </small>
+                    </div>
+
+                    <a href="{% url 'product_detail' product.id %}" class="text-decoration-none">
+                        <h5 class="fw-bold text-dark mb-1 text-truncate hover-text-primary transition-all">
+                            {{ product.name }}</h5>
+                    </a>
+
+                    <p class="text-secondary small mb-3 flex-grow-1 line-clamp-2">
+                        {{ product.description|striptags|truncatechars:80 }}
+                    </p>
+
+                    <div
+                        class="d-flex justify-content-between align-items-end mt-3 pt-3 border-top border-light-subtle">
+                        <div>
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">ราคาเช่า/วัน</small>
+                            <span class="text-primary fw-bolder fs-5">฿{{
+                                product.price|floatformat:0|intcomma }}</span>
+                        </div>
+
+                        <form action="{% url 'cart_add' product.id %}" method="post">
+                            {% csrf_token %}
+                            <!-- Hidden Date Inputs propagate filter -->
+                            {% if search_start_date %}<input type="hidden" name="start_date"
+                                value="{{ search_start_date|date:'Y-m-d' }}">{% endif %}
+                            {% if search_end_date %}<input type="hidden" name="end_date"
+                                value="{{ search_end_date|date:'Y-m-d' }}">{% endif %}
+
+                            <button type="submit"
+                                class="btn btn-light rounded-circle shadow-sm hover-scale text-primary"
+                                style="width: 42px; height: 42px;" {% if product.calculated_remaining==0 %}disabled{%
+                                endif %}>
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 py-5 text-center">
+            <div class="py-5 bg-white rounded-4 shadow-sm">
+                <i class="fas fa-box-open fa-4x text-muted mb-3 opacity-25"></i>
+                <h4 class="fw-bold text-muted">ไม่พบสินค้าที่คุณค้นหา</h4>
+                <p class="text-secondary">ลองเปลี่ยนคำค้นหาหรือตัวกรองดูใหม่นะครับ</p>
+                <a href="{% url 'equipment_catalog' %}" class="btn btn-outline-primary rounded-pill mt-3">
+                    ดูสินค้าทั้งหมด
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+</div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .text-primary-light {
+        color: #cfe2ff;
+    }
+
+    .hover-up {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hover-up:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .group-hover-zoom {
+        transition: transform 0.5s ease;
+    }
+
+    .group:hover .group-hover-zoom {
+        transform: scale(1.05);
+    }
+
+    .hover-scale {
+        transition: transform 0.2s;
+    }
+
+    .hover-scale:hover {
+        transform: scale(1.1);
+    }
+
+    .custom-radio-card {
+        cursor: pointer;
+        padding: 10px 15px;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .custom-radio-card:hover {
+        background-color: #f8f9fa;
+    }
+
+    .custom-radio-card.active {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+        border-color: #cfe2ff;
+    }
+
+    .custom-radio-card.active .icon-box {
+        background-color: #fff;
+        color: #0d6efd;
+    }
+
+    .icon-box {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background-color: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        color: #64748b;
+        transition: all 0.2s;
+    }
+
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .letter-spacing-2 {
+        letter-spacing: 2px;
+    }
+
+    .object-fit-cover {
+        object-fit: cover;
+    }
+
+    /* Sticky Sidebar Offset for fixed navbar */
+    .sticky-top {
+        top: 90px !important;
+    }
+</style>
+{% endblock %}

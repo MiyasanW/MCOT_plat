@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - MCOT Rental{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-20">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-20">
+
+        <!-- Left: Info & Map -->
+        <div>
+            <div class="inline-flex items-center gap-2 mb-6 border-l-2 border-mcot-orange pl-3">
+                <span class="text-gray-400 text-sm tracking-widest uppercase font-medium">Support Center</span>
+            </div>
+            <h1 class="text-4xl font-display font-bold text-white mb-6">Contact Us</h1>
+            <p class="text-gray-400 mb-10 leading-relaxed">
+                Need details on equipment specs or studio availability? Our production specialists are ready to assist.
+            </p>
+
+            <div class="space-y-8 mb-12">
+                <div class="flex gap-6 items-start">
+                    <span class="w-12 h-12 rounded bg-white/5 flex items-center justify-center text-gray-400 shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </span>
+                    <div>
+                        <h4 class="text-white font-bold mb-1">Headquarters</h4>
+                        <p class="text-gray-500 text-sm leading-relaxed">
+                            63/1 Rama IX Road, Huaykwang<br>
+                            Bangkok 10310, Thailand
+                        </p>
+                    </div>
+                </div>
+                <div class="flex gap-6 items-start">
+                    <span class="w-12 h-12 rounded bg-white/5 flex items-center justify-center text-gray-400 shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </span>
+                    <div>
+                        <h4 class="text-white font-bold mb-1">Direct Contact</h4>
+                        <p class="text-mcot-orange text-sm font-medium">rental@mcot.net</p>
+                        <p class="text-gray-500 text-sm">02-201-6000</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map (Simplified Border) -->
+            <div
+                class="h-64 bg-white/5 rounded border border-white/10 grayscale opacity-80 hover:opacity-100 transition-opacity">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.3621404179377!2d100.57395561534724!3d13.756994990343388!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29e8c45555555%3A0x6a0e632906800000!2sMCOT%20Public%20Company%20Limited!5e0!3m2!1sen!2sth!4v1625555555555!5m2!1sen!2sth"
+                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+
+        <!-- Right: Form (Minimal) -->
+        <div class="bg-white/[0.02] p-8 md:p-10 border border-white/10 rounded-xl">
+            <h3 class="text-xl font-bold text-white mb-8">Send Message</h3>
+            <form action="#" class="space-y-6">
+                <div class="space-y-2">
+                    <label class="text-xs text-gray-500 uppercase tracking-wider">Your Name</label>
+                    <input type="text"
+                        class="w-full bg-transparent border-b border-gray-700 py-3 text-white focus:border-mcot-orange focus:ring-0 outline-none transition-colors placeholder-gray-600"
+                        placeholder="Full Name">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs text-gray-500 uppercase tracking-wider">Email Address</label>
+                    <input type="email"
+                        class="w-full bg-transparent border-b border-gray-700 py-3 text-white focus:border-mcot-orange focus:ring-0 outline-none transition-colors placeholder-gray-600"
+                        placeholder="name@company.com">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs text-gray-500 uppercase tracking-wider">Topic</label>
+                    <select
+                        class="w-full bg-transparent border-b border-gray-700 py-3 text-white focus:border-mcot-orange focus:ring-0 outline-none transition-colors [&>option]:text-black">
+                        <option>General Inquiry</option>
+                        <option>Equipment Rental</option>
+                        <option>Studio Booking</option>
+                    </select>
+                </div>
+                <div class="space-y-2 pt-4">
+                    <label class="text-xs text-gray-500 uppercase tracking-wider">Message</label>
+                    <textarea rows="4"
+                        class="w-full bg-transparent border-b border-gray-700 py-3 text-white focus:border-mcot-orange focus:ring-0 outline-none transition-colors placeholder-gray-600"
+                        placeholder="Tell us about your requirements..."></textarea>
+                </div>
+
+                <div class="pt-6">
+                    <button type="submit"
+                        class="px-8 py-3 bg-white text-black font-bold text-sm rounded hover:bg-gray-200 transition-colors w-full md:w-auto">
+                        Send Message
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

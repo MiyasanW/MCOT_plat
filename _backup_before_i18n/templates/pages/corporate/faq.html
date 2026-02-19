@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FAQ - MCOT Rental{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-20 min-h-screen">
+    <!-- Header (Left Aligned) -->
+    <div class="mb-16">
+        <div class="inline-flex items-center gap-2 mb-6 border-l-2 border-mcot-orange pl-3">
+            <span class="text-gray-400 text-sm tracking-widest uppercase font-medium">Help Center</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-display font-bold text-white mb-6">Common Questions</h1>
+        <p class="text-gray-400 text-lg font-light">Find answers regarding booking, payments, and equipment policies.
+        </p>
+    </div>
+
+    <!-- FAQ List (Clean Accordion) -->
+    <div class="space-y-4 border-t border-white/5 pt-8">
+        <!-- Item 1 -->
+        <details class="group border-b border-white/5 pb-4 open:pb-6 transition-all duration-300">
+            <summary
+                class="flex items-center justify-between cursor-pointer list-none py-4 text-lg font-medium text-white select-none hover:text-mcot-orange transition-colors">
+                <span>How do I rent equipment?</span>
+                <span class="transition-transform group-open:rotate-180 text-gray-500">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </span>
+            </summary>
+            <div class="pt-2 text-gray-400 leading-relaxed max-w-2xl">
+                You can browse our catalog online, check availability for your desired dates, and add items to your
+                cart. Once you submit your booking request, our team will review and confirm it within 24 hours.
+            </div>
+        </details>
+
+        <!-- Item 2 -->
+        <details class="group border-b border-white/5 pb-4 open:pb-6 transition-all duration-300">
+            <summary
+                class="flex items-center justify-between cursor-pointer list-none py-4 text-lg font-medium text-white select-none hover:text-mcot-orange transition-colors">
+                <span>What documents are required?</span>
+                <span class="transition-transform group-open:rotate-180 text-gray-500">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </span>
+            </summary>
+            <div class="pt-2 text-gray-400 leading-relaxed max-w-2xl">
+                For corporate clients, we require a company registration certificate and VAT registration (Por Por 20).
+                For individuals, a valid Thai National ID card is required.
+            </div>
+        </details>
+
+        <!-- Item 3 -->
+        <details class="group border-b border-white/5 pb-4 open:pb-6 transition-all duration-300">
+            <summary
+                class="flex items-center justify-between cursor-pointer list-none py-4 text-lg font-medium text-white select-none hover:text-mcot-orange transition-colors">
+                <span>Can I rent a studio for a half-day?</span>
+                <span class="transition-transform group-open:rotate-180 text-gray-500">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </span>
+            </summary>
+            <div class="pt-2 text-gray-400 leading-relaxed max-w-2xl">
+                Yes, our studios are available for both half-day (4 hours) and full-day (8 hours) bookings. Please
+                contact our team for specific pricing.
+            </div>
+        </details>
+
+        <!-- Item 4 -->
+        <details class="group border-b border-white/5 pb-4 open:pb-6 transition-all duration-300">
+            <summary
+                class="flex items-center justify-between cursor-pointer list-none py-4 text-lg font-medium text-white select-none hover:text-mcot-orange transition-colors">
+                <span>Do you offer delivery service?</span>
+                <span class="transition-transform group-open:rotate-180 text-gray-500">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </span>
+            </summary>
+            <div class="pt-2 text-gray-400 leading-relaxed max-w-2xl">
+                Yes, we offer delivery and pickup services within the Bangkok Metropolitan Region. Additional charges
+                may apply based on distance and equipment volume.
+            </div>
+        </details>
+    </div>
+</div>
+{% endblock %}

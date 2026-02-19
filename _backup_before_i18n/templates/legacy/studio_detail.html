@@ -1,0 +1,310 @@
+{% extends 'rentals/public/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ studio.name }} | MCOT Rental{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* --- PURE WHITE THEME OVERRIDES --- */
+    body {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+    }
+
+    /* Navbar Visibility */
+    #mainNav .navbar-brand span {
+        color: #111827 !important;
+    }
+
+    #mainNav .nav-link {
+        color: #4b5563 !important;
+    }
+
+    #mainNav .nav-link:hover,
+    #mainNav .nav-link.active {
+        color: var(--primary) !important;
+        background: transparent !important;
+    }
+
+    #mainNav.navbar.scrolled {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: #111827 !important;
+    }
+
+    .text-muted {
+        color: #6b7280 !important;
+    }
+
+    /* Amenities Iterface */
+    .amenity-card {
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1rem;
+        transition: all 0.2s;
+    }
+
+    .amenity-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #ffffff;
+        border-radius: 50%;
+        color: #111827;
+        margin-right: 1rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    /* Sidebar */
+    .sticky-sidebar {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 100px;
+        z-index: 10;
+    }
+
+    .sidebar-card {
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Standard White Header -->
+<div style="padding-top: 120px; padding-bottom: 40px; border-bottom: 1px solid #f3f4f6;">
+    <div class="container-xl">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                        class="text-decoration-none text-muted">หน้าหลัก</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'studios' %}"
+                        class="text-decoration-none text-muted">บริการเช่าสตูดิโอ</a></li>
+                <li class="breadcrumb-item active text-dark" aria-current="page">{{ studio.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="container-xl py-5">
+    <div class="row g-5">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Studio Image -->
+            <div class="rounded-4 overflow-hidden mb-5 bg-light border" style="min-height: 400px; position: relative;">
+                {% if studio.image %}
+                <img src="{{ studio.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ studio.name }}"
+                    style="max-height: 500px; width: 100%; object-fit: cover;">
+                {% else %}
+                <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted"
+                    style="min-height: 400px;">
+                    <div class="text-center">
+                        <i class="fas fa-warehouse fa-5x mb-3 opacity-25"></i>
+                        <p>ไม่มีรูปภาพ</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div class="mb-5">
+                <span class="badge bg-light text-primary border px-3 py-2 rounded-pill mb-3">MCOT STUDIO</span>
+                <h1 class="fw-bold mb-4">{{ studio.name }}</h1>
+                <div class="prose text-secondary lh-lg fs-5">
+                    {% if studio.description and studio.description != "None" %}
+                    {{ studio.description|linebreaks }}
+                    {% else %}
+                    <p>สตูดิโอถ่ายทำรายการโทรทัศน์มาตรฐาน MCOT พร้อมระบบควบคุม ระบบไฟ และสิ่งอำนวยความสะดวกครบครัน</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <hr class="border-secondary opacity-10 my-5">
+
+            <!-- Amenities -->
+            <h3 class="fw-bold mb-4">สิ่งอำนวยความสะดวก</h3>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="amenity-card d-flex align-items-center">
+                        <div class="amenity-icon"><i class="fas fa-bolt"></i></div>
+                        <div>
+                            <span class="d-block fw-bold">ระบบไฟฟ้า 3 เฟส</span>
+                            <small class="text-muted">300A สำหรับกองถ่าย</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="amenity-card d-flex align-items-center">
+                        <div class="amenity-icon"><i class="fas fa-wifi"></i></div>
+                        <div>
+                            <span class="d-block fw-bold">อินเทอร์เน็ตความเร็วสูง</span>
+                            <small class="text-muted">Fiber Optic + WiFi 6</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="amenity-card d-flex align-items-center">
+                        <div class="amenity-icon"><i class="fas fa-user-tie"></i></div>
+                        <div>
+                            <span class="d-block fw-bold">ห้องรับรอง VIP</span>
+                            <small class="text-muted">พร้อมห้องแต่งตัว</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="amenity-card d-flex align-items-center">
+                        <div class="amenity-icon"><i class="fas fa-parking"></i></div>
+                        <div>
+                            <span class="d-block fw-bold">ที่จอดรถส่วนตัว</span>
+                            <small class="text-muted">ติดกับสตูดิโอ</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="sticky-sidebar sidebar-card bg-white rounded-4 p-4" id="studio-sidebar">
+                <div class="mb-4 text-center">
+                    <p class="text-muted mb-1 small text-uppercase fw-bold">อัตราค่าเช่าเริ่มต้น</p>
+                    <h2 class="display-5 fw-bold text-primary mb-0">฿{{ studio.daily_rate|floatformat:0|intcomma }}</h2>
+                    <small class="text-muted">/ วัน</small>
+                </div>
+
+                <!-- Check Availability Form -->
+                <div class="bg-light p-4 rounded-4 mb-4 border">
+                    <h6 class="fw-bold mb-3"><i class="far fa-calendar-check me-2"></i>ตรวจสอบสถานะว่าง</h6>
+                    <form action="" method="GET" class="row g-2" onsubmit="handleStudioCheck(event)">
+                        <div class="col-12">
+                            <label class="form-label small text-muted mb-1">วันเริ่มต้น</label>
+                            <input type="date" name="start_date" class="form-control" value="{{ start_date }}" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small text-muted mb-1">วันสิ้นสุด</label>
+                            <input type="date" name="end_date" class="form-control" value="{{ end_date }}" required>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <button type="submit" class="btn btn-dark w-100 rounded-pill py-2 fw-bold">
+                                <i class="fas fa-search me-2"></i> ตรวจสอบ
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Status Badge -->
+                {% if start_date and end_date %}
+                {% if is_available %}
+                <div class="alert alert-success border-0 rounded-3 mb-4 text-center">
+                    <i class="fas fa-check-circle fa-2x mb-2"></i>
+                    <h5 class="fw-bold mb-1">ว่าง (Available)</h5>
+                    <p class="mb-0 small">สามารถจองได้ในช่วงเวลานี้</p>
+                </div>
+                {% else %}
+                <div class="alert alert-danger border-0 rounded-3 mb-4 text-center">
+                    <i class="fas fa-times-circle fa-2x mb-2"></i>
+                    <h5 class="fw-bold mb-1">ไม่ว่าง (Booked)</h5>
+                    <p class="mb-0 small">มีการจองแล้วในช่วงเวลานี้</p>
+                </div>
+                {% endif %}
+                {% endif %}
+
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2">
+                    {% if is_available %}
+                    <a href="{% url 'studio_booking' studio.id %}?start_date={{ start_date }}&end_date={{ end_date }}"
+                        class="btn btn-primary btn-lg rounded-pill fw-bold">
+                        จองสตูดิโอนี้ทันที
+                    </a>
+                    {% else %}
+                    <button class="btn btn-secondary btn-lg rounded-pill fw-bold" disabled>
+                        เลือกวันใหม่เพื่อจอง
+                    </button>
+                    {% endif %}
+
+                    <a href="{% url 'studios' %}" class="btn btn-outline-secondary rounded-pill fw-bold">
+                        <i class="fas fa-arrow-left me-2"></i> ย้อนกลับ
+                    </a>
+                </div>
+
+                <div class="mt-4 pt-4 border-top text-center">
+                    <p class="small text-muted mb-0">ต้องการข้อมูลเพิ่มเติม?</p>
+                    <a href="tel:022016000" class="fw-bold text-dark text-decoration-none">02-201-6000</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function handleStudioCheck(event) {
+        event.preventDefault();
+        const form = event.target;
+        const btn = form.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+
+        // Basic validation
+        const startDate = form.querySelector('input[name="start_date"]').value;
+        const endDate = form.querySelector('input[name="end_date"]').value;
+
+        if (!startDate || !endDate) {
+            alert('กรุณาระบุวันเริ่มต้นและวันสิ้นสุด');
+            return;
+        }
+
+        if (endDate < startDate) {
+            alert('วันสิ้นสุดต้องไม่น้อยกว่าวันเริ่มต้น');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> กำลังตรวจสอบ...';
+
+        try {
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData);
+            const fetchUrl = `${window.location.pathname}?${params.toString()}`;
+
+            const [response] = await Promise.all([
+                fetch(fetchUrl),
+                new Promise(resolve => setTimeout(resolve, 500))
+            ]);
+
+            if (!response.ok) throw new Error('Network error');
+            const html = await response.text();
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newContent = doc.getElementById('studio-sidebar');
+            const currentContainer = document.getElementById('studio-sidebar');
+
+            if (newContent && currentContainer) {
+                currentContainer.innerHTML = newContent.innerHTML;
+                window.history.replaceState({}, '', fetchUrl);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('เกิดข้อผิดพลาดในการตรวจสอบ');
+        } finally {
+            if (document.body.contains(btn)) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+    }
+</script>
+{% endblock %}

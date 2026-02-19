@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Studios | MCOT Rental{% endblock %}
+
+{% block content %}
+<!-- Industrial Catalog Header -->
+<div class="bg-[#353535] border-b border-white/10 py-8 mb-8">
+    <div class="max-w-[1600px] mx-auto px-4 flex flex-col md:flex-row justify-between items-end gap-6">
+        <div>
+            <div class="flex items-center gap-2 text-xs text-gray-500 uppercase mb-2">
+                <a href="{% url 'store:home' %}" class="hover:text-white">Home</a> <i
+                    class="fas fa-chevron-right text-[8px]"></i>
+                <span class="text-mcot-orange">Studios</span>
+            </div>
+            <h1 class="text-3xl font-bold text-white font-display">
+                Professional Studios
+            </h1>
+            <p class="text-gray-400 text-sm mt-1">Soundproof stages and virtual production facilities.</p>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-[1600px] mx-auto px-4 min-h-screen pb-20">
+    {% if studios %}
+    <div class="grid grid-cols-1 gap-6">
+        {% for studio in studios %}
+        <div
+            class="group relative bg-[#353535] border border-white/10 hover:border-mcot-orange/50 transition-all duration-300 flex flex-col md:flex-row shadow-lg overflow-hidden">
+
+            <!-- Image Section -->
+            <div class="md:w-1/3 aspect-video md:aspect-auto relative overflow-hidden bg-black/20">
+                {% if studio.image %}
+                <img src="{{ studio.image.url }}" alt="{{ studio.name }}"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center text-gray-600">
+                    <i class="fas fa-warehouse text-4xl"></i>
+                </div>
+                {% endif %}
+
+                <div class="absolute top-4 left-4">
+                    <span
+                        class="bg-black/50 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 uppercase tracking-wide border border-white/10">
+                        Available
+                    </span>
+                </div>
+            </div>
+
+            <!-- Content Section -->
+            <div class="md:w-2/3 p-6 md:p-8 flex flex-col justify-center">
+                <h2 class="text-2xl font-bold text-white mb-2 group-hover:text-mcot-orange transition-colors">
+                    {{ studio.name }}
+                </h2>
+
+                <p class="text-gray-400 text-sm mb-6 line-clamp-2 leading-relaxed">
+                    {{ studio.description|striptags|default:"Professional grade studio space." }}
+                </p>
+
+                <!-- Quick Specs -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 border-y border-white/5 py-4">
+                    <div>
+                        <span class="block text-[10px] text-gray-500 uppercase tracking-widest">Size</span>
+                        <span class="text-white font-mono text-sm">120 Sq.m</span>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] text-gray-500 uppercase tracking-widest">Power</span>
+                        <span class="text-white font-mono text-sm">3-Phase</span>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] text-gray-500 uppercase tracking-widest">Sound</span>
+                        <span class="text-white font-mono text-sm">Silent AC</span>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] text-gray-500 uppercase tracking-widest">Internet</span>
+                        <span class="text-white font-mono text-sm">1 Gbps</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between mt-auto">
+                    <div>
+                        <span class="text-[10px] text-gray-500 uppercase tracking-wide block mb-1">Standard Rate</span>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-2xl font-bold text-white font-mono">
+                                ฿{{ studio.daily_rate|intcomma }}
+                            </span>
+                            <span class="text-xs text-gray-500">/ day</span>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'store:studio_detail' studio.id %}"
+                        class="px-6 py-2 bg-white/10 hover:bg-mcot-orange text-white text-xs font-bold uppercase tracking-wider transition-colors border border-white/5">
+                        View Details <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div
+        class="flex flex-col items-center justify-center py-20 text-center border border-dashed border-white/10 rounded-lg">
+        <i class="fas fa-door-closed text-4xl text-gray-600 mb-4"></i>
+        <h3 class="text-white font-bold text-lg">No Studios Found</h3>
+        <p class="text-gray-500 text-sm">Facility roster is currently empty.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

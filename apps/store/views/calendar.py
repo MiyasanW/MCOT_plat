@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Q
-from .models import Booking, Staff
+from apps.store.models import Booking, Staff
 
 @staff_member_required
 def calendar_view(request):

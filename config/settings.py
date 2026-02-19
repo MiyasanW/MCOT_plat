@@ -31,6 +31,7 @@ CSRF_TRUSTED_ORIGINS = [
 INSTALLED_APPS = [
     
     # --- Django Core ---
+    # 'jazzmin',  # Removed (Using custom CSS theme instead)
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -74,6 +75,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.store.context_processors.admin_dashboard_stats', # Custom Admin Dashboard Stats
             ],
         },
     },
@@ -134,11 +136,10 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 SUMMERNOTE_THEME = 'bs5'
 
 # ==============================================================================
-# ADMIN CUSTOMIZATION
+# JAZZMIN CONFIGURATION (Disabled - Using Custom CSS)
 # ==============================================================================
-ADMIN_SITE_HEADER = 'MCOT Rental Admin'
-ADMIN_SITE_TITLE = 'MCOT Rental Platform'
-ADMIN_INDEX_TITLE = 'Dashboard'
+# ... (Configuration Removed) ...
+
 
 # --- Summernote ---
 X_FRAME_OPTIONS = 'SAMEORIGIN'
@@ -175,3 +176,20 @@ if not DEBUG:
 
 # Login URL (for @login_required redirect)
 LOGIN_URL = '/accounts/login/'
+
+# ==============================================================================
+# EMAIL SETTINGS (Smart Selection)
+# ==============================================================================
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
+if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD and 'your_email' not in EMAIL_HOST_USER:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    # Optional: print warning to console so dev knows
+    # print("Using Console Email Backend (Setup .env to send real emails)")

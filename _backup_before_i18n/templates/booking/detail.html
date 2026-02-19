@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="min-h-screen pt-24 pb-20">
+    <div class="container mx-auto px-4 max-w-4xl">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <a href="{% url 'store:my_bookings' %}" class="text-gray-400 hover:text-white transition-colors text-sm mb-2 inline-flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i> กลับไปรายการจอง
+                </a>
+                <h1 class="text-3xl font-bold text-white">Booking #{{ booking.id }}</h1>
+                <div class="flex items-center gap-2 mt-2">
+                    <span class="text-gray-400 text-sm">Created: {{ booking.created_at|date:"d M Y, H:i" }}</span>
+                </div>
+            </div>
+            <div>
+                {% if booking.payment_status == 'paid' %}
+                    <span class="px-4 py-2 rounded-full bg-green-500/20 text-green-400 font-bold border border-green-500/30">
+                        <i class="fas fa-check-circle mr-2"></i> ชำระเงินแล้ว
+                    </span>
+                {% elif booking.payment_status == 'pending' %}
+                    <span class="px-4 py-2 rounded-full bg-yellow-500/20 text-yellow-400 font-bold border border-yellow-500/30">
+                        <i class="fas fa-clock mr-2"></i> รอตรวจสอบสลิป
+                    </span>
+                {% else %}
+                    <span class="px-4 py-2 rounded-full bg-red-500/20 text-red-400 font-bold border border-red-500/30">
+                        <i class="fas fa-exclamation-circle mr-2"></i> ยังไม่ชำระมัดจำ
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left: Items & Details -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Items Card -->
+                <div class="glass-panel p-6 rounded-2xl border border-white/10">
+                    <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-list text-mcot-orange"></i> รายการที่จอง
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        {% for item in booking.items.all %}
+                        <div class="flex items-center justify-between p-4 bg-[#2A2A2A] rounded-xl border border-white/5">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-lg bg-black border border-white/5 flex items-center justify-center overflow-hidden">
+                                    {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}" class="w-full h-full object-contain">
+                                    {% else %}
+                                        <i class="fas fa-image text-gray-600"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-white">{{ item.product.name }}</h4>
+                                    <div class="text-xs text-gray-500">{{ item.product.category.name }}</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-white font-mono">x{{ item.quantity }}</div>
+                                <div class="text-gray-500 text-xs">฿{{ item.price_at_booking|intcomma }} / วัน</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        {% for studio in booking.booked_studios.all %}
+                        <div class="flex items-center justify-between p-4 bg-[#2A2A2A] rounded-xl border border-white/5">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-lg bg-black border border-white/5 flex items-center justify-center overflow-hidden">
+                                     <i class="fas fa-door-open text-gray-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-white">{{ studio.studio.name }}</h4>
+                                    <div class="text-xs text-gray-500">Studio</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-white font-mono">1 ห้อง</div>
+                                <div class="text-gray-500 text-xs">฿{{ studio.price_at_booking|intcomma }} / วัน</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="glass-panel p-6 rounded-2xl border border-white/10">
+                   <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-calendar-alt text-mcot-orange"></i> วันเวลา
+                    </h2>
+                    <div class="flex items-center justify-between text-white">
+                        <div>
+                            <span class="text-gray-400 block text-xs uppercase mb-1">รับของ/เริ่ม</span>
+                            <span class="text-lg font-bold">{{ booking.start_time|date:"d M Y" }}</span>
+                        </div>
+                        <div class="h-px bg-white/20 flex-1 mx-8 relative">
+                             <div class="absolute inset-0 flex items-center justify-center -top-3">
+                                 <span class="bg-[#1E1E1E] px-2 text-xs text-gray-500">{{ booking.calculate_rental_days }} วัน</span>
+                             </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-gray-400 block text-xs uppercase mb-1">คืนของ/สิ้นสุด</span>
+                            <span class="text-lg font-bold">{{ booking.end_time|date:"d M Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Payment -->
+            <div class="lg:col-span-1 space-y-6">
+                
+                <!-- Helper Buttons -->
+                 <div class="glass-panel p-4 rounded-xl border border-white/10 text-center">
+                    <a href="{% url 'store:download_quotation_pdf' booking.id %}" target="_blank" class="block w-full bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-bold transition-all mb-2">
+                        <i class="fas fa-file-invoice-dollar mr-2"></i> ดาวน์โหลดใบเสนอราคา
+                    </a>
+                    <p class="text-xs text-gray-400">ใช้สำหรับทำเรื่องเบิกจ่าย หรือยืนยันการจอง</p>
+                </div>
+
+                <!-- Summary -->
+                <div class="glass-panel p-6 rounded-2xl border border-white/10">
+                    <h2 class="text-xl font-bold text-white mb-4">สรุปยอดเงิน</h2>
+                    <div class="space-y-3 pb-4 border-b border-white/10">
+                        <div class="flex justify-between text-gray-400">
+                            <span>ยอดรวม (Total)</span>
+                            <span class="text-white">฿{{ booking.total_price|intcomma }}</span>
+                        </div>
+                        <div class="flex justify-between text-mcot-orange font-bold text-lg">
+                            <span>มัดจำ (30%)</span>
+                            <span>฿{{ booking.deposit_amount|intcomma }}</span>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        {% if booking.payment_status == 'paid' %}
+                            <div class="bg-green-500/10 p-4 rounded-xl text-center border border-green-500/20">
+                                <i class="fas fa-check-circle text-2xl text-green-400 mb-2"></i>
+                                <h3 class="text-green-400 font-bold">ชำระมัดจำเรียบร้อย</h3>
+                                <p class="text-gray-400 text-xs mt-1">ขอบคุณที่ใช้บริการครับ</p>
+                            </div>
+                        {% else %}
+                            <!-- Pending Message (If uploaded) -->
+                            {% if booking.payment_status == 'pending' %}
+                                <div class="bg-yellow-500/10 p-4 rounded-xl text-center border border-yellow-500/20 mb-4">
+                                    <i class="fas fa-hourglass-half text-2xl text-yellow-400 mb-2"></i>
+                                    <h3 class="text-yellow-400 font-bold">กำลังตรวจสอบหลักฐาน</h3>
+                                    <p class="text-gray-400 text-xs mt-1">คุณสามารถอัปโหลดสลิปใหม่ได้หากต้องการแก้ไข</p>
+                                </div>
+                            {% else %}
+                                <!-- Expiration Timer -->
+                                {% if booking.expires_at and not booking.is_expired %}
+                                <div class="bg-red-500/10 p-4 rounded-xl text-center border border-red-500/20 mb-4">
+                                    <div class="text-red-400 font-bold text-sm mb-1">⏰ กรุณาชำระเงินภายใน</div>
+                                    <div id="countdown" class="text-2xl font-mono text-white font-bold" data-expire="{{ booking.expires_at|date:'Y-m-d H:i:s' }}">--:--:--</div>
+                                </div>
+                                {% elif booking.is_expired %}
+                                <div class="bg-red-500/10 p-4 rounded-xl text-center border border-red-500/20 mb-4">
+                                    <i class="fas fa-times-circle text-2xl text-red-500 mb-2"></i>
+                                    <h3 class="text-red-500 font-bold">หมดเวลาชำระเงิน</h3>
+                                    <p class="text-gray-400 text-xs mt-1">ใบจองนี้ถูกยกเลิกแล้ว</p>
+                                </div>
+                                {% endif %}
+
+                                <!-- QR Code (Hide if expired) -->
+                                {% if not booking.is_expired %}
+                                <div class="bg-white p-4 rounded-xl text-center mb-4">
+                                    <div class="w-full aspect-square bg-gray-200 rounded-lg flex items-center justify-center mb-2">
+                                        <i class="fas fa-qrcode text-6xl text-gray-400"></i>
+                                    </div>
+                                    <p class="text-black font-bold text-sm">Scan เพื่อชำระมัดจำ</p>
+                                    <p class="text-mcot-orange font-bold text-lg">฿{{ booking.deposit_amount|intcomma }}</p>
+                                </div>
+                                {% endif %}
+                            {% endif %}
+
+                            <!-- Upload Form (Always show unless paid) -->
+                            <form id="slip-form" class="space-y-4">
+                                <div>
+                                    <label class="block text-gray-400 text-xs mb-2">
+                                        {% if booking.payment_status == 'pending' %}อัปโหลดสลิปใหม่{% else %}แนบสลิปโอนเงิน{% endif %} (Image only)
+                                    </label>
+                                    <input type="file" id="slip-input" accept="image/*" class="block w-full text-sm text-gray-400
+                                      file:mr-4 file:py-2 file:px-4
+                                      file:rounded-full file:border-0
+                                      file:text-xs file:font-semibold
+                                      file:bg-mcot-orange file:text-white
+                                      hover:file:bg-orange-600
+                                    "/>
+                                </div>
+                                <button type="button" onclick="uploadSlip()" id="btn-upload" class="w-full bg-mcot-orange hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-orange-500/30">
+                                    {% if booking.payment_status == 'pending' %}ส่งหลักฐานใหม่{% else %}แจ้งชำระเงิน{% endif %} <i class="fas fa-file-upload ml-2"></i>
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if booking.payment_slip %}
+                <div class="glass-panel p-6 rounded-2xl border border-white/10">
+                     <h2 class="text-sm font-bold text-gray-400 mb-4">หลักฐานการโอนปัจจุบัน</h2>
+                     <div class="rounded-lg overflow-hidden border border-white/10 bg-black/50 relative group">
+                         <img src="{{ booking.payment_slip.url }}" class="w-full object-contain max-h-96">
+                         <a href="{{ booking.payment_slip.url }}" target="_blank" class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold">
+                             <i class="fas fa-search-plus mr-2"></i> ดูรูปขยาย
+                         </a>
+                     </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function uploadSlip() {
+    const input = document.getElementById('slip-input');
+    const btn = document.getElementById('btn-upload');
+    
+    if (input.files.length === 0) {
+        alert("กรุณาเลือกไฟล์สลิป");
+        return;
+    }
+
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('slip', file);
+    
+    // CSRF Token
+    const csrfToken = '{{ csrf_token }}';
+
+    try {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังอัปโหลด...';
+
+        const response = await fetch('{% url "store:api_upload_slip" booking.id %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            alert("แจ้งชำระเงินเรียบร้อย! กรุณารอเจ้าหน้าที่ตรวจสอบ");
+            window.location.reload();
+        } else {
+            alert("Error: " + data.message);
+            btn.disabled = false;
+            btn.innerHTML = 'แจ้งชำระเงิน <i class="fas fa-file-upload ml-2"></i>';
+        }
+
+    } catch (e) {
+        console.error(e);
+        alert("Upload Failed");
+        btn.disabled = false;
+        btn.innerHTML = 'แจ้งชำระเงิน <i class="fas fa-file-upload ml-2"></i>';
+    }
+}
+
+// Countdown Logic
+document.addEventListener('DOMContentLoaded', function() {
+    const timer = document.getElementById('countdown');
+    if (!timer) return;
+
+    const expireStr = timer.dataset.expire; // "YYYY-MM-DD HH:MM:SS"
+    if (!expireStr) return;
+
+    const expireTime = new Date(expireStr).getTime();
+
+    function updateTimer() {
+        const now = new Date().getTime();
+        const distance = expireTime - now;
+
+        if (distance < 0) {
+            timer.innerHTML = "EXPIRED";
+            timer.classList.add('text-red-500');
+            // Optionally reload to show expired status
+            if (distance > -5000) window.location.reload(); 
+            return;
+        }
+
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        timer.innerHTML = 
+            (hours < 10 ? "0" + hours : hours) + ":" + 
+            (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+            (seconds < 10 ? "0" + seconds : seconds);
+    }
+
+    setInterval(updateTimer, 1000);
+    updateTimer();
+});
+</script>
+{% endblock %}

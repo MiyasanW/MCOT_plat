@@ -12,6 +12,7 @@ from .models import (
     BookingItem, BookingStudio, BookingStaff, BookingPackage,
     Profile
 )
+from apps.store.services.notification_service import NotificationService
 
 
 # =============================================================================
@@ -330,16 +331,32 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
         if not (request.user.is_superuser or is_web_admin(request.user)):
              self.message_user(request, '❌ คุณไม่มีสิทธิ์อนุมัติ', level='error')
              return
-        updated = queryset.filter(status__in=['draft', 'pending']).update(status='approved')
-        self.message_user(request, f'✅ อนุมัติแล้ว {updated} รายการ')
+        # updated = queryset.filter(status__in=['draft', 'pending']).update(status='approved')
+        # loop to trigger notifications
+        count = 0
+        for booking in queryset.filter(status__in=['draft', 'pending']):
+            booking.status = 'approved'
+            booking.save()
+            NotificationService.send_notification(booking, 'approved')
+            count += 1
+            
+        self.message_user(request, f'✅ อนุมัติแล้ว {count} รายการ')
 
     @admin.action(description='❌ ยกเลิก (Cancel)')
     def action_cancel(self, request, queryset):
         if not (request.user.is_superuser or is_web_admin(request.user)):
              self.message_user(request, '❌ คุณไม่มีสิทธิ์ยกเลิก', level='error')
              return
-        updated = queryset.exclude(status__in=['completed', 'cancelled']).update(status='cancelled')
-        self.message_user(request, f'❌ ยกเลิกแล้ว {updated} รายการ')
+        # updated = queryset.exclude(status__in=['completed', 'cancelled']).update(status='cancelled')
+        # loop to trigger notifications
+        count = 0
+        for booking in queryset.exclude(status__in=['completed', 'cancelled']):
+            booking.status = 'cancelled'
+            booking.save()
+            NotificationService.send_notification(booking, 'cancelled')
+            count += 1
+
+        self.message_user(request, f'❌ ยกเลิกแล้ว {count} รายการ')
 
     @admin.action(description='▶ เริ่มใช้งาน (Active)')
     def action_mark_active(self, request, queryset):

@@ -1,0 +1,548 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Shopping Cart | MCOT Rental{% endblock %}
+
+{% block content %}
+<div class="min-h-screen pb-20 pt-8" style="background-color: #2A2A2A;">
+    <div class="max-w-[1600px] mx-auto px-6">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-white mb-2 font-display">Shopping Cart</h1>
+                <p class="text-gray-400">Review your equipment and schedule your rental.</p>
+            </div>
+            <a href="{% url 'store:catalog' %}" class="px-4 py-2 rounded-lg bg-[#353535] border border-white/10 text-gray-300 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-2 text-sm">
+                <i class="fas fa-arrow-left"></i>
+                Continue Shopping
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 relative" id="cart-wrapper" style="display: none;">
+            
+            <!-- Items List (Left) -->
+            <div class="lg:col-span-8 space-y-6">
+                <!-- Toolbar -->
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-lg font-bold text-white">Items (<span id="cart-count">0</span>)</h2>
+                    <button onclick="clearCart()" class="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 transition-colors">
+                        <i class="fas fa-trash-alt"></i> Clear Cart
+                    </button>
+                </div>
+
+                <div id="cart-container" class="space-y-4">
+                    <!-- Items -->
+                </div>
+            </div>
+
+            <!-- Sticky Summary (Right) -->
+            <div class="lg:col-span-4">
+                <div class="sticky top-24 space-y-6">
+                    
+                    <!-- Booking Details Card -->
+                    <div class="bg-[#353535] rounded-2xl p-6 border border-white/10 shadow-xl">
+                        <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                            <i class="fas fa-calendar-alt text-mcot-orange"></i>
+                            Booking Details
+                        </h3>
+
+                        <!-- Date Display (Read-Only) -->
+                        <div class="space-y-4 mb-6">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">วันรับของ</label>
+                                    <div class="bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white font-mono text-sm opacity-50 cursor-not-allowed">
+                                        <input type="hidden" id="start-date">
+                                        <span id="start-date-display">...</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">วันคืนของ</label>
+                                    <div class="bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white font-mono text-sm opacity-50 cursor-not-allowed">
+                                        <input type="hidden" id="end-date">
+                                        <span id="end-date-display">...</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Duration & Status -->
+                            <div class="bg-[#2A2A2A] rounded-xl p-3 border border-white/5 flex justify-between items-center">
+                                <span class="text-xs text-gray-500">ระยะเวลาเช่า</span>
+                                <span id="rental-duration" class="text-white font-bold font-mono">1 วัน</span>
+                            </div>
+                        </div>
+
+                        <!-- Availability Alert -->
+                        <div id="availability-alert" class="hidden animate-pulse bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-6 flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-500 mt-0.5"></i>
+                            <div class="text-xs text-red-400">
+                                <span class="font-bold block mb-1">มีสินค้าไม่ว่าง!</span>
+                                สินค้าบางรายการถูกจองเต็มแล้วในช่วงเวลาที่เลือก กรุณาลบออก หรือติดต่อเจ้าหน้าที่
+                            </div>
+                        </div>
+
+                        <!-- Project Info -->
+                        <div class="space-y-4 border-t border-white/10 pt-6">
+                            <div>
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">ชื่อผู้ติดต่อ / องค์กร (Name / Org)</label>
+                                <input type="text" id="customer-name" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" value="{{ user.get_full_name|default:user.username }}" placeholder="ระบุชื่อผู้ติดต่อ...">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">อีเมล (Email)</label>
+                                <input type="email" id="customer-email" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" value="{{ user.email }}" placeholder="example@org.com">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">เบอร์โทรศัพท์ติดต่อ (Phone)</label>
+                                <input type="tel" id="contact-phone" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm mb-1" value="{{ user.profile.phone|default:'' }}" placeholder="08x-xxx-xxxx">
+                                <p class="text-[10px] text-gray-500">*จำเป็นต้องระบุ</p>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">ชื่อโปรเจค / งาน (Project)</label>
+                                <input type="text" id="project-name" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" placeholder="เช่น ถ่ายทำรายการ...">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">หมายเหตุเพิ่มเติม (Note)</label>
+                                <textarea id="booking-note" rows="2" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" placeholder="ระบุความต้องการเพิ่มเติม..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Total -->
+                        <div class="mt-8 pt-6 border-t border-white/10 space-y-2">
+                             <div class="flex justify-between text-gray-400 text-sm">
+                                <span>ราคาต่อวัน (Daily)</span>
+                                <span id="daily-subtotal" class="text-white font-mono">฿0</span>
+                            </div>
+                            <div class="flex justify-between items-end pt-2">
+                                <span class="text-lg font-bold text-white">ราคารวม (Total)</span>
+                                <span id="grand-total" class="text-3xl font-black text-mcot-orange font-display">฿0</span>
+                            </div>
+                        </div>
+
+                        <!-- Action -->
+                        {% if user.is_authenticated %}
+                        <button onclick="processCheckout()" id="btn-checkout" class="w-full mt-6 bg-mcot-orange text-white hover:bg-white hover:text-black font-bold py-4 rounded-xl shadow-[0_10px_20px_rgba(242,101,34,0.2)] hover:shadow-2xl transition-all flex items-center justify-center gap-2 uppercase tracking-wider text-sm">
+                            <span>ยืนยันการจอง</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        {% else %}
+                        <a href="{% url 'login' %}?next={% url 'store:cart' %}" class="w-full mt-6 bg-[#2A2A2A] border border-white/20 text-gray-300 hover:border-white hover:text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-wider text-sm">
+                            <span>เข้าสู่ระบบเพื่อจอง</span>
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Trust Badges -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-[#353535] p-3 rounded-xl border border-white/5 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-mcot-orange">
+                                <i class="fas fa-shield-alt text-xs"></i>
+                            </div>
+                            <div class="text-[10px] text-gray-500 leading-tight">
+                                <strong class="block text-white">มาตรฐาน MCOT</strong>
+                                อุปกรณ์คุณภาพ
+                            </div>
+                        </div>
+                        <div class="bg-[#353535] p-3 rounded-xl border border-white/5 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-mcot-orange">
+                                <i class="fas fa-headset text-xs"></i>
+                            </div>
+                            <div class="text-[10px] text-gray-500 leading-tight">
+                                <strong class="block text-white">Support 24/7</strong>
+                                ปรึกษาเจ้าหน้าที่
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-cart-message" class="hidden flex flex-col items-center justify-center py-32 border border-white/10 bg-[#353535] rounded-3xl mx-auto max-w-2xl text-center">
+            <div class="w-24 h-24 rounded-full bg-[#2A2A2A] flex items-center justify-center mb-6 text-gray-600">
+                <i class="fas fa-shopping-cart text-4xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-2 font-display">Your Cart is Empty</h2>
+            <p class="text-gray-500 mb-8 max-w-sm mx-auto">Looks like you haven't added any gear yet. Check out our catalog for premium equipment.</p>
+            <a href="{% url 'store:catalog' %}" class="px-8 py-3 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-colors uppercase tracking-wider text-sm shadow-xl">
+                Browse Equipment
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const CART_STORAGE_KEY = 'mcot_cart';
+    const cartContainer = document.getElementById('cart-container');
+    const displayWrapper = document.getElementById('cart-wrapper');
+    const emptyMessage = document.getElementById('empty-cart-message');
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+    const availabilityAlert = document.getElementById('availability-alert');
+    const checkoutBtn = document.getElementById('btn-checkout');
+    
+    let cartItems = [];
+    let rentalDays = 1;
+    let availabilityConflicts = new Set(); 
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCart();
+        initDateDisplay();
+    });
+
+    function loadCart() {
+        try {
+            const stored = localStorage.getItem(CART_STORAGE_KEY);
+            cartItems = stored ? JSON.parse(stored) : [];
+            document.getElementById('cart-count').innerText = cartItems.length;
+            renderCart();
+            checkAvailability(); 
+        } catch (e) {
+            console.error("Load Error", e);
+            cartItems = [];
+        }
+    }
+
+    function saveCart() {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+        window.dispatchEvent(new Event('cartUpdated'));
+        document.getElementById('cart-count').innerText = cartItems.length;
+    }
+
+    function clearCart() {
+        Swal.fire({
+            title: 'ยืนยันการลบ?',
+            text: "คุณต้องการลบรายการทั้งหมดในตะกร้าใช่หรือไม่?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#333',
+            confirmButtonText: 'ใช่, ลบทั้งหมด',
+            cancelButtonText: 'ยกเลิก',
+            background: '#1e1e1e',
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                cartItems = [];
+                saveCart();
+                renderCart();
+                Swal.fire({
+                    title: 'ลบเรียบร้อย!',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    background: '#1e1e1e',
+                    color: '#fff'
+                });
+            }
+        });
+    }
+
+    function renderCart() {
+        cartContainer.innerHTML = '';
+        
+        if (cartItems.length === 0) {
+            displayWrapper.style.display = 'none';
+            emptyMessage.style.display = 'flex';
+            return;
+        }
+
+        displayWrapper.style.display = 'grid';
+        emptyMessage.style.display = 'none';
+
+        cartItems.forEach((item, index) => {
+            const hasConflict = availabilityConflicts.has(item.id);
+            const conflictMsg = item.conflictMessage || '';
+
+            const el = document.createElement('div');
+            el.className = `p-6 rounded-2xl border transition-all relative flex flex-col md:flex-row gap-6 items-start md:items-center ${hasConflict ? 'bg-red-500/10 border-red-500/50' : 'bg-[#353535] border-white/10 hover:border-white/20'}`;
+            
+            let imgHTML = `<div class="w-24 h-24 rounded-xl bg-black border border-white/5 flex items-center justify-center overflow-hidden shrink-0"><i class="fas fa-image text-gray-600"></i></div>`;
+            if (item.image) {
+                imgHTML = `<div class="w-24 h-24 rounded-xl bg-black border border-white/5 flex items-center justify-center overflow-hidden shrink-0"><img src="${item.image}" class="w-full h-full object-contain"></div>`;
+            }
+
+            let warningHTML = '';
+            if (hasConflict) {
+                warningHTML = `
+                <div class="mt-2 text-xs text-red-400 font-bold bg-red-500/10 px-3 py-1.5 rounded-lg inline-flex items-center gap-2">
+                    <i class="fas fa-times-circle"></i>
+                    ${conflictMsg || "ไม่ว่าง (Not Available)"}
+                </div>`;
+            }
+
+            el.innerHTML = `
+                ${imgHTML}
+                <div class="flex-1 w-full">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">${item.type || 'Equipment'}</div>
+                            <h4 class="text-xl font-bold text-white leading-tight">${item.name}</h4>
+                            <div class="text-mcot-orange font-mono text-sm mt-1">฿${parseFloat(item.price).toLocaleString()} <span class="text-gray-500">/ วัน</span></div>
+                        </div>
+                        <button onclick="removeItem(${index})" class="text-gray-500 hover:text-red-400 transition-colors p-2">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    ${warningHTML}
+
+                    <div class="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                        <div class="flex items-center bg-[#2A2A2A] rounded-lg border border-white/10 p-1">
+                            <button onclick="updateQty(${index}, -1)" class="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors"><i class="fas fa-minus text-xs"></i></button>
+                            <span class="w-10 text-center text-sm font-bold text-white font-mono">${item.quantity}</span>
+                            <button onclick="updateQty(${index}, 1)" class="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors" ${hasConflict ? 'disabled' : ''}><i class="fas fa-plus text-xs"></i></button>
+                        </div>
+                        <div class="text-right">
+                             <span class="block text-lg font-bold text-white font-mono">฿${((parseFloat(item.price)||0) * (parseInt(item.quantity)||1) * rentalDays).toLocaleString()}</span>
+                             <span class="text-[10px] text-gray-500">รวม ${rentalDays} วัน</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            cartContainer.appendChild(el);
+        });
+
+        calculateTotals();
+    }
+
+    function updateQty(index, change) {
+        const item = cartItems[index];
+        const newQty = (parseInt(item.quantity) || 0) + change;
+        const max = parseInt(item.max_stock) || 999; 
+        
+        if (newQty > 0) {
+            if (newQty > max) {
+                 Swal.fire({
+                    icon: 'info',
+                    title: 'จำนวนสูงสุด',
+                    text: `คุณสามารถจองได้สูงสุด ${max} ชิ้น`,
+                    background: '#1e1e1e',
+                    color: '#fff'
+                 });
+                 return;
+            }
+            cartItems[index].quantity = newQty;
+            saveCart();
+            renderCart();
+            checkAvailability(); 
+        }
+    }
+
+    function removeItem(index) {
+        Swal.fire({
+            title: 'ลบรายการนี้?',
+            text: "คุณต้องการลบสินค้านี้ออกจากตะกร้าหรือไม่?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#333',
+            confirmButtonText: 'ลบรายการ',
+            cancelButtonText: 'ยกเลิก',
+            background: '#1e1e1e',
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                cartItems.splice(index, 1);
+                saveCart();
+                renderCart();
+                checkAvailability();
+                
+                // Show mini toast
+                const Toast = Swal.mixin({
+                  toast: true,
+                  position: 'top-end',
+                  showConfirmButton: false,
+                  timer: 3000,
+                  timerProgressBar: true,
+                  background: '#1e1e1e',
+                  color: '#fff',
+                  didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                  }
+                })
+
+                Toast.fire({
+                  icon: 'success',
+                  title: 'ลบรายการเรียบร้อยแล้ว'
+                })
+            }
+        });
+    }
+
+    function calculateTotals() {
+        let daily = 0;
+        cartItems.forEach(item => {
+            daily += (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1);
+        });
+        
+        document.getElementById('daily-subtotal').innerText = `฿${daily.toLocaleString()}`;
+        document.getElementById('grand-total').innerText = `฿${(daily * rentalDays).toLocaleString()}`;
+    }
+
+    async function checkAvailability() {
+        if (cartItems.length === 0) return;
+
+        const start = startDateInput.value;
+        const end = endDateInput.value;
+        if (!start || !end) return;
+
+        availabilityConflicts.clear();
+
+        try {
+            if(checkoutBtn) {
+                checkoutBtn.disabled = true;
+                checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังตรวจสอบ...';
+            }
+
+            const response = await fetch('{% url "store:api_check_cart_availability" %}', {
+                method: 'POST',
+                headers: {
+                     'Content-Type': 'application/json',
+                     'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    items: cartItems,
+                    start: start,
+                    end: end
+                })
+            });
+
+            const data = await response.json();
+
+            cartItems.forEach(i => i.conflictMessage = null);
+
+            if (data.valid) {
+                availabilityAlert.classList.add('hidden');
+                if(checkoutBtn) {
+                    checkoutBtn.disabled = false;
+                    checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    checkoutBtn.innerHTML = '<span>ยืนยันการจอง</span> <i class="fas fa-arrow-right"></i>';
+                }
+            } else {
+                data.conflicts.forEach(c => {
+                    availabilityConflicts.add(c.id);
+                    const item = cartItems.find(i => i.id == c.id);
+                    if(item) item.conflictMessage = c.message;
+                });
+                
+                availabilityAlert.classList.remove('hidden');
+                if(checkoutBtn) {
+                    checkoutBtn.innerHTML = '<span>สินค้าหมด!</span> <i class="fas fa-times"></i>';
+                }
+            }
+            renderCart(); 
+
+        } catch (e) {
+            console.error("Check Error", e);
+        }
+    }
+
+    function initDateDisplay() {
+        const savedStart = localStorage.getItem('mcot_booking_start');
+        const savedEnd = localStorage.getItem('mcot_booking_end');
+        
+        const startDisplay = document.getElementById('start-date-display');
+        const endDisplay = document.getElementById('end-date-display');
+        
+        if (savedStart) {
+            startDateInput.value = savedStart;
+            startDisplay.innerText = savedStart;
+        } else {
+            startDisplay.innerText = "-";
+        }
+
+        if (savedEnd) {
+             endDateInput.value = savedEnd;
+             endDisplay.innerText = savedEnd;
+        } else {
+             endDisplay.innerText = "-";
+        }
+
+        if (savedStart && savedEnd) updateDuration();
+    }
+
+    function updateDuration() {
+        const start = new Date(startDateInput.value);
+        const end = new Date(endDateInput.value);
+        
+        if (!isNaN(start) && !isNaN(end)) {
+            const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            rentalDays = diff > 0 ? diff : 1;
+            document.getElementById('rental-duration').innerText = `${rentalDays} วัน`;
+            
+            checkAvailability(); 
+            calculateTotals();
+        }
+    }
+
+    async function processCheckout() {
+         const startStr = startDateInput.value;
+        const endStr = endDateInput.value;
+
+        if (!startStr || !endStr) {
+            alert("กรุณาเลือกวันที่ (จากหน้าสินค้าก่อน)");
+            return;
+        }
+        
+        if (availabilityConflicts.size > 0) {
+            alert("มีสินค้าบางรายการถูกจองเต็มแล้ว กรุณาลบออก");
+            return;
+        }
+
+        const payload = {
+            items: cartItems.map(item => ({
+                id: item.id,
+                quantity: item.quantity,
+                type: item.type || 'product'
+            })),
+            start: startStr,
+            end: endStr,
+            customer_name: document.getElementById('customer-name').value,
+            customer_email: document.getElementById('customer-email').value,
+            project_name: document.getElementById('project-name').value,
+            phone: document.getElementById('contact-phone').value,
+            note: document.getElementById('booking-note').value
+        };
+
+        try {
+            checkoutBtn.disabled = true;
+            checkoutBtn.innerHTML = 'กำลังบันทึก...';
+
+            const response = await fetch("{% url 'store:api_create_booking' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                cartItems = [];
+                saveCart();
+                alert("จองสำเร็จ! รหัสใบจอง #" + data.booking_id);
+                // Redirect to Booking Detail
+                const baseUrl = "{% url 'store:booking_detail' 999999 %}";
+                window.location.href = baseUrl.replace('999999', data.booking_id);
+            } else {
+                alert("จองไม่สำเร็จ: " + data.message);
+                if(data.errors) alert(data.errors.join("\n"));
+                checkoutBtn.disabled = false;
+                checkoutBtn.innerHTML = 'ยืนยันการจอง';
+                checkAvailability(); 
+            }
+        } catch(e) {
+            console.error(e);
+            alert("เกิดข้อผิดพลาด (System Error)");
+            checkoutBtn.disabled = false;
+        }
+    }
+</script>
+{% endblock %}

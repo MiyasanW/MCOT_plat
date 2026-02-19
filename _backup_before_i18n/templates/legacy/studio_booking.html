@@ -1,0 +1,318 @@
+{% extends 'rentals/public/base.html' %}
+{% load static %}
+{% load humanize %}
+{% load custom_filters %}
+
+{% block title %}จองสตูดิโอ {{ studio.name }} | MCOT Rental{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* --- PURE WHITE THEME OVERRIDES --- */
+    body {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+    }
+
+    #mainNav .navbar-brand span {
+        color: #111827 !important;
+    }
+
+    #mainNav .nav-link {
+        color: #4b5563 !important;
+    }
+
+    #mainNav .nav-link:hover,
+    #mainNav .nav-link.active {
+        color: var(--primary) !important;
+        background: transparent !important;
+    }
+
+    #mainNav.navbar.scrolled {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: #111827 !important;
+    }
+
+    .text-muted {
+        color: #6b7280 !important;
+    }
+
+    /* Progress Steps */
+    .step-circle {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: bold;
+        margin-right: 0.5rem;
+    }
+
+    .step-active .step-circle {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .step-completed .step-circle {
+        background-color: #10b981;
+        color: white;
+    }
+
+    .step-text {
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Standard White Header -->
+<div style="padding-top: 120px; padding-bottom: 20px; border-bottom: 1px solid #f3f4f6;">
+    <div class="container-xl">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'studios' %}"
+                        class="text-decoration-none text-muted">บริการเช่าสตูดิโอ</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'studio_detail' studio.id %}"
+                        class="text-decoration-none text-muted">{{ studio.name }}</a></li>
+                <li class="breadcrumb-item active text-dark" aria-current="page">ยืนยันการจอง</li>
+            </ol>
+        </nav>
+        <div class="row mt-4 align-items-end">
+            <div class="col-lg-8">
+                <h1 class="fw-bold display-5 mb-0">ยืนยันการจอง</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Progress Steps (Simplified) -->
+<div class="border-bottom py-3 bg-white sticky-top mb-5" style="top: 80px; z-index: 90;">
+    <div class="container-xl">
+        <div class="d-flex justify-content-center align-items-center gap-4 flex-wrap">
+            <div class="d-flex align-items-center text-success step-completed">
+                <div class="step-circle"><i class="fas fa-check"></i></div>
+                <span class="step-text">เลือกสตูดิโอ</span>
+            </div>
+            <i class="fas fa-chevron-right text-muted small opacity-25"></i>
+            <div class="d-flex align-items-center text-success step-completed">
+                <div class="step-circle"><i class="fas fa-check"></i></div>
+                <span class="step-text">เลือกวันที่</span>
+            </div>
+            <i class="fas fa-chevron-right text-muted small opacity-25"></i>
+            <div class="d-flex align-items-center text-dark step-active">
+                <div class="step-circle">3</div>
+                <span class="step-text">กรอกข้อมูล</span>
+            </div>
+            <i class="fas fa-chevron-right text-muted small opacity-25"></i>
+            <div class="d-flex align-items-center text-muted">
+                <div class="step-circle border bg-light text-muted">4</div>
+                <span class="step-text">เสร็จสิ้น</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-xl pb-5">
+    <div class="row g-5">
+        <!-- Form Column -->
+        <div class="col-lg-7">
+            <div class="card border border-light-subtle shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white py-4 px-4 border-bottom">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-user-edit me-2 text-primary"></i>ข้อมูลผู้จอง
+                    </h5>
+                </div>
+                <div class="card-body p-4 p-lg-5">
+                    {% if error %}
+                    <div class="alert alert-danger border-0 rounded-4 mb-4 d-flex align-items-center bg-danger-subtle text-danger"
+                        role="alert">
+                        <i class="fas fa-exclamation-circle fs-4 me-3"></i>
+                        <div><strong>เกิดข้อผิดพลาด!</strong><br>{{ error }}</div>
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" action="" id="studioBookingForm" novalidate>
+                        {% csrf_token %}
+                        <!-- DateTime -->
+                        <h6 class="text-uppercase text-muted fw-bold small mb-3 letter-spacing-1">วันและเวลาที่ใช้งาน
+                        </h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">วันที่เริ่ม</label>
+                                <input type="date" name="start_date" class="form-control bg-light border-0"
+                                    value="{{ start_date }}" required id="startDateInput">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">วันที่สิ้นสุด</label>
+                                <input type="date" name="end_date" class="form-control bg-light border-0"
+                                    value="{{ end_date }}" required id="endDateInput">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">เวลาเริ่ม</label>
+                                <input type="time" name="start_time" class="form-control bg-light border-0"
+                                    value="{{ start_time|default:'09:00' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">เวลาสิ้นสุด</label>
+                                <input type="time" name="end_time" class="form-control bg-light border-0"
+                                    value="{{ end_time|default:'18:00' }}" required>
+                            </div>
+                        </div>
+
+                        <hr class="border-secondary opacity-10 my-4">
+
+                        <h6 class="text-uppercase text-muted fw-bold small mb-3 letter-spacing-1">ข้อมูลติดต่อ</h6>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">ชื่อ-นามสกุล / หน่วยงาน <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" name="customer_name"
+                                class="form-control form-control-lg bg-light border-0" placeholder="ระบุชื่อผู้จอง"
+                                value="{{ initial_name }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">เบอร์โทรศัพท์ <span
+                                    class="text-danger">*</span></label>
+                            <input type="tel" name="customer_phone"
+                                class="form-control form-control-lg bg-light border-0" placeholder="0xx-xxx-xxxx"
+                                value="{{ initial_phone }}" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">อีเมล (ถ้ามี)</label>
+                            <input type="email" name="customer_email"
+                                class="form-control form-control-lg bg-light border-0" placeholder="email@example.com"
+                                value="{{ initial_email }}">
+                        </div>
+
+                        <div class="d-grid gap-3 mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold py-3 shadow-sm">
+                                ยืนยันการจอง <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                            <a href="{% url 'studio_detail' studio.id %}?start_date={{ start_date }}&end_date={{ end_date }}"
+                                class="btn btn-outline-secondary btn-lg rounded-pill fw-bold py-3">
+                                ย้อนกลับ
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Column -->
+        <div class="col-lg-5">
+            <div class="card border border-light-subtle shadow-sm rounded-4 overflow-hidden sticky-top"
+                style="top: 150px;">
+                <div class="position-relative">
+                    {% if studio.image %}
+                    <img src="{{ studio.image.url }}" class="w-100 object-fit-cover" style="height: 200px;"
+                        alt="{{ studio.name }}">
+                    {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center text-muted"
+                        style="height: 200px;">
+                        <i class="fas fa-warehouse fa-3x opacity-25"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-1">{{ studio.name }}</h4>
+                    <div class="d-flex align-items-center mb-4">
+                        <h3 class="fw-bold text-primary mb-0 me-2">฿{{ studio.daily_rate|intcomma }}</h3>
+                        <span class="text-muted small">/ วัน</span>
+                    </div>
+
+                    <div class="bg-light rounded-4 p-3 mb-4 small">
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">วันที่เริ่ม</span>
+                            <span class="fw-bold">{{ start_date|default:"-" }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">วันที่สิ้นสุด</span>
+                            <span class="fw-bold">{{ end_date|default:"-" }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2">
+                            <span class="text-muted">ระยะเวลา</span>
+                            <span class="fw-bold text-primary">{{ duration_days }} วัน</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-primary bg-opacity-10 rounded-4 p-4 text-center">
+                        <p class="text-muted small mb-1 text-uppercase">ยอดรวมโดยประมาณ</p>
+                        <h2 class="text-primary fw-bold mb-0">฿{{ studio.daily_rate|multiply:duration_days|intcomma }}
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const startInput = document.getElementById('startDateInput');
+        const endInput = document.getElementById('endDateInput');
+        const form = document.getElementById('studioBookingForm');
+
+        if (startInput && endInput) {
+            const d = new Date();
+            const offset = d.getTimezoneOffset() * 60000;
+            const today = new Date(d.getTime() - offset).toISOString().split('T')[0];
+
+            startInput.setAttribute('min', today);
+            endInput.setAttribute('min', today);
+
+            function updateEndDateConstraints() {
+                const startDate = startInput.value;
+                if (startDate) {
+                    endInput.setAttribute('min', startDate);
+                    if (endInput.value && endInput.value < startDate) {
+                        endInput.value = startDate;
+                    }
+                }
+            }
+
+            function validateEndDate() {
+                const startDate = startInput.value;
+                const endDate = endInput.value;
+                if (startDate && endDate && endDate < startDate) {
+                    endInput.value = startDate;
+                }
+            }
+
+            startInput.addEventListener('change', updateEndDateConstraints);
+            endInput.addEventListener('change', validateEndDate);
+            endInput.addEventListener('blur', validateEndDate);
+            updateEndDateConstraints();
+        }
+
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                const startDate = startInput.value;
+                const endDate = endInput.value;
+
+                if (!startDate || !endDate) {
+                    e.preventDefault();
+                    alert('กรุณาระบุวันเริ่มต้นและวันสิ้นสุด');
+                    return;
+                }
+                if (endDate < startDate) {
+                    e.preventDefault();
+                    alert('วันสิ้นสุดต้องไม่น้อยกว่าวันเริ่มต้น');
+                    endInput.value = startDate;
+                    endInput.focus();
+                    return;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

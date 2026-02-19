@@ -1,0 +1,57 @@
+{% extends 'rentals/public/base.html' %}
+
+{% block title %}เงื่อนไขการใช้งาน | MCOT Rental{% endblock %}
+{% block body_class %}light-theme{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-lg-5">
+                    <h1 class="fw-bold mb-4">เงื่อนไขการใช้งาน (Terms of Use)</h1>
+                    <p class="text-muted">โปรดอ่านเงื่อนไขการใช้งานนี้อย่างละเอียดก่อนใช้บริการ</p>
+
+                    <hr class="my-4">
+
+                    <h5 class="fw-bold">1. ข้อตกลงทั่วไป</h5>
+                    <p>โดยการเข้าใช้เว็บไซต์นี้ ท่านตกลงที่จะปฏิบัติตามเงื่อนไขและข้อกำหนดเหล่านี้
+                        หากท่านไม่ยอมรับเงื่อนไข โปรดระงับการเข้าใช้งาน</p>
+
+                    <h5 class="fw-bold mt-4">2. การจองและชำระเงิน</h5>
+                    <ul>
+                        <li>การจองอุปกรณ์จะสมบูรณ์เมื่อได้รับการยืนยันจากเจ้าหน้าที่ และมีการชำระเงินมัดจำตามที่กำหนด
+                        </li>
+                        <li>บริษัทขอสงวนสิทธิ์ในการยกเลิกการจองหากไม่ได้รับการชำระเงินภายในเวลาที่กำหนด</li>
+                    </ul>
+
+                    <h5 class="fw-bold mt-4">3. ความรับผิดชอบต่ออุปกรณ์</h5>
+                    <ul>
+                        <li>ผู้เช่าต้องตรวจสอบอุปกรณ์ก่อนรับมอบ หากพบความเสียหายต้องแจ้งให้ทราบทันที</li>
+                        <li>หากอุปกรณ์เสียหายระหว่างการใช้งานโดยผู้เช่า
+                            ผู้เช่าต้องรับผิดชอบค่าใช้จ่ายในการซ่อมแซมหรือทดแทนตามจริง</li>
+                    </ul>
+
+                    <h5 class="fw-bold mt-4">4. การยกเลิกและคืนเงิน</h5>
+                    <p>การยกเลิกการจองต้องแจ้งล่วงหน้าอย่างน้อย 3 วันทำการ เพื่อขอรับเงินคืนเต็มจำนวน
+                        หากแจ้งช้ากว่าที่กำหนด อาจมีการหักค่าธรรมเนียม</p>
+
+                    <div class="mt-5 text-center">
+                        <script>
+                            if (window.opener) {
+                                document.write('<button onclick="window.close()" class="btn btn-outline-secondary rounded-pill px-4">ปิดหน้าต่าง</button>');
+                            } else {
+                                document.write('<a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-pill px-4">กลับหน้าหลัก</a>');
+                            }
+                        </script>
+                        <noscript>
+                            <a href="{% url 'home' %}"
+                                class="btn btn-outline-secondary rounded-pill px-4">กลับหน้าหลัก</a>
+                        </noscript>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
