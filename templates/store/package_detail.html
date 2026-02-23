@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load humanize %}
+{% load i18n %}
 
 {% block title %}{{ package.name }} | MCOT Rental{% endblock %}
 
@@ -99,16 +100,56 @@
                                 <span class="text-gray-400 font-medium">/ day</span>
                             </div>
 
+                            <!-- Date Selection -->
+                            <div class="bg-[#2A2A2A] rounded-xl p-5 mb-8 border border-white/5 group hover:border-mcot-orange/30 transition-colors">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">{% trans "Booking Period" %}</span>
+                                    <a href="{% url 'store:catalog' %}"
+                                        class="text-[10px] text-mcot-orange hover:text-white transition-colors uppercase font-bold">{% trans "Change Dates" %}</a>
+                                </div>
+                                <div class="flex items-center gap-4 text-white">
+                                    <div class="flex-1">
+                                        <div class="text-[10px] text-gray-600 mb-1 uppercase">{% trans "Start" %}</div>
+                                        <div class="font-mono text-sm border-b border-white/10 pb-1">
+                                            {{ selected_start_date|default:_("Today") }}
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-arrow-right text-gray-600 text-xs"></i>
+                                    <div class="flex-1 text-right">
+                                        <div class="text-[10px] text-gray-600 mb-1 uppercase">{% trans "End" %}</div>
+                                        <div class="font-mono text-sm border-b border-white/10 pb-1">
+                                            {{ selected_end_date|default:_("Today") }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <button
-                                onclick="addPackageToCart('{{ package.id }}', '{{ package.name|escapejs }}', {{ package.price|default:0 }})"
-                                class="w-full py-5 rounded-2xl font-bold text-base uppercase tracking-widest transition-all transform hover:-translate-y-1 hover:shadow-2xl flex items-center justify-center gap-3 group bg-mcot-orange text-white hover:bg-white hover:text-black shadow-[0_10px_30px_rgba(242,101,34,0.3)]">
-                                <span>Add Package to Quote</span>
+                                onclick="addPackageToCart('pkg_{{ package.id }}', '{{ package.name|escapejs }}', '{{ package.price|default:0 }}')"
+                                class="w-full py-5 rounded-2xl font-bold text-base uppercase tracking-widest transition-all transform hover:-translate-y-1 hover:shadow-2xl flex items-center justify-center gap-3 group {% if is_available %}bg-mcot-orange text-white hover:bg-white hover:text-black shadow-[0_10px_30px_rgba(242,101,34,0.3)]{% else %}bg-[#404040] text-gray-500 cursor-not-allowed{% endif %}"
+                                {% if not is_available %}disabled{% endif %}>
+                                {% if is_available %}
+                                <span>{% trans "Add Package to Quote" %}</span>
                                 <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                                {% else %}
+                                <span>{% trans "Unavailable" %}</span>
+                                {% endif %}
                             </button>
 
-                            <p class="text-center text-xs text-gray-500 mt-4">
-                                *Availability checked at checkout
-                            </p>
+                            {% if not is_available %}
+                            <div class="text-left mt-4 text-xs text-red-400 font-bold bg-red-400/10 p-3 rounded-lg border border-red-500/20">
+                                <div class="flex items-start gap-2">
+                                    <i class="fas fa-exclamation-circle mt-0.5"></i> 
+                                    <div>
+                                        {% if availability_error %}
+                                            <span class="block">{{ availability_error }}</span>
+                                        {% else %}
+                                            <span class="block">สินค้าบางรายการในแพ็คเกจนี้ ถูกจองเต็มแล้วในช่วงเวลาที่คุณเลือก</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -119,8 +160,8 @@
                                 <i class="fas fa-check-circle text-xs"></i>
                             </div>
                             <div class="text-xs text-gray-400">
-                                <span class="block text-white font-bold mb-0.5">Ready to Shoot</span>
-                                Includes all essential accessories
+                                <span class="block text-white font-bold mb-0.5">{% trans "Ready to Shoot" %}</span>
+                                {% trans "Includes all essential accessories" %}
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
@@ -129,8 +170,8 @@
                                 <i class="fas fa-box text-xs"></i>
                             </div>
                             <div class="text-xs text-gray-400">
-                                <span class="block text-white font-bold mb-0.5">Hard Case Included</span>
-                                Protected transportation
+                                <span class="block text-white font-bold mb-0.5">{% trans "Hard Case Included" %}</span>
+                                {% trans "Protected transportation" %}
                             </div>
                         </div>
                     </div>
@@ -142,17 +183,20 @@
 </div>
 
 <script>
-    function addPackageToCart(id, name, price) {
-        try {
-            // Use 'package_' prefix to distinguish or just treat as item with type 'package' if logic supported
-            // Current cart logic seems simple ID based. 
-            // We might need to handle this in checkout. For now, let's treat it as a product but maybe prepend ID?
-            // Actually, best to modify logic. But let's stick to simple list for now.
-            // A quick hack for MVP: Use a unique ID string or large number? 
-            // Let's use string ID 'pkg_' + id
+    function addPackageToCart(itemId, name, price) {
+        if (event.target.closest('button').disabled) return;
 
+        try {
             let cart = JSON.parse(localStorage.getItem('mcot_cart') || '[]');
-            const itemId = 'pkg_' + id;
+            
+            // Generate basic array of included items for info
+            let packageItems = [];
+            {% for item in package.items.all %}
+                packageItems.push({ 
+                    id: parseInt("{{ item.id }}"), 
+                    name: String("{{ item.name|escapejs }}") 
+                });
+            {% endfor %}
 
             const existingIndex = cart.findIndex(item => item.id == itemId);
 
@@ -161,25 +205,31 @@
             } else {
                 cart.push({
                     id: itemId,
-                    name: name,
-                    price: price,
+                    name: String(name),
+                    price: parseFloat(price) || 0,
                     type: 'package',
-                    image: '{% if package.image %}{{ package.image.url }}{% endif %}',
-                    quantity: 1
+                    image: "{% if package.image %}{{ package.image.url|escapejs }}{% endif %}",
+                    quantity: 1,
+                    package_items: packageItems
                 });
             }
 
             localStorage.setItem('mcot_cart', JSON.stringify(cart));
             window.dispatchEvent(new Event('cartUpdated'));
 
-            // Show feedback or redirect?
-            if (confirm('Package added! Go to cart?')) {
-                window.location.href = "{% url 'store:cart' %}";
+            const startDate = '{{ selected_start_date|escapejs }}';
+            const endDate = '{{ selected_end_date|escapejs }}';
+            if (startDate && endDate) {
+                localStorage.setItem('mcot_booking_start', startDate);
+                localStorage.setItem('mcot_booking_end', endDate);
             }
+
+            // Redirect automatically without confirm, to match product logic
+            window.location.href = "{% url 'store:cart' %}";
 
         } catch (e) {
             console.error(e);
-            alert("Error adding to cart.");
+            alert("{% trans 'Error adding to cart.' %}");
         }
     }
 </script>

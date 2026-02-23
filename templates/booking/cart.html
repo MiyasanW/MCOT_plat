@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load humanize %}
+{% load i18n %}
 
 {% block title %}Shopping Cart | MCOT Rental{% endblock %}
 
@@ -11,12 +12,12 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-8">
             <div>
-                <h1 class="text-3xl font-bold text-white mb-2 font-display">Shopping Cart</h1>
-                <p class="text-gray-400">Review your equipment and schedule your rental.</p>
+                <h1 class="text-3xl font-bold text-white mb-2 font-display">{% trans "Shopping Cart" %}</h1>
+                <p class="text-gray-400">{% trans "Review your equipment and schedule your rental." %}</p>
             </div>
             <a href="{% url 'store:catalog' %}" class="px-4 py-2 rounded-lg bg-[#353535] border border-white/10 text-gray-300 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-2 text-sm">
                 <i class="fas fa-arrow-left"></i>
-                Continue Shopping
+                {% trans "Continue Shopping" %}
             </a>
         </div>
 
@@ -26,9 +27,9 @@
             <div class="lg:col-span-8 space-y-6">
                 <!-- Toolbar -->
                 <div class="flex justify-between items-center mb-2">
-                    <h2 class="text-lg font-bold text-white">Items (<span id="cart-count">0</span>)</h2>
+                    <h2 class="text-lg font-bold text-white">{% trans "Items" %} (<span id="cart-count">0</span>)</h2>
                     <button onclick="clearCart()" class="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 transition-colors">
-                        <i class="fas fa-trash-alt"></i> Clear Cart
+                        <i class="fas fa-trash-alt"></i> {% trans "Clear Cart" %}
                     </button>
                 </div>
 
@@ -45,21 +46,21 @@
                     <div class="bg-[#353535] rounded-2xl p-6 border border-white/10 shadow-xl">
                         <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
                             <i class="fas fa-calendar-alt text-mcot-orange"></i>
-                            Booking Details
+                            {% trans "Booking Details" %}
                         </h3>
 
                         <!-- Date Display (Read-Only) -->
                         <div class="space-y-4 mb-6">
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">วันรับของ</label>
+                                    <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Pick-up Date" %}</label>
                                     <div class="bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white font-mono text-sm opacity-50 cursor-not-allowed">
                                         <input type="hidden" id="start-date">
                                         <span id="start-date-display">...</span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">วันคืนของ</label>
+                                    <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Return Date" %}</label>
                                     <div class="bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white font-mono text-sm opacity-50 cursor-not-allowed">
                                         <input type="hidden" id="end-date">
                                         <span id="end-date-display">...</span>
@@ -69,8 +70,8 @@
                             
                             <!-- Duration & Status -->
                             <div class="bg-[#2A2A2A] rounded-xl p-3 border border-white/5 flex justify-between items-center">
-                                <span class="text-xs text-gray-500">ระยะเวลาเช่า</span>
-                                <span id="rental-duration" class="text-white font-bold font-mono">1 วัน</span>
+                                <span class="text-xs text-gray-500">{% trans "Duration" %}</span>
+                                <span id="rental-duration" class="text-white font-bold font-mono">1 {% trans "Day" %}</span>
                             </div>
                         </div>
 
@@ -78,44 +79,60 @@
                         <div id="availability-alert" class="hidden animate-pulse bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-6 flex items-start gap-3">
                             <i class="fas fa-exclamation-triangle text-red-500 mt-0.5"></i>
                             <div class="text-xs text-red-400">
-                                <span class="font-bold block mb-1">มีสินค้าไม่ว่าง!</span>
-                                สินค้าบางรายการถูกจองเต็มแล้วในช่วงเวลาที่เลือก กรุณาลบออก หรือติดต่อเจ้าหน้าที่
+                                <span class="font-bold block mb-1">{% trans "Not Available!" %}</span>
+                                {% trans "Some items are not available for the selected dates." %}
                             </div>
                         </div>
 
                         <!-- Project Info -->
                         <div class="space-y-4 border-t border-white/10 pt-6">
                             <div>
-                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">ชื่อผู้ติดต่อ / องค์กร (Name / Org)</label>
-                                <input type="text" id="customer-name" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" value="{{ user.get_full_name|default:user.username }}" placeholder="ระบุชื่อผู้ติดต่อ...">
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Name / Organization" %}</label>
+                                <input type="text" id="customer-name" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" value="{{ user.get_full_name|default:user.username }}" placeholder="{% trans 'Enter name...' %}">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">อีเมล (Email)</label>
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Email" %}</label>
                                 <input type="email" id="customer-email" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" value="{{ user.email }}" placeholder="example@org.com">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">เบอร์โทรศัพท์ติดต่อ (Phone)</label>
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Phone Number" %}</label>
                                 <input type="tel" id="contact-phone" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm mb-1" value="{{ user.profile.phone|default:'' }}" placeholder="08x-xxx-xxxx">
-                                <p class="text-[10px] text-gray-500">*จำเป็นต้องระบุ</p>
+                                <p class="text-[10px] text-gray-500">*{% trans "Required" %}</p>
                             </div>
                             <div>
-                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">ชื่อโปรเจค / งาน (Project)</label>
-                                <input type="text" id="project-name" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" placeholder="เช่น ถ่ายทำรายการ...">
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Project Name" %}</label>
+                                <input type="text" id="project-name" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" placeholder="{% trans 'e.g. TV Commercial...' %}">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">หมายเหตุเพิ่มเติม (Note)</label>
-                                <textarea id="booking-note" rows="2" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" placeholder="ระบุความต้องการเพิ่มเติม..."></textarea>
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Additional Note" %}</label>
+                                <textarea id="booking-note" rows="2" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" placeholder="{% trans 'Any special requests...' %}"></textarea>
+                            </div>
+                            
+                            <!-- Promo Code -->
+                            <div>
+                                <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Promotion Code" %}</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="promo-code" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm uppercase" placeholder="{% trans 'Enter code...' %}">
+                                    <button type="button" onclick="applyPromoCode()" class="bg-[#353535] hover:bg-mcot-orange hover:text-white border border-white/10 text-gray-300 font-bold py-3 px-4 rounded-xl transition-colors text-sm whitespace-nowrap">
+                                        {% trans "Apply" %}
+                                    </button>
+                                </div>
+                                <div id="promo-message" class="text-[10px] mt-1 hidden"></div>
                             </div>
                         </div>
 
                         <!-- Total -->
                         <div class="mt-8 pt-6 border-t border-white/10 space-y-2">
                              <div class="flex justify-between text-gray-400 text-sm">
-                                <span>ราคาต่อวัน (Daily)</span>
+                                <span>{% trans "Daily Rate" %}</span>
                                 <span id="daily-subtotal" class="text-white font-mono">฿0</span>
                             </div>
+                            <div class="flex justify-between text-mcot-orange text-sm hidden" id="discount-row">
+                                <span>{% trans "Discount" %}</span>
+                                <span id="discount-amount" class="font-mono">-฿0</span>
+                            </div>
                             <div class="flex justify-between items-end pt-2">
-                                <span class="text-lg font-bold text-white">ราคารวม (Total)</span>
+                                <span class="text-lg font-bold text-white">{% trans "Total" %}</span>
                                 <span id="grand-total" class="text-3xl font-black text-mcot-orange font-display">฿0</span>
                             </div>
                         </div>
@@ -123,12 +140,12 @@
                         <!-- Action -->
                         {% if user.is_authenticated %}
                         <button onclick="processCheckout()" id="btn-checkout" class="w-full mt-6 bg-mcot-orange text-white hover:bg-white hover:text-black font-bold py-4 rounded-xl shadow-[0_10px_20px_rgba(242,101,34,0.2)] hover:shadow-2xl transition-all flex items-center justify-center gap-2 uppercase tracking-wider text-sm">
-                            <span>ยืนยันการจอง</span>
+                            <span>{% trans "Confirm Booking" %}</span>
                             <i class="fas fa-arrow-right"></i>
                         </button>
                         {% else %}
                         <a href="{% url 'login' %}?next={% url 'store:cart' %}" class="w-full mt-6 bg-[#2A2A2A] border border-white/20 text-gray-300 hover:border-white hover:text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-wider text-sm">
-                            <span>เข้าสู่ระบบเพื่อจอง</span>
+                            <span>{% trans "Login to Book" %}</span>
                         </a>
                         {% endif %}
                     </div>
@@ -140,8 +157,8 @@
                                 <i class="fas fa-shield-alt text-xs"></i>
                             </div>
                             <div class="text-[10px] text-gray-500 leading-tight">
-                                <strong class="block text-white">มาตรฐาน MCOT</strong>
-                                อุปกรณ์คุณภาพ
+                                <strong class="block text-white">{% trans "MCOT Standard" %}</strong>
+                                {% trans "Quality Equipment" %}
                             </div>
                         </div>
                         <div class="bg-[#353535] p-3 rounded-xl border border-white/5 flex items-center gap-3">
@@ -149,8 +166,8 @@
                                 <i class="fas fa-headset text-xs"></i>
                             </div>
                             <div class="text-[10px] text-gray-500 leading-tight">
-                                <strong class="block text-white">Support 24/7</strong>
-                                ปรึกษาเจ้าหน้าที่
+                                <strong class="block text-white">{% trans "Support 24/7" %}</strong>
+                                {% trans "Expert Advice" %}
                             </div>
                         </div>
                     </div>
@@ -164,10 +181,10 @@
             <div class="w-24 h-24 rounded-full bg-[#2A2A2A] flex items-center justify-center mb-6 text-gray-600">
                 <i class="fas fa-shopping-cart text-4xl"></i>
             </div>
-            <h2 class="text-2xl font-bold text-white mb-2 font-display">Your Cart is Empty</h2>
-            <p class="text-gray-500 mb-8 max-w-sm mx-auto">Looks like you haven't added any gear yet. Check out our catalog for premium equipment.</p>
+            <h2 class="text-2xl font-bold text-white mb-2 font-display">{% trans "Your Cart is Empty" %}</h2>
+            <p class="text-gray-500 mb-8 max-w-sm mx-auto">{% trans "Looks like you haven't added any gear yet. Check out our catalog for premium equipment." %}</p>
             <a href="{% url 'store:catalog' %}" class="px-8 py-3 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-colors uppercase tracking-wider text-sm shadow-xl">
-                Browse Equipment
+                {% trans "Browse Equipment" %}
             </a>
         </div>
 
@@ -374,14 +391,60 @@
         });
     }
 
-    function calculateTotals() {
+    let currentDiscount = 0;
+    let appliedPromoCode = '';
+
+    async function calculateTotals() {
         let daily = 0;
         cartItems.forEach(item => {
             daily += (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1);
         });
         
+        const subtotal = daily * rentalDays;
         document.getElementById('daily-subtotal').innerText = `฿${daily.toLocaleString()}`;
-        document.getElementById('grand-total').innerText = `฿${(daily * rentalDays).toLocaleString()}`;
+        
+        // Check promo/partner discount
+        const promoInput = document.getElementById('promo-code').value.trim();
+        try {
+            const res = await fetch(`{% url "store:api_check_promo" %}?subtotal=${subtotal}&code=${promoInput}`);
+            const data = await res.json();
+            
+            const promoMessageDiv = document.getElementById('promo-message');
+            
+            if (data.valid) {
+                 currentDiscount = data.discount_amount;
+                 appliedPromoCode = data.code_applied || '';
+                 
+                 if (currentDiscount > 0) {
+                     document.getElementById('discount-row').classList.remove('hidden');
+                     document.getElementById('discount-amount').innerText = `-฿${currentDiscount.toLocaleString()}`;
+                     
+                     promoMessageDiv.innerHTML = data.messages.join('<br>');
+                     promoMessageDiv.className = 'text-[10px] mt-1 text-green-400 block';
+                 } else {
+                     document.getElementById('discount-row').classList.add('hidden');
+                     promoMessageDiv.className = 'hidden';
+                 }
+            } else {
+                 currentDiscount = 0;
+                 appliedPromoCode = '';
+                 document.getElementById('discount-row').classList.add('hidden');
+                 
+                 if (promoInput) {
+                     promoMessageDiv.innerText = data.message;
+                     promoMessageDiv.className = 'text-[10px] mt-1 text-red-400 block';
+                 }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+
+        const grandTotal = Math.max(0, subtotal - currentDiscount);
+        document.getElementById('grand-total').innerText = `฿${grandTotal.toLocaleString()}`;
+    }
+    
+    function applyPromoCode() {
+        calculateTotals();
     }
 
     async function checkAvailability() {
@@ -486,12 +549,40 @@
         const endStr = endDateInput.value;
 
         if (!startStr || !endStr) {
-            alert("กรุณาเลือกวันที่ (จากหน้าสินค้าก่อน)");
+            Swal.fire({
+                icon: 'warning',
+                title: 'ไม่พบวันที่เช่า',
+                text: 'กรุณาเลือกวันที่จากหน้าสินค้าก่อน',
+                background: '#1e1e1e',
+                color: '#fff',
+                confirmButtonColor: '#f26522'
+            });
             return;
         }
         
         if (availabilityConflicts.size > 0) {
-            alert("มีสินค้าบางรายการถูกจองเต็มแล้ว กรุณาลบออก");
+            Swal.fire({
+                icon: 'error',
+                title: 'สินค้าไม่ว่าง',
+                text: 'มีสินค้าบางรายการถูกจองเต็มแล้ว กรุณาลบออกก่อนยืนยัน',
+                background: '#1e1e1e',
+                color: '#fff',
+                confirmButtonColor: '#f26522'
+            });
+            return;
+        }
+
+        const phoneInput = document.getElementById('contact-phone').value;
+        if (!phoneInput || phoneInput.trim() === '') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'ข้อมูลไม่ครบถ้วน',
+                text: 'กรุณาระบุเบอร์โทรศัพท์สำหรับติดต่อ',
+                background: '#1e1e1e',
+                color: '#fff',
+                confirmButtonColor: '#f26522'
+            });
+            document.getElementById('contact-phone').focus();
             return;
         }
 
@@ -506,13 +597,14 @@
             customer_name: document.getElementById('customer-name').value,
             customer_email: document.getElementById('customer-email').value,
             project_name: document.getElementById('project-name').value,
-            phone: document.getElementById('contact-phone').value,
-            note: document.getElementById('booking-note').value
+            phone: phoneInput,
+            note: document.getElementById('booking-note').value,
+            promotion_code: appliedPromoCode
         };
 
         try {
             checkoutBtn.disabled = true;
-            checkoutBtn.innerHTML = 'กำลังบันทึก...';
+            checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
 
             const response = await fetch("{% url 'store:api_create_booking' %}", {
                 method: 'POST',
@@ -527,21 +619,51 @@
             if (data.success) {
                 cartItems = [];
                 saveCart();
-                alert("จองสำเร็จ! รหัสใบจอง #" + data.booking_id);
-                // Redirect to Booking Detail
-                const baseUrl = "{% url 'store:booking_detail' 999999 %}";
-                window.location.href = baseUrl.replace('999999', data.booking_id);
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'จองสำเร็จ!',
+                    text: 'รหัสใบจอง #' + data.booking_id,
+                    background: '#1e1e1e',
+                    color: '#fff',
+                    confirmButtonColor: '#f26522',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    const baseUrl = "{% url 'store:booking_detail' 999999 %}";
+                    window.location.href = baseUrl.replace('999999', data.booking_id);
+                });
             } else {
-                alert("จองไม่สำเร็จ: " + data.message);
-                if(data.errors) alert(data.errors.join("\n"));
+                let errorMsg = data.message;
+                if (data.errors && data.errors.length > 0) {
+                    errorMsg += "\n" + data.errors.join("\n");
+                }
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'จองไม่สำเร็จ',
+                    text: errorMsg,
+                    background: '#1e1e1e',
+                    color: '#fff',
+                    confirmButtonColor: '#f26522'
+                });
+                
                 checkoutBtn.disabled = false;
-                checkoutBtn.innerHTML = 'ยืนยันการจอง';
+                checkoutBtn.innerHTML = '<span>ยืนยันการจอง</span> <i class="fas fa-arrow-right"></i>';
                 checkAvailability(); 
             }
         } catch(e) {
             console.error(e);
-            alert("เกิดข้อผิดพลาด (System Error)");
+            Swal.fire({
+                icon: 'error',
+                title: 'ข้อผิดพลาดระบบ',
+                text: 'เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่',
+                background: '#1e1e1e',
+                color: '#fff',
+                confirmButtonColor: '#f26522'
+            });
             checkoutBtn.disabled = false;
+            checkoutBtn.innerHTML = '<span>ยืนยันการจอง</span> <i class="fas fa-arrow-right"></i>';
         }
     }
 </script>

@@ -69,10 +69,17 @@ def download_booking_pdf(request, booking_id):
         return redirect('store:home')
 
     booking = get_object_or_404(Booking, id=booking_id)
-    items = BookingItem.objects.filter(booking=booking).select_related('product', 'equipment')
+    items = booking.items.select_related('product', 'equipment').all()
+    packages = booking.booked_packages.select_related('package').all()
+    studios = booking.booked_studios.select_related('studio').all()
 
     template_path = 'booking/pdf/equipment_sheet.html'
-    context = {'booking': booking, 'items': items}
+    context = {
+        'booking': booking, 
+        'items': items,
+        'packages': packages,
+        'studios': studios
+    }
 
     # Fallback to HTML Print due to xhtml2pdf installation issues
     return render(request, template_path, context)
@@ -88,7 +95,9 @@ def download_quotation_pdf(request, booking_id):
     if booking.created_by != request.user and not (request.user.is_staff or request.user.is_superuser):
         return redirect('store:home')
 
-    items = BookingItem.objects.filter(booking=booking).select_related('product', 'equipment')
+    items = booking.items.select_related('product', 'equipment').all()
+    packages = booking.booked_packages.select_related('package').all()
+    studios = booking.booked_studios.select_related('studio').all()
     
     # Calculate Remaining Balance
     remaining_balance = booking.total_price - booking.deposit_amount
@@ -96,6 +105,8 @@ def download_quotation_pdf(request, booking_id):
     context = {
         'booking': booking, 
         'items': items,
+        'packages': packages,
+        'studios': studios,
         'remaining_balance': remaining_balance
     }
     

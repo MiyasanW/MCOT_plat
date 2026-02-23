@@ -1,0 +1,675 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: you@example.com\n"
+"POT-Creation-Date: 2023-01-01 00:00+0000\n"
+"PO-Revision-Date: 2023-01-01 00:00+0000\n"
+"Last-Translator: Auto\n"
+"Language-Team: Thai\n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Professional Studio"
+msgstr "สตูดิโอมืออาชีพ"
+
+msgid "Equipment"
+msgstr "อุปกรณ์"
+
+msgid "Sign In / Register"
+msgstr "เข้าสู่ระบบ / สมัครสมาชิก"
+
+msgid "Enter name..."
+msgstr "กรอกชื่อ..."
+
+msgid "Total"
+msgstr "ยอดรวม"
+
+msgid "Image Unavailable"
+msgstr "ไม่มีรูปภาพ"
+
+msgid "No post-production services available."
+msgstr "ไม่มีบริการโพสต์โปรดักชันในขณะนี้"
+
+msgid "Login to Book"
+msgstr "เข้าสู่ระบบเพื่อจอง"
+
+msgid "About Space"
+msgstr "เกี่ยวกับพื้นที่"
+
+msgid "View Details"
+msgstr "ดูรายละเอียด"
+
+msgid "Camera Rental"
+msgstr "เช่ากล้องถ่ายทำ"
+
+msgid "Duration"
+msgstr "ระยะเวลา"
+
+msgid "Add to Quote"
+msgstr "ขอใบเสนอราคา"
+
+msgid "Fiber Internet 1Gbps"
+msgstr "อินเทอร์เน็ตไฟเบอร์ 1Gbps"
+
+msgid "Unavailable"
+msgstr "ไม่ว่าง"
+
+msgid "Loading..."
+msgstr "กำลังโหลด..."
+
+msgid "No products available."
+msgstr "ไม่มีสินค้า"
+
+msgid "มาตรฐานการผลิตระดับประเทศ ยาวนานกว่า 70 ปี"
+msgstr "มาตรฐานการผลิตระดับประเทศ ยาวนานกว่า 70 ปี"
+
+msgid "Production Packages"
+msgstr "แพ็กเกจโปรดักชัน"
+
+msgid "Browse Equipment"
+msgstr "ดูอุปกรณ์ทั้งหมด"
+
+msgid "Facility roster is currently empty."
+msgstr "ยังไม่มีข้อมูลพื้นที่"
+
+msgid "No Preview"
+msgstr "ไม่มีตัวอย่าง"
+
+msgid "Standard Packs"
+msgstr "ชุดมาตรฐาน"
+
+msgid "Studios"
+msgstr "สตูดิโอ"
+
+msgid "Corporate Sales"
+msgstr "ฝ่ายขายองค์กร"
+
+msgid "Required"
+msgstr "จำเป็น"
+
+msgid "Silent AC"
+msgstr "แอร์เก็บเสียง"
+
+msgid "Search Equipment History"
+msgstr "ค้นหาประวัติอุปกรณ์"
+
+msgid "Cookies Usage"
+msgstr "การใช้คุกกี้"
+
+msgid "Clear Cart"
+msgstr "ล้างตะกร้า"
+
+msgid "MCOT Public Company Limited. All rights reserved."
+msgstr "บริษัท อสมท จำกัด (มหาชน) สงวนสิทธิ์ทุกประการ"
+
+msgid "Rental Terms"
+msgstr "เงื่อนไขการเช่า"
+
+msgid "Professional QC"
+msgstr "มาตรฐาน QC คุณภาพสูง"
+
+msgid "to"
+msgstr "ถึง"
+
+msgid "Security"
+msgstr "ความปลอดภัย"
+
+msgid "Post Production"
+msgstr "โพสต์โปรดักชัน"
+
+msgid "Continue Shopping"
+msgstr "เลือกสินค้าต่อ"
+
+msgid ""
+"Full-scale studios equipped with lighting grids, cycloramas, and control "
+"rooms. Ideal for talk shows, live events, and commercial production."
+msgstr ""
+"สตูดิโอขนาดใหญ่พร้อมระบบไฟอัจฉริยะ ซีเคิลรามา และห้องคอนโทรล "
+"เหมาะสำหรับรายการทอล์คโชว์ ถ่ายทอดสด และถ่ายทำโฆษณา"
+
+msgid "Quality Equipment"
+msgstr "อุปกรณ์เกรด A"
+
+msgid "Availability"
+msgstr "ความพร้อมของสินค้า"
+
+msgid "ISO 9001:2015 Certified"
+msgstr "ได้รับการรับรอง ISO 9001:2015"
+
+msgid "Sitemap"
+msgstr "แผนผังเว็บไซต์"
+
+msgid "Standard"
+msgstr "มาตรฐาน"
+
+msgid "Home"
+msgstr "หน้าแรก"
+
+msgid "Dates fully booked"
+msgstr "วันที่เลือกคิวเต็มแล้ว"
+
+msgid "All Equipment"
+msgstr "อุปกรณ์ทั้งหมด"
+
+msgid "Book Now"
+msgstr "จองเลย"
+
+msgid "Showing"
+msgstr "กำลังแสดง"
+
+msgid "63/1 Rama 9 Road, Huai Khwang"
+msgstr "63/1 ถ.พระราม 9 ห้วยขวาง"
+
+msgid "Download Price List (PDF)"
+msgstr "ดาวน์โหลดราคา (PDF)"
+
+msgid "OB Truck Service"
+msgstr "บริการรถโอบี"
+
+msgid "Direct line for rental issues"
+msgstr "สายตรงปัญหาการเช่า"
+
+msgid "Power Supply"
+msgstr "การจ่ายไฟ"
+
+msgid "Spacious Area"
+msgstr "พื้นที่กว้างขวาง"
+
+msgid "Check-out"
+msgstr "วันคืนอุปกรณ์"
+
+msgid "Confirm Booking"
+msgstr "ยืนยันการจอง"
+
+msgid "HOME"
+msgstr "หน้าแรก"
+
+msgid "Call Center"
+msgstr "ศูนย์บริการลูกค้า"
+
+msgid "Check-in"
+msgstr "วันรับอุปกรณ์"
+
+msgid "Camera Systems"
+msgstr "ระบบกล้องถ่ายภาพยนตร์"
+
+msgid "Items"
+msgstr "รายการ"
+
+msgid "Our Services"
+msgstr "บริการของเรา"
+
+msgid "Email"
+msgstr "อีเมล"
+
+msgid "Categories"
+msgstr "หมวดหมู่"
+
+msgid "Log Out"
+msgstr "ออกจากระบบ"
+
+msgid "Studio Rental"
+msgstr "เช่าสตูดิโอ"
+
+msgid "Internet"
+msgstr "อินเทอร์เน็ต"
+
+msgid "Government Enterprise Standard"
+msgstr "มาตรฐานระดับรัฐวิสาหกิจ"
+
+msgid "Min"
+msgstr "เริ่มต้น"
+
+msgid "About Us"
+msgstr "เกี่ยวกับเรา"
+
+msgid "Includes"
+msgstr "ประกอบด้วย"
+
+msgid "Stock ID"
+msgstr "รหัสสินค้า"
+
+msgid "in cart, and stock is"
+msgstr "ในตะกร้า และสินค้ามีอยู่"
+
+msgid "Rate"
+msgstr "ราคา"
+
+msgid "professional items in stock."
+msgstr "รายการในพอร์ตโฟลิโอ"
+
+msgid "Featured"
+msgstr "แนะนำ"
+
+msgid "No packages available at the moment."
+msgstr "ขณะนี้ยังไม่มีแพ็กเกจ"
+
+msgid "Your Cart is Empty"
+msgstr "ตะกร้าสินค้าว่างเปล่า"
+
+msgid "Crew and Post-Production Services."
+msgstr "บริการทีมงานและโพสต์โปรดักชัน"
+
+msgid "Location"
+msgstr "สถานที่ตั้ง"
+
+msgid "SERVICES"
+msgstr "บริการ"
+
+msgid "Booking Period"
+msgstr "ระยะเวลาการเช่า"
+
+msgid "Headquarters"
+msgstr "สำนักงานใหญ่"
+
+msgid "Price Range"
+msgstr "ช่วงราคา"
+
+msgid "Pick-up Date"
+msgstr "วันที่รับของ"
+
+msgid "Available"
+msgstr "พร้อมเช่า"
+
+msgid "Recommended"
+msgstr "แนะนำ"
+
+msgid "ABOUT"
+msgstr "เกี่ยวกับเรา"
+
+msgid "HQ"
+msgstr "สำนักงานใหญ่"
+
+msgid "New Arrivals"
+msgstr "สินค้ามาใหม่"
+
+msgid "Clear all filters"
+msgstr "ล้างตัวกรองทั้งหมด"
+
+msgid "Quantity"
+msgstr "จำนวน"
+
+msgid "Terms of Service"
+msgstr "เงื่อนไขการให้บริการ"
+
+msgid "Condition"
+msgstr "สภาพสินค้า"
+
+msgid "OB Van Service"
+msgstr "เช่ารถโอบี"
+
+msgid "Mark all read"
+msgstr "อ่านทั้งหมดแล้ว"
+
+msgid "Category"
+msgstr "หมวดหมู่"
+
+msgid "Rent Now"
+msgstr "เช่าเลย"
+
+msgid "Book Studio"
+msgstr "จองสตูดิโอ"
+
+msgid "Connectivity"
+msgstr "การเชื่อมต่อ"
+
+msgid "Cannot add more. You already have"
+msgstr "ไม่สามารถเพิ่มได้ คุณมีอยู่แล้ว"
+
+msgid "In Stock"
+msgstr "มีสินค้า"
+
+msgid "Monitors & Video"
+msgstr "จอมอนิเตอร์และวิดีโอ"
+
+msgid "day"
+msgstr "วัน"
+
+msgid "Ready-to-shoot sets for Cinema & Broadcast."
+msgstr "เซตอุปกรณ์พร้อมถ่ายทำสำหรับงานภาพยนตร์และบรอดแคสต์"
+
+msgid "Sound"
+msgstr "ระบบเสียง"
+
+msgid "Admin Panel"
+msgstr "แผงควบคุมแอดมิน"
+
+msgid "Soundproof stages and virtual production facilities."
+msgstr "สเตจกันเสียงและบริการ Virtual Production"
+
+msgid "ผู้ให้บริการเช่าอุปกรณ์ถ่ายทำครบวงจร โดย บมจ. อสมท"
+msgstr "ผู้ให้บริการเช่าอุปกรณ์ถ่ายทำครบวงจร โดย บมจ. อสมท"
+
+msgid "Accessibility"
+msgstr "สิ่งอำนวยความสะดวก"
+
+msgid "Phone Number"
+msgstr "เบอร์โทรศัพท์"
+
+msgid "Sales Support"
+msgstr "ฝ่ายสนับสนุนการขาย"
+
+msgid "Some items are not available for the selected dates."
+msgstr "สินค้าบางรายการไม่ว่างในวันที่เลือก"
+
+msgid "Excellent"
+msgstr "ดีเยี่ยม"
+
+msgid "No specs available"
+msgstr "ไม่มีข้อมูลสเปค"
+
+msgid "Includes basic lighting grip & power"
+msgstr "รวมอุปกรณ์ไฟ Grip และกระแสไฟฟ้าพื้นฐาน"
+
+msgid "Phase 100A ready"
+msgstr "รองรับเฟส 100 แอมป์"
+
+msgid "Size"
+msgstr "ขนาดพื้นที่"
+
+msgid "Sq.m"
+msgstr "ตร.ม."
+
+msgid "Check"
+msgstr "ตรวจสอบ"
+
+msgid "Professional Studios"
+msgstr "สตูดิโอมาตรฐานโลก"
+
+msgid "Power"
+msgstr "ระบบไฟ"
+
+msgid "No Studios Found"
+msgstr "ไม่พบสตูดิโอ"
+
+msgid "Return Date"
+msgstr "วันที่คืนของ"
+
+msgid "Error adding to cart."
+msgstr "เกิดข้อผิดพลาดในการเพิ่มลงตะกร้า"
+
+msgid "Climate Control"
+msgstr "ระบบปรับอากาศ"
+
+msgid "View All Activities"
+msgstr "ดูกิจกรรมทั้งหมด"
+
+msgid "per day"
+msgstr "ต่อวัน"
+
+msgid "Name / Organization"
+msgstr "ชื่อ / องค์กร"
+
+msgid "Technical Specifications"
+msgstr "ข้อมูลจำเพาะทางเทคนิค"
+
+msgid "Out of Stock"
+msgstr "ของหมด"
+
+msgid "Select Dates"
+msgstr "เลือกวันที่"
+
+msgid "Details"
+msgstr "รายละเอียด"
+
+msgid "Update"
+msgstr "อัปเดต"
+
+msgid "Technical Crew"
+msgstr "ทีมงานเทคนิค"
+
+msgid "Flexible Booking"
+msgstr "จองยืดหยุ่น"
+
+msgid "No studios configured."
+msgstr "ยังไม่มีการตั้งค่าสตูดิโอ"
+
+msgid "Services"
+msgstr "บริการ"
+
+msgid "24/7 Support"
+msgstr "ช่วยเหลือ 24 ชม."
+
+msgid "STAFF CALENDAR"
+msgstr "ปฏิทินพนักงาน"
+
+msgid "Pickup Queue"
+msgstr "คิวรับของ"
+
+msgid "Review your equipment and schedule your rental."
+msgstr "ตรวจสอบรายการของคุณและกำหนดเวลาเช่า"
+
+msgid "EQUIPMENT"
+msgstr "อุปกรณ์"
+
+msgid "Ground floor loading"
+msgstr "จุดโหลดของชั้นพื้น"
+
+msgid "Privacy Policy"
+msgstr "นโยบายความเป็นส่วนตัว"
+
+msgid "Sq.m working space"
+msgstr "พื้นที่ใช้งานตารางเมตร"
+
+msgid "No crew members available at the moment."
+msgstr "ขณะนี้ยังไม่มีทีมงานว่าง"
+
+msgid "MCOT Standard"
+msgstr "มาตรฐาน อสมท"
+
+msgid "Contact Us"
+msgstr "ติดต่อเรา"
+
+msgid "View All"
+msgstr "ดูทั้งหมด"
+
+msgid "Out of stock for selected dates"
+msgstr "ของหมดในช่วงวันที่เลือก"
+
+msgid "Silent AC System"
+msgstr "ระบบแอร์เก็บเสียง"
+
+msgid "Standard Rate"
+msgstr "ราคามาตรฐาน"
+
+msgid "Professional Broadcast Studios"
+msgstr "สตูดิโอบรอดแคสต์มืออาชีพ"
+
+msgid "Packages"
+msgstr "แพ็กเกจ"
+
+msgid "Change Dates"
+msgstr "เปลี่ยนวันที่"
+
+msgid "End"
+msgstr "สิ้นสุด"
+
+msgid "Anamorphic Lenses"
+msgstr "เลนส์ Anamorphic"
+
+msgid "Production Services"
+msgstr "บริการโปรดักชัน"
+
+msgid "Start"
+msgstr "เริ่มต้น"
+
+msgid "Equipment Insurance"
+msgstr "ประกันภัยอุปกรณ์"
+
+msgid "Additional Note"
+msgstr "หมายเหตุเพิ่มเติม"
+
+msgid "Studio Booking"
+msgstr "จองสตูดิโอ"
+
+msgid "Any special requests..."
+msgstr "ระบุความต้องการเพิ่มเติม..."
+
+msgid "FAQ"
+msgstr "คำถามที่พบบ่อย"
+
+msgid "Help Center (FAQ)"
+msgstr "ศูนย์ช่วยเหลือ (FAQ)"
+
+msgid "Vendor Registration"
+msgstr "ลงทะเบียนคู่ค้า"
+
+msgid "Lighting & Grip"
+msgstr "ระบบไฟและกริป"
+
+msgid "Support 24/7"
+msgstr "ให้คำปรึกษา 24 ชม."
+
+msgid "Booking Details"
+msgstr "รายละเอียดการจอง"
+
+msgid "View"
+msgstr "เปิดดู"
+
+msgid "Project Name"
+msgstr "ชื่อโปรเจกต์"
+
+msgid "Daily Rate"
+msgstr "ราคารายวัน"
+
+msgid "Department"
+msgstr "แผนก"
+
+msgid "My Bookings"
+msgstr "ประวัติการจอง"
+
+msgid "Audio / Sound"
+msgstr "ระบบเสียง / ไมโครโฟน"
+
+msgid "MCOT Rental Profile"
+msgstr "ประวัติ MCOT Rental"
+
+msgid "Dressing room & Lounge"
+msgstr "ห้องแต่งตัวและเลานจ์พักผ่อน"
+
+msgid "Rental Platform"
+msgstr "ระบบเช่าอุปกรณ์"
+
+msgid "Service Overview"
+msgstr "ภาพรวมบริการ"
+
+msgid "View Specs"
+msgstr "ดูสเปก"
+
+msgid "Phase"
+msgstr "เฟส"
+
+msgid "Request Quote"
+msgstr "ขอใบเสนอราคา"
+
+msgid "No Equipment Found"
+msgstr "ไม่พบอุปกรณ์ที่ค้นหา"
+
+msgid "Error adding to booking."
+msgstr "เกิดข้อผิดพลาดในการจอง"
+
+msgid "Hourly rates available via phone"
+msgstr "สอบถามรายชั่วโมงโทร..."
+
+msgid "Max"
+msgstr "สูงสุด"
+
+msgid "Tested before every rental"
+msgstr "ผ่านการทดสอบก่อนส่งมอบทุกครั้ง"
+
+msgid "Catalog"
+msgstr "แคตตาล็อก"
+
+msgid "Please select check-in and check-out dates."
+msgstr "กรุณาเลือกวันรับของและวันคืนของ"
+
+msgid "Studio Facilities"
+msgstr "สิ่งอำนวยความสะดวก"
+
+msgid "Not Available!"
+msgstr "ไม่สามารถเช่าได้!"
+
+msgid "Notifications"
+msgstr "การแจ้งเตือน"
+
+msgid "Tools for tracking and managing equipment history."
+msgstr "ระบบจัดการและเช็คประวัติอุปกรณ์"
+
+msgid "Contact Staff"
+msgstr "ติดต่อเจ้าหน้าที่"
+
+msgid "Live / Broadcast"
+msgstr "รถโอบี / ถ่ายทอดสด"
+
+msgid "Amenities"
+msgstr "สิ่งอำนวยความสะดวก"
+
+msgid "Resources"
+msgstr "ศูนย์รวมข้อมูล"
+
+msgid "Studio added to booking list! Go to checkout?"
+msgstr "เพิ่มสตูดิโอลงตะกร้าแล้ว! ไปยังหน้าชำระเงิน?"
+
+msgid "No detailed description available."
+msgstr "ไม่มีคำอธิบายโดยละเอียด"
+
+msgid "New"
+msgstr "ใหม่"
+
+msgid "View Studio Specs"
+msgstr "ดูสเปกสตูดิโอ"
+
+msgid "Shopping Cart"
+msgstr "ตะกร้าสินค้า"
+
+msgid "Live production on the go. 4K Ready."
+msgstr "ระบบผลิตรายการสดเคลื่อนที่ รองรับ 4K"
+
+msgid "STUDIOS"
+msgstr "สตูดิโอ"
+
+msgid "Huai Khwang, Bangkok 10310"
+msgstr "เขตห้วยขวาง กรุงเทพฯ 10310"
+
+msgid "e.g. TV Commercial..."
+msgstr "เช่น ถ่ายทำโฆษณาทีวี..."
+
+msgid "Lenses & Filters"
+msgstr "เลนส์และฟิลเตอร์"
+
+msgid "Expert Advice"
+msgstr "คำแนะนำจากผู้เชี่ยวชาญ"
+
+msgid ""
+"Looks like you haven't added any gear yet. Check out our catalog for premium"
+" equipment."
+msgstr ""
+"คุณยังไม่ได้เพิ่มอุปกรณ์ในตะกร้า "
+"เลือกชมอุปกรณ์ระดับพรีเมียมในแคตตาล็อกของเรา"
+
+msgid "Equipment Management"
+msgstr "จัดการอุปกรณ์"
+
+msgid "Booked"
+msgstr "ถูกจองแล้ว"
+
+msgid "Inventory Empty"
+msgstr "ไม่มีอุปกรณ์"
+
+msgid "All Studios"
+msgstr "สตูดิโอทั้งหมด"
+
+msgid "Day"
+msgstr "วัน"
+
+msgid "Facility Status"
+msgstr "สถานะพื้นที่"
+
+msgid "Modify your search criteria or clear filters."
+msgstr "ลองเปลี่ยนคำค้นหาหรือตัวกรอง"
+
+msgid "PACKAGES"
+msgstr "แพ็กเกจ"

@@ -5,7 +5,8 @@ typing_extensions==4.15.0
 pillow==11.3.0
 
 # Admin Interface
-django-simpleui==2024.1.25  # Vue+ElementUI Admin Theme
+# Admin Interface
+# django-simpleui==2024.1.25  (Removed: Using Custom CSS Theme)
 
 # Utilities
 django-import-export==3.3.6  # Excel/CSV Import/Export

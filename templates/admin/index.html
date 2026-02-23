@@ -14,12 +14,15 @@
 {% block content %}
 <div id="content-main">
   <!-- Custom Dashboard Panel for Equipment History -->
-  <div class="module" style="margin-bottom: 20px; padding: 15px; background: #fff; border: 1px solid #ccc; border-radius: 4px;">
-    <h2 style="margin-top: 0; color: #333;">⚡ Equipment Management</h2>
-    <p>เครื่องมือจัดการประวัติและติดตามอุปกรณ์</p>
-    <a href="{% url 'store:equipment_history_search' %}" class="button" style="padding: 10px 20px; font-size: 14px; background: #79aec8; color: white; text-decoration: none; border-radius: 4px;">
-      🔍 ค้นหาประวัติอุปกรณ์ (Equipment History)
-    </a>
+  <!-- Custom Dashboard Panel for Equipment History -->
+  <div class="module" style="margin-bottom: 20px;">
+    <h2>⚡ {% trans "Equipment Management" %}</h2>
+    <div style="padding: 15px;">
+        <p class="mb-4">{% trans "Tools for tracking and managing equipment history." %}</p>
+        <a href="{% url 'store:equipment_history_search' %}" class="button">
+        🔍 {% trans "Search Equipment History" %}
+        </a>
+    </div>
   </div>
 
   {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}

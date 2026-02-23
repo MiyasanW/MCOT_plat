@@ -109,16 +109,81 @@ def studio_detail(request, studio_id):
 def package_list(request):
     """
     หน้าแสดงรายการแพ็คเกจ (Package List)
+    พร้อมเช็คคิวว่างเบื้องต้น (ถ้ามีการเลือกวันที่)
     """
-    packages = Package.objects.filter(is_active=True)
-    return render(request, 'store/package_list.html', {'packages': packages})
+    packages = Package.objects.filter(is_active=True).prefetch_related('packageitem_set__product')
+    
+    # --- Date Availability Filtering ---
+    filter_start_date_str = request.GET.get('start_date')
+    filter_end_date_str = request.GET.get('end_date')
+    filtering_by_date = False
+
+    if not filter_start_date_str or not filter_end_date_str:
+        today_str = timezone.now().strftime("%Y-%m-%d")
+        filter_start_date_str = today_str
+        filter_end_date_str = today_str
+
+    if filter_start_date_str and filter_end_date_str:
+        try:
+            filter_start_date = datetime.strptime(filter_start_date_str, "%Y-%m-%d").date()
+            filter_end_date = datetime.strptime(filter_end_date_str, "%Y-%m-%d").date()
+            filter_start_datetime = datetime.combine(filter_start_date, datetime.min.time())
+            filter_end_datetime = datetime.combine(filter_end_date, datetime.max.time())
+            filtering_by_date = True
+            
+            for package in packages:
+                is_avail, _ = AvailabilityService.check_package_availability(
+                    package, 
+                    filter_start_datetime, 
+                    filter_end_datetime
+                )
+                package.is_available_for_selected_dates = is_avail
+        except ValueError:
+            pass 
+
+    context = {
+        'packages': packages,
+        'selected_start_date': filter_start_date_str,
+        'selected_end_date': filter_end_date_str,
+        'is_date_filtered': filtering_by_date
+    }
+    return render(request, 'store/package_list.html', context)
+
 
 def package_detail(request, package_id):
     """
     หน้าละเอียดแพ็คเกจ (Package Detail)
     """
     package = get_object_or_404(Package, pk=package_id)
-    return render(request, 'store/package_detail.html', {'package': package})
+    
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+    is_available = True
+    
+    if not start_date_str or not end_date_str:
+        today_str = timezone.now().strftime("%Y-%m-%d")
+        start_date_str = today_str
+        end_date_str = today_str
+        
+    try:
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+        start_dt = datetime.combine(start_date, datetime.min.time())
+        end_dt = datetime.combine(end_date, datetime.max.time())
+        
+        is_available, availability_error = AvailabilityService.check_package_availability(package, start_dt, end_dt)
+    except ValueError:
+        is_available = False
+        availability_error = "รูปแบบวันที่ไม่ถูกต้อง"
+
+    context = {
+        'package': package,
+        'selected_start_date': start_date_str,
+        'selected_end_date': end_date_str,
+        'is_available': is_available,
+        'availability_error': availability_error
+    }
+    return render(request, 'store/package_detail.html', context)
 
 def service_list(request):
     """

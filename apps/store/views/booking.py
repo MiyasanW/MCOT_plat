@@ -7,7 +7,7 @@ from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
 import json
 
-from apps.store.models import Product, Studio, Package, Booking, BookingItem
+from apps.store.models import Product, Studio, Package, Booking, BookingItem, PromotionCode, Profile
 from apps.store.services.availability import AvailabilityService
 
 def cart(request):
@@ -16,6 +16,69 @@ def cart(request):
     Render template เปล่า โดยข้อมูลสินค้าจะถูกดึงจาก LocalStorage ทางฝั่ง Client
     """
     return render(request, 'booking/cart.html')
+@require_GET
+def check_promo_api(request):
+    """
+    API ตรวจสอบโค้ดส่วนลดและส่วนลดพาร์ทเนอร์
+    รับค่า: code (optional), subtotal
+    """
+    subtotal_str = request.GET.get('subtotal', '0')
+    promo_code = request.GET.get('code', '').strip()
+    
+    try:
+        from decimal import Decimal
+        subtotal = Decimal(subtotal_str)
+        if subtotal <= 0:
+            return JsonResponse({"valid": False, "message": "ยอดรวมต้องมากกว่า 0"})
+            
+        discount = Decimal('0.00')
+        messages = []
+        is_partner = False
+
+        # 1. เช็ค Partner Discount อัตโนมัติ (ถ้าล็อกอิน)
+        if request.user.is_authenticated and hasattr(request.user, 'profile'):
+            if request.user.profile.is_partner:
+                is_partner = True
+                p_discount = subtotal * (Decimal(request.user.profile.partner_discount_percent) / Decimal('100.0'))
+                discount += p_discount
+                messages.append(f"ส่วนลดพาร์ทเนอร์ {request.user.profile.partner_discount_percent}%")
+
+        # 2. เช็ค Promo Code
+        code_valid = False
+        promo_discount = Decimal('0.00')
+        if promo_code:
+            now = timezone.now()
+            try:
+                promo = PromotionCode.objects.get(code__iexact=promo_code, is_active=True, valid_from__lte=now, valid_to__gte=now)
+                code_valid = True
+                
+                if promo.discount_percent > 0:
+                    promo_discount = subtotal * (Decimal(promo.discount_percent) / Decimal('100.0'))
+                    messages.append(f"โปรโมชั่นลด {promo.discount_percent}%")
+                elif promo.discount_amount > 0:
+                    promo_discount = promo.discount_amount
+                    messages.append(f"โปรโมชั่นลด ฿{promo.discount_amount:,.2f}")
+                
+                discount += promo_discount
+            except PromotionCode.DoesNotExist:
+                return JsonResponse({"valid": False, "message": "โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว"})
+
+        # จำกัดส่วนลดไม่ให้เกินยอดรวม
+        if discount > subtotal:
+            discount = subtotal
+
+        return JsonResponse({
+            "valid": True,
+            "discount_amount": float(discount),
+            "messages": messages,
+            "code_applied": promo_code if code_valid else None,
+            "is_partner": is_partner
+        })
+
+    except ValueError:
+        return JsonResponse({"valid": False, "message": "ข้อมูลไม่ถูกต้อง"}, status=400)
+    except Exception as e:
+        return JsonResponse({"valid": False, "message": str(e)}, status=500)
 
 @require_GET
 def check_availability_api(request):
@@ -102,16 +165,23 @@ def create_booking_api(request):
             'customer_phone': payload.get('phone'),
             'project_name': payload.get('project_name'),
             'note': payload.get('note'),
+            'promotion_code': payload.get('promotion_code'),
             'start_time': None,
             'end_time': None
         }
 
         # Parse Dates
         try:
-            from django.utils.dateparse import parse_datetime
-            booking_data['start_time'] = parse_datetime(payload.get('start'))
-            booking_data['end_time'] = parse_datetime(payload.get('end'))
-        except:
+            from datetime import datetime
+            
+            # Use strict YYYY-MM-DD parsing, as sent by frontend
+            start_date = datetime.strptime(payload.get('start')[:10], "%Y-%m-%d").date()
+            end_date = datetime.strptime(payload.get('end')[:10], "%Y-%m-%d").date()
+            
+            # Combine to full datetimes (covering the whole start day to the end of the end day)
+            booking_data['start_time'] = datetime.combine(start_date, datetime.min.time())
+            booking_data['end_time'] = datetime.combine(end_date, datetime.max.time())
+        except Exception as e:
             return JsonResponse({"success": False, "message": "Invalid Date Format"}, status=400)
             
         # Call Service (No Transaction Here, Service handles it)

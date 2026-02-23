@@ -172,11 +172,44 @@
                     [ ] Damaged
                 </td>
             </tr>
-            {% empty %}
+            {% endfor %}
+
+            {% for pkg in packages %}
             <tr>
-                <td colspan="4" style="text-align:center; padding: 20px;">No equipment in this booking.</td>
+                <td class="col-no">-</td>
+                <td class="col-item">
+                    {{ pkg.package.name }}
+                    <br><span style="color:#666; font-size:10px;">(Package - x{{ pkg.quantity }})</span>
+                </td>
+                <td class="col-sn">
+                    <span style="color:orange;">See Package Details</span>
+                </td>
+                <td class="col-check">
+                    [ ] OK <br>
+                    [ ] Damaged
+                </td>
             </tr>
             {% endfor %}
+
+            {% for studio in studios %}
+            <tr>
+                <td class="col-no">-</td>
+                <td class="col-item">
+                    {{ studio.studio.name }}
+                    <br><span style="color:#666; font-size:10px;">(Studio)</span>
+                </td>
+                <td class="col-sn">-</td>
+                <td class="col-check">
+                    [ ] OK
+                </td>
+            </tr>
+            {% endfor %}
+
+            {% if not items and not packages and not studios %}
+            <tr>
+                <td colspan="4" style="text-align:center; padding: 20px;">No items in this booking.</td>
+            </tr>
+            {% endif %}
         </tbody>
     </table>
 

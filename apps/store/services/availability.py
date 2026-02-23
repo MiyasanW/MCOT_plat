@@ -140,7 +140,7 @@ class AvailabilityService:
         โดยการ Loop เช็คสินค้าทุกชิ้นที่อยู่ในแพ็คเกจนั้นว่าว่างพอหรือไม่
         """
         errors = []
-        for pkg_item in package.items.all():
+        for pkg_item in package.packageitem_set.select_related('product').all():
             # จำนวนที่ต้องใช้ = (จำนวนในแพ็คเกจ x จำนวนชุดที่ลูกค้าจอง)
             required_qty = pkg_item.quantity * requested_quantity
             is_valid, msg = AvailabilityService.check_availability(

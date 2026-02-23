@@ -23,10 +23,28 @@ class StaffPosition(models.Model):
     def __str__(self): return self.name
     class Meta: verbose_name_plural = "ตั้งค่า - ตำแหน่งพนักงาน"
 
+class PromotionCode(models.Model):
+    """โค้ดโปรโมชั่น / ส่วนลด"""
+    code = models.CharField(max_length=50, unique=True, verbose_name="โค้ดส่วนลด")
+    discount_percent = models.IntegerField(default=0, verbose_name="ส่วนลด (เปอร์เซ็นต์ %)", help_text="ใส่ 0 หากต้องการใช้ส่วนลดเป็นจำนวนเงิน")
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="ส่วนลด (จำนวนบาท)", help_text="ใส่ 0 หากต้องการใช้ส่วนลดเป็น %")
+    valid_from = models.DateTimeField(verbose_name="เริ่มใช้ได้ตั้งแต่")
+    valid_to = models.DateTimeField(verbose_name="หมดอายุ")
+    is_active = models.BooleanField(default=True, verbose_name="สถานะใช้งาน")
+
+    def is_valid(self):
+        now = timezone.now()
+        return self.is_active and self.valid_from <= now <= self.valid_to
+
+    def __str__(self): return self.code
+    class Meta: verbose_name_plural = "ตั้งค่า - โค้ดส่วนลด (Promotions)"
+
 # --- 2. Resource Models ---
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     phone = models.CharField(max_length=20, verbose_name="เบอร์โทรศัพท์", blank=True, null=True)
+    is_partner = models.BooleanField(default=False, verbose_name="สิทธิพาร์ทเนอร์ (Partner)")
+    partner_discount_percent = models.IntegerField(default=10, verbose_name="เปอร์เซ็นต์ส่วนลดพาร์ทเนอร์")
     
     def __str__(self): return f"Profile of {self.user.username}"
 
@@ -72,6 +90,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to='products/', null=True, blank=True, verbose_name="รูปภาพ")
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="ราคาเช่าต่อวัน")
     quantity = models.IntegerField(default=1, verbose_name="จำนวนทั้งหมด")
+    late_fee_per_day = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="ค่าปรับส่งคืนช้า (ต่อวัน)")
     turnaround_time = models.DurationField(default=timedelta(hours=1), verbose_name="เวลาในการเตรียมของ (Buffer Time)", help_text="เวลาที่ต้องเว้นว่างหลังคืนของ เพื่อเช็ค/ทำความสะอาด")
     is_active = models.BooleanField(default=True, verbose_name="เปิดให้เช่า")
     is_featured = models.BooleanField(default=False, verbose_name="แนะนำ (Featured)")
@@ -215,6 +234,11 @@ class Booking(models.Model):
     ]
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='unpaid', verbose_name="สถานะการชำระเงิน")
     
+    # Promotions and Penalties (New)
+    promotion = models.ForeignKey(PromotionCode, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="โค้ดส่วนลดที่ใช้")
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="ยอดส่วนลดรวม")
+    penalty_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="ค่าปรับ (ส่งคืนช้า, ของชำรุด ฯลฯ)")
+
     # Expiration (New)
     expires_at = models.DateTimeField(null=True, blank=True, verbose_name="หมดอายุการจอง (ชำระเงินภายใน)")
 
@@ -236,7 +260,11 @@ class Booking(models.Model):
 
     def calculate_total_price(self):
         from apps.store.services.pricing_service import PricingService
-        return PricingService.calculate_booking_total(self)
+        # Now returns a dictionary with breakdown, so we return the grand_total for legacy calls
+        totals = PricingService.calculate_booking_total(self)
+        if isinstance(totals, dict):
+            return totals.get('grand_total', 0)
+        return totals
 
 # --- 4. Intermediary (Through) Models with Snapshots ---
 class BookingItem(models.Model):

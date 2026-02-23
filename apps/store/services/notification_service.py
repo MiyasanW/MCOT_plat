@@ -3,7 +3,6 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from apps.store.models import Notification
-from apps.store.services.notify import send_line_notify
 from decimal import Decimal
 
 class NotificationService:
@@ -27,7 +26,7 @@ class NotificationService:
         if event_type == 'booking_created':
             # แจ้งเตือนเข้า LINE กลุ่ม Staff (มีคนจองเข้ามาใหม่)
             msg = f"📦 New Booking #{booking.id}: {booking.project_name} โดย {booking.customer_name}"
-            send_line_notify(msg)
+            # send_line_notify(msg) # Disabled
             
             # In-App Notification (For Staff)
             from django.contrib.auth.models import User
@@ -68,7 +67,7 @@ class NotificationService:
         elif event_type == 'verification_pending':
             # แจ้งเตือนเข้า LINE กลุ่ม Staff (ให้ Admin รู้ทันที)
             msg = f"💸 แจ้งโอนเงินใหม่: Booking #{booking.id} ({booking.customer_name}) รอตรวจสอบสลิป"
-            send_line_notify(msg)
+            # send_line_notify(msg) # Disabled
 
             # In-App Notification (For Staff)
             from django.contrib.auth.models import User

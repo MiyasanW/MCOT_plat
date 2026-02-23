@@ -10,7 +10,7 @@ from .models import (
     Staff, Product, ProductionVehicle, Equipment, Studio, Booking, Package,
     IssueReport, Notification, ProductCategory, StaffPosition,
     BookingItem, BookingStudio, BookingStaff, BookingPackage,
-    Profile
+    Profile, PromotionCode
 )
 from apps.store.services.notification_service import NotificationService
 
@@ -35,6 +35,7 @@ class ProfileInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'Customer Profile'
     fk_name = 'user'
+    fields = ('phone', 'is_partner', 'partner_discount_percent')
 
 
 class StudioHistoryInline(admin.TabularInline):
@@ -147,6 +148,12 @@ class UserAdmin(BaseUserAdmin):
 
     def has_module_permission(self, request):
         return request.user.is_superuser or is_web_admin(request.user)
+
+@admin.register(PromotionCode)
+class PromotionCodeAdmin(ModelAdmin):
+    list_display = ['code', 'discount_percent', 'discount_amount', 'valid_from', 'valid_to', 'is_active']
+    search_fields = ['code']
+    list_filter = ['is_active', 'valid_from', 'valid_to']
 
 @admin.register(Profile)
 class ProfileAdmin(ModelAdmin):
@@ -303,7 +310,7 @@ class StudioAdmin(ModelAdmin):
 class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
     # --- List View ---
     list_display = ['id', 'customer_name', 'project_name', 'coordinator', 'status_badge', 'payment_status', 'payment_slip_preview',
-                     'total_price_display', 'start_time', 'end_time']
+                     'total_price_display', 'penalty_amount', 'start_time', 'end_time']
     list_display_links = ['id', 'customer_name']
     search_fields = ['customer_name', 'project_name', 'phone', 'id']
     search_help_text = 'ค้นหาด้วย ชื่อลูกค้า, ชื่อโปรเจค, เบอร์โทร, หรือ เลขที่จอง'
@@ -316,7 +323,34 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
     inlines = [BookingItemInline, BookingStudioInline, BookingStaffInline, BookingPackageInline]
 
     # --- Batch Actions ---
-    actions = ['action_approve', 'action_confirm_payment', 'action_cancel', 'action_mark_active', 'action_mark_completed']
+    actions = ['action_approve', 'action_confirm_payment', 'action_cancel', 'action_mark_active', 'action_mark_completed', 'action_calculate_penalty']
+
+    @admin.action(description='⚠️ คำนวณค่าปรับคืนช้า (Calculate Penalty)')
+    def action_calculate_penalty(self, request, queryset):
+        if not (request.user.is_superuser or is_web_admin(request.user)):
+             self.message_user(request, '❌ คุณไม่มีสิทธิ์', level='error')
+             return
+        
+        count = 0
+        from django.utils import timezone
+        
+        for booking in queryset:
+            penalty = 0
+            # ตรวจสอบแต่ละอุปกรณ์ที่ถูกยืม ว่าคืนช้าไหม
+            for item in booking.items.all():
+                if item.returned_at and item.returned_at > booking.end_time:
+                    days_late = (item.returned_at.date() - booking.end_time.date()).days
+                    if days_late > 0 and item.product.late_fee_per_day:
+                        penalty += (days_late * item.product.late_fee_per_day)
+            
+            if penalty > 0:
+                booking.penalty_amount = penalty
+                # อัปเดตยอดรวมใหม่ (บวกค่าปรับ)
+                booking.calculate_total_price() # Using method wrapper
+                booking.save(update_fields=['penalty_amount'])
+                count += 1
+
+        self.message_user(request, f'⚠️ อัปเดตยอดค่าปรับแล้ว {count} รายการ')
 
     @admin.action(description='💰 ยืนยันการชำระเงิน (Confirm Payment)')
     def action_confirm_payment(self, request, queryset):
@@ -460,7 +494,7 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
                 'fields': ('start_time', 'end_time'),
             }),
             ('💰 การชำระเงิน', {
-                'fields': ('total_price', 'deposit_amount', 'payment_status', 'payment_slip', 'payment_slip_large_preview'),
+                'fields': ('total_price', 'deposit_amount', 'payment_status', 'payment_slip', 'payment_slip_large_preview', 'promotion', 'discount_amount', 'penalty_amount'),
             }),
             ('📄 เอกสาร (Documents)', {
                 'fields': ('print_equipment_sheet', 'print_quotation'),
@@ -485,7 +519,7 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
         return base_fieldsets
 
     def get_readonly_fields(self, request, obj=None):
-        readonly = ['created_at', 'total_price', 'deposit_amount', 'payment_slip_large_preview', 'print_equipment_sheet', 'print_quotation'] # Automation fields
+        readonly = ['created_at', 'total_price', 'deposit_amount', 'discount_amount', 'payment_slip_large_preview', 'print_equipment_sheet', 'print_quotation'] # Automation fields
 
         if not (request.user.is_superuser or is_web_admin(request.user)):
             # Staff: แก้ status, payment, coordinator ไม่ได้

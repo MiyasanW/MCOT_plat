@@ -106,3 +106,49 @@ class BookingFlowTests(TestCase):
         response = self.client.post(url, data=json.dumps(payload), content_type='application/json')
         
         self.assertEqual(response.status_code, 400)
+
+    def test_package_availability(self):
+        """Test package availability checks component products correctly"""
+        from apps.store.models import Package, PackageItem
+        
+        # Create a package
+        package = Package.objects.create(
+            name="Test Bundle",
+            price=2000,
+            is_active=True
+        )
+        
+        # Add products to package (Need 2 of Product A)
+        PackageItem.objects.create(
+            package=package,
+            product=self.product,
+            quantity=2
+        )
+        
+        start = timezone.now() + timedelta(days=5)
+        end = timezone.now() + timedelta(days=6)
+        
+        # Initially, product has 5 in stock. Package needs 2. 
+        # Requesting 1 package = needs 2 products. Avail: 5 >= 2 => True
+        is_avail, msg = AvailabilityService.check_package_availability(package, start, end, requested_quantity=1)
+        self.assertTrue(is_avail)
+        
+        # Requesting 3 packages = needs 6 products. Avail: 5 < 6 => False
+        is_avail, msg = AvailabilityService.check_package_availability(package, start, end, requested_quantity=3)
+        self.assertFalse(is_avail)
+        
+        # Create a booking that consumes 4 of Product A
+        booking = Booking.objects.create(
+            customer_name="Test User 2",
+            created_by=self.user,
+            start_time=start,
+            end_time=end,
+            status='approved'
+        )
+        from apps.store.models import BookingItem
+        BookingItem.objects.create(booking=booking, product=self.product, quantity=4, price_at_booking=1000)
+        
+        # Now product has 1 left in stock. Package needs 2.
+        # Requesting 1 package = needs 2. Avail: 1 < 2 => False
+        is_avail, msg = AvailabilityService.check_package_availability(package, start, end, requested_quantity=1)
+        self.assertFalse(is_avail)

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load humanize %}
+{% load i18n %}
 
 {% block title %}{{ product.name }} | MCOT Rental{% endblock %}
 
@@ -10,12 +11,12 @@
     <div class="max-w-[1600px] mx-auto px-6">
 
         <nav class="flex items-center gap-2 text-xs text-gray-500 mb-8 uppercase tracking-wider font-medium">
-            <a href="/" class="hover:text-white transition-colors">Home</a>
+            <a href="/" class="hover:text-white transition-colors">{% trans "Home" %}</a>
             <span class="text-white/20">/</span>
-            <a href="{% url 'store:catalog' %}" class="hover:text-white transition-colors">Catalog</a>
+            <a href="{% url 'store:catalog' %}" class="hover:text-white transition-colors">{% trans "Catalog" %}</a>
             <span class="text-white/20">/</span>
             <span class="text-mcot-orange">
-                {{ product.category.name|default:"Equipment" }}
+                {{ product.category.name|default:_("Equipment") }}
             </span>
         </nav>
 
@@ -32,7 +33,7 @@
                     {% else %}
                     <div class="text-gray-700 flex flex-col items-center">
                         <i class="fas fa-camera text-6xl mb-4"></i>
-                        <span class="text-sm font-mono uppercase">Image Unavailable</span>
+                        <span class="text-sm font-mono uppercase">{% trans "Image Unavailable" %}</span>
                     </div>
                     {% endif %}
 
@@ -42,14 +43,14 @@
                             class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 backdrop-blur-md">
                             <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                             <span
-                                class="text-[10px] font-bold text-green-400 uppercase tracking-widest">Available</span>
+                                class="text-[10px] font-bold text-green-400 uppercase tracking-widest">{% trans "Available" %}</span>
                         </div>
                         {% else %}
                         <div
                             class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 backdrop-blur-md">
                             <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
                             <span
-                                class="text-[10px] font-bold text-red-400 uppercase tracking-widest">Unavailable</span>
+                                class="text-[10px] font-bold text-red-400 uppercase tracking-widest">{% trans "Unavailable" %}</span>
                         </div>
                         {% endif %}
                     </div>
@@ -58,7 +59,7 @@
                 <!-- Specs -->
                 <div class="bg-[#353535] rounded-2xl p-8 border border-white/5 shadow-xl">
                     <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fas fa-list-ul text-mcot-orange"></i> Technical Specifications
+                        <i class="fas fa-list-ul text-mcot-orange"></i> {% trans "Technical Specifications" %}
                     </h2>
 
                     <div class="prose prose-invert prose-p:text-gray-400 prose-ul:text-gray-400 max-w-none">
@@ -67,28 +68,28 @@
                             {{ product.description|safe }}
                         </div>
                         {% else %}
-                        <p class="text-gray-500 italic">No detailed description available.</p>
+                        <p class="text-gray-500 italic">{% trans "No detailed description available." %}</p>
                         {% endif %}
                     </div>
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-white/5">
                         <div class="p-4 bg-[#2A2A2A] rounded-xl border border-white/5">
-                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider mb-1">Stock ID</span>
+                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider mb-1">{% trans "Stock ID" %}</span>
                             <span class="block text-white font-mono">#{{ product.id|stringformat:"04d" }}</span>
                         </div>
                         <div class="p-4 bg-[#2A2A2A] rounded-xl border border-white/5">
-                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider mb-1">Category</span>
+                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider mb-1">{% trans "Category" %}</span>
                             <span class="block text-white">
                                 {{ product.category.name }}
                             </span>
                         </div>
                         <div class="p-4 bg-[#2A2A2A] rounded-xl border border-white/5">
-                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider mb-1">Condition</span>
-                            <span class="block text-green-400">Excellent</span>
+                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider mb-1">{% trans "Condition" %}</span>
+                            <span class="block text-green-400">{% trans "Excellent" %}</span>
                         </div>
                         <div class="p-4 bg-[#2A2A2A] rounded-xl border border-white/5">
-                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider mb-1">Location</span>
-                            <span class="block text-white">HQ</span>
+                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider mb-1">{% trans "Location" %}</span>
+                            <span class="block text-white">{% trans "HQ" %}</span>
                         </div>
                     </div>
                 </div>
@@ -116,30 +117,28 @@
                                 <span class="text-5xl font-bold text-mcot-orange tracking-tight">
                                     ฿{{ product.price|intcomma }}
                                 </span>
-                                <span class="text-gray-400 font-medium">/ day</span>
+                                <span class="text-gray-400 font-medium">/ {% trans "day" %}</span>
                             </div>
 
                             <div
                                 class="bg-[#2A2A2A] rounded-xl p-5 mb-8 border border-white/5 group hover:border-mcot-orange/30 transition-colors">
                                 <div class="flex justify-between items-center mb-3">
-                                    <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">Booking
-                                        Period</span>
+                                    <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">{% trans "Booking Period" %}</span>
                                     <a href="{% url 'store:catalog' %}"
-                                        class="text-[10px] text-mcot-orange hover:text-white transition-colors uppercase font-bold">Change
-                                        Dates</a>
+                                        class="text-[10px] text-mcot-orange hover:text-white transition-colors uppercase font-bold">{% trans "Change Dates" %}</a>
                                 </div>
                                 <div class="flex items-center gap-4 text-white">
                                     <div class="flex-1">
-                                        <div class="text-[10px] text-gray-600 mb-1 uppercase">Start</div>
+                                        <div class="text-[10px] text-gray-600 mb-1 uppercase">{% trans "Start" %}</div>
                                         <div class="font-mono text-sm border-b border-white/10 pb-1">
-                                            {{ selected_start_date|default:"Today" }}
+                                            {{ selected_start_date|default:_("Today") }}
                                         </div>
                                     </div>
                                     <i class="fas fa-arrow-right text-gray-600 text-xs"></i>
                                     <div class="flex-1 text-right">
-                                        <div class="text-[10px] text-gray-600 mb-1 uppercase">End</div>
+                                        <div class="text-[10px] text-gray-600 mb-1 uppercase">{% trans "End" %}</div>
                                         <div class="font-mono text-sm border-b border-white/10 pb-1">
-                                            {{ selected_end_date|default:"Today" }}
+                                            {{ selected_end_date|default:_("Today") }}
                                         </div>
                                     </div>
                                 </div>
@@ -148,12 +147,12 @@
                             <!-- Quantity & Availability -->
                             <div class="mb-6">
                                 <div class="flex items-center justify-between mb-2">
-                                    <label class="text-xs text-gray-500 uppercase font-bold tracking-wider">Quantity</label>
+                                    <label class="text-xs text-gray-500 uppercase font-bold tracking-wider">{% trans "Quantity" %}</label>
                                     <span class="text-xs font-bold {% if available_qty > 0 %}text-green-400{% else %}text-red-400{% endif %}">
                                         {% if available_qty > 0 %}
-                                        In Stock: {{ available_qty }}
+                                        {% trans "In Stock" %}: {{ available_qty }}
                                         {% else %}
-                                        Out of Stock
+                                        {% trans "Out of Stock" %}
                                         {% endif %}
                                     </span>
                                 </div>
@@ -175,22 +174,22 @@
                                 class="w-full py-5 rounded-2xl font-bold text-base uppercase tracking-widest transition-all transform hover:-translate-y-1 hover:shadow-2xl flex items-center justify-center gap-3 group {% if is_available and available_qty > 0 %}bg-mcot-orange text-white hover:bg-white hover:text-black shadow-[0_10px_30px_rgba(242,101,34,0.3)]{% else %}bg-[#404040] text-gray-500 cursor-not-allowed{% endif %}"
                                 {% if not is_available or available_qty == 0 %}disabled{% endif %}>
                                 {% if is_available and available_qty > 0 %}
-                                <span>Add to Quote</span>
+                                <span>{% trans "Add to Quote" %}</span>
                                 <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                                 {% else %}
-                                <span>Unavailable</span>
+                                <span>{% trans "Unavailable" %}</span>
                                 {% endif %}
                             </button>
 
                             {% if available_qty == 0 and is_available %}
                             <p class="text-center text-xs text-red-400 mt-4 font-bold bg-red-400/10 py-2 rounded-lg">
-                                <i class="fas fa-exclamation-circle mr-1"></i> Out of stock for selected dates
+                                <i class="fas fa-exclamation-circle mr-1"></i> {% trans "Out of stock for selected dates" %}
                             </p>
                             {% endif %}
                             
                             {% if not is_available %}
                             <p class="text-center text-xs text-red-400 mt-4 font-bold bg-red-400/10 py-2 rounded-lg">
-                                <i class="fas fa-exclamation-circle mr-1"></i> Dates fully booked
+                                <i class="fas fa-exclamation-circle mr-1"></i> {% trans "Dates fully booked" %}
                             </p>
                             {% endif %}
                         </div>
@@ -203,8 +202,8 @@
                                 <i class="fas fa-shield-alt text-xs"></i>
                             </div>
                             <div class="text-xs text-gray-400">
-                                <span class="block text-white font-bold mb-0.5">Professional QC</span>
-                                Tested before every rental
+                                <span class="block text-white font-bold mb-0.5">{% trans "Professional QC" %}</span>
+                                {% trans "Tested before every rental" %}
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
@@ -213,8 +212,8 @@
                                 <i class="fas fa-headset text-xs"></i>
                             </div>
                             <div class="text-xs text-gray-400">
-                                <span class="block text-white font-bold mb-0.5">24/7 Support</span>
-                                Direct line for rental issues
+                                <span class="block text-white font-bold mb-0.5">{% trans "24/7 Support" %}</span>
+                                {% trans "Direct line for rental issues" %}
                             </div>
                         </div>
                     </div>
@@ -291,7 +290,7 @@
             }
 
             if (currentInCart + qty > maxStock) {
-                alert(`Cannot add more. You already have ${currentInCart} in cart, and stock is ${maxStock}.`);
+                alert(`{% trans "Cannot add more. You already have" %} ${currentInCart} {% trans "in cart, and stock is" %} ${maxStock}.`);
                 return;
             }
 
@@ -316,7 +315,7 @@
 
         } catch (e) {
             console.error(e);
-            alert("Error adding to cart.");
+            alert("{% trans 'Error adding to cart.' %}");
         }
     }
 </script>

@@ -6,7 +6,7 @@ from datetime import timedelta
 
 from apps.store.models import (
     Booking, BookingItem, BookingStudio, BookingPackage, 
-    Product, Studio, Package, Notification
+    Product, Studio, Package, Notification, PromotionCode
 )
 from apps.store.services.availability import AvailabilityService
 from apps.store.services.pricing_service import PricingService
@@ -50,6 +50,17 @@ class BookingService:
         if booking_start > booking_end:
             raise ValueError("วันเวลาไม่ถูกต้อง (วันกลับต้องหลังหรือวันเดียวกับวันรับ)")
 
+        # ตรวจสอบ Promotion Code
+        promotion_obj = None
+        promo_code = booking_data.get('promotion_code')
+        if promo_code:
+            try:
+                # ตรวจสอบโค้ดที่ Active และไม่หมดอายุ
+                now = timezone.now()
+                promotion_obj = PromotionCode.objects.get(code__iexact=promo_code, is_active=True, valid_from__lte=now, valid_to__gte=now)
+            except PromotionCode.DoesNotExist:
+                pass # ถ้าไม่เจอ หรือหมดอายุ ให้ข้ามไป
+
         # เตรียมข้อมูล Booking Header
         create_payload = {
             'customer_name': booking_data['customer_name'],
@@ -60,7 +71,8 @@ class BookingService:
             'start_time': booking_start,
             'end_time': booking_end,
             'status': booking_data.get('status', 'draft'),
-            'created_by': user if (user and user.is_authenticated) else None
+            'created_by': user if (user and user.is_authenticated) else None,
+            'promotion': promotion_obj
         }
 
         # สร้าง Booking หรือย้อนกลับทั้งหมดถ้ามีปัญหา (Atomic Transaction)
@@ -151,10 +163,11 @@ class BookingService:
                 if error_messages:
                     raise ValueError(f"Conflict: {', '.join(error_messages)}")
                 
-                # 3. Calculate Totals & Deposit
-                total = PricingService.calculate_booking_total(new_booking)
-                new_booking.total_price = total
-                new_booking.deposit_amount = PricingService.calculate_deposit(total) # 30%
+                # 3. Calculate Totals, Discounts, & Deposit
+                totals = PricingService.calculate_booking_total(new_booking)
+                new_booking.total_price = totals['grand_total']
+                new_booking.discount_amount = totals['discount']
+                new_booking.deposit_amount = PricingService.calculate_deposit(totals['grand_total']) # 30%
                 
                 # Set Expiration (24h)
                 new_booking.expires_at = timezone.now() + timedelta(hours=24)

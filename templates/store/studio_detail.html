@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load humanize %}
+{% load i18n %}
 
 {% block title %}{{ studio.name }} | MCOT Rental{% endblock %}
 
@@ -9,9 +10,9 @@
     <div class="max-w-[1600px] mx-auto px-6">
 
         <nav class="flex items-center gap-2 text-xs text-gray-500 mb-8 uppercase tracking-wider font-medium">
-            <a href="/" class="hover:text-white transition-colors">Home</a>
+            <a href="/" class="hover:text-white transition-colors">{% trans "Home" %}</a>
             <span class="text-white/20">/</span>
-            <a href="{% url 'store:studio_list' %}" class="hover:text-white transition-colors">Studios</a>
+            <a href="{% url 'store:studio_list' %}" class="hover:text-white transition-colors">{% trans "Studios" %}</a>
             <span class="text-white/20">/</span>
             <span class="text-purple-400">
                 {{ studio.name }}
@@ -31,7 +32,7 @@
                     {% else %}
                     <div class="text-gray-700 flex flex-col items-center">
                         <i class="fas fa-warehouse text-6xl mb-4"></i>
-                        <span class="text-sm font-mono uppercase">Image Unavailable</span>
+                        <span class="text-sm font-mono uppercase">{% trans "Image Unavailable" %}</span>
                     </div>
                     {% endif %}
                 </div>
@@ -39,50 +40,50 @@
                 <!-- Facilities -->
                 <div class="bg-[#353535] rounded-2xl p-8 border border-white/5 shadow-xl">
                     <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fas fa-tools text-purple-400"></i> Studio Facilities
+                        <i class="fas fa-tools text-purple-400"></i> {% trans "Studio Facilities" %}
                     </h2>
 
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
                         <div class="flex items-start gap-3">
                             <i class="fas fa-ruler-combined text-purple-400 mt-1"></i>
                             <div>
-                                <h4 class="text-white font-bold text-sm">Spacious Area</h4>
-                                <p class="text-xs text-gray-500">120 Sq.m working space</p>
+                                <h4 class="text-white font-bold text-sm">{% trans "Spacious Area" %}</h4>
+                                <p class="text-xs text-gray-500">120 {% trans "Sq.m working space" %}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
                             <i class="fas fa-bolt text-purple-400 mt-1"></i>
                             <div>
-                                <h4 class="text-white font-bold text-sm">Power Supply</h4>
-                                <p class="text-xs text-gray-500">3-Phase 100A ready</p>
+                                <h4 class="text-white font-bold text-sm">{% trans "Power Supply" %}</h4>
+                                <p class="text-xs text-gray-500">3-{% trans "Phase 100A ready" %}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
                             <i class="fas fa-wind text-purple-400 mt-1"></i>
                             <div>
-                                <h4 class="text-white font-bold text-sm">Climate Control</h4>
-                                <p class="text-xs text-gray-500">Silent AC System</p>
+                                <h4 class="text-white font-bold text-sm">{% trans "Climate Control" %}</h4>
+                                <p class="text-xs text-gray-500">{% trans "Silent AC System" %}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
                             <i class="fas fa-wifi text-purple-400 mt-1"></i>
                             <div>
-                                <h4 class="text-white font-bold text-sm">Connectivity</h4>
-                                <p class="text-xs text-gray-500">Fiber Internet 1Gbps</p>
+                                <h4 class="text-white font-bold text-sm">{% trans "Connectivity" %}</h4>
+                                <p class="text-xs text-gray-500">{% trans "Fiber Internet 1Gbps" %}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
                             <i class="fas fa-parking text-purple-400 mt-1"></i>
                             <div>
-                                <h4 class="text-white font-bold text-sm">Accessibility</h4>
-                                <p class="text-xs text-gray-500">Ground floor loading</p>
+                                <h4 class="text-white font-bold text-sm">{% trans "Accessibility" %}</h4>
+                                <p class="text-xs text-gray-500">{% trans "Ground floor loading" %}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
                             <i class="fas fa-couch text-purple-400 mt-1"></i>
                             <div>
-                                <h4 class="text-white font-bold text-sm">Amenities</h4>
-                                <p class="text-xs text-gray-500">Dressing room & Lounge</p>
+                                <h4 class="text-white font-bold text-sm">{% trans "Amenities" %}</h4>
+                                <p class="text-xs text-gray-500">{% trans "Dressing room & Lounge" %}</p>
                             </div>
                         </div>
                     </div>
@@ -91,10 +92,10 @@
                 <!-- Description -->
                 <div class="bg-[#353535] rounded-2xl p-8 border border-white/5 shadow-xl">
                     <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fas fa-info-circle text-purple-400"></i> About Space
+                        <i class="fas fa-info-circle text-purple-400"></i> {% trans "About Space" %}
                     </h2>
                     <div class="prose prose-invert prose-p:text-gray-400 max-w-none">
-                        {{ studio.description|safe|linebreaks|default:"Contact us for full technical specifications." }}
+                        {{ studio.description|safe|linebreaks|default:_("Contact us for full technical specifications.") }}
                     </div>
                 </div>
             </div>
@@ -111,7 +112,7 @@
 
                         <div class="relative">
                             <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">
-                                Professional Studio
+                                {% trans "Professional Studio" %}
                             </p>
                             <h1 class="text-3xl lg:text-4xl font-black text-white mb-6 leading-tight font-display">
                                 {{ studio.name }}
@@ -121,21 +122,20 @@
                                 <span class="text-5xl font-bold text-purple-400 tracking-tight">
                                     ฿{{ studio.daily_rate|intcomma }}
                                 </span>
-                                <span class="text-gray-400 font-medium">/ day</span>
+                                <span class="text-gray-400 font-medium">/ {% trans "day" %}</span>
                             </div>
 
                             <!-- Date Picker -->
                             <div class="bg-[#2A2A2A] rounded-xl p-5 mb-8 border border-white/5">
                                 <label
-                                    class="block text-xs text-gray-500 uppercase font-bold tracking-wider mb-3">Select
-                                    Dates</label>
+                                    class="block text-xs text-gray-500 uppercase font-bold tracking-wider mb-3">{% trans "Select Dates" %}</label>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <input type="text" id="studio-start-date" placeholder="Check-in"
+                                        <input type="text" id="studio-start-date" placeholder="{% trans 'Check-in' %}"
                                             class="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-purple-500 focus:outline-none placeholder-gray-600">
                                     </div>
                                     <div>
-                                        <input type="text" id="studio-end-date" placeholder="Check-out"
+                                        <input type="text" id="studio-end-date" placeholder="{% trans 'Check-out' %}"
                                             class="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-purple-500 focus:outline-none placeholder-gray-600">
                                     </div>
                                 </div>
@@ -144,12 +144,12 @@
                             <button
                                 onclick="addStudioToCart('{{ studio.id }}', '{{ studio.name|escapejs }}', {{ studio.daily_rate|default:0 }})"
                                 class="w-full py-5 rounded-2xl font-bold text-base uppercase tracking-widest transition-all transform hover:-translate-y-1 hover:shadow-2xl flex items-center justify-center gap-3 group bg-purple-600 text-white hover:bg-white hover:text-black shadow-[0_10px_30px_rgba(147,51,234,0.3)]">
-                                <span>Book Studio</span>
+                                <span>{% trans "Book Studio" %}</span>
                                 <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                             </button>
 
                             <p class="text-center text-xs text-gray-500 mt-4">
-                                *Includes basic lighting grip & power
+                                *{% trans "Includes basic lighting grip & power" %}
                             </p>
                         </div>
                     </div>
@@ -161,8 +161,8 @@
                                 <i class="fas fa-calendar-check text-xs"></i>
                             </div>
                             <div class="text-xs text-gray-400">
-                                <span class="block text-white font-bold mb-0.5">Flexible Booking</span>
-                                Hourly rates available via phone
+                                <span class="block text-white font-bold mb-0.5">{% trans "Flexible Booking" %}</span>
+                                {% trans "Hourly rates available via phone" %}
                             </div>
                         </div>
                     </div>
@@ -206,7 +206,7 @@
             const endDate = document.getElementById('studio-end-date').value;
 
             if (!startDate || !endDate) {
-                alert('Please select check-in and check-out dates.');
+                alert('{% trans "Please select check-in and check-out dates." %}');
                 return;
             }
 
@@ -232,13 +232,13 @@
             localStorage.setItem('mcot_cart', JSON.stringify(cart));
             window.dispatchEvent(new Event('cartUpdated'));
 
-            if (confirm('Studio added to booking list! Go to checkout?')) {
+            if (confirm('{% trans "Studio added to booking list! Go to checkout?" %}')) {
                 window.location.href = "{% url 'store:cart' %}";
             }
 
         } catch (e) {
             console.error(e);
-            alert("Error adding to booking.");
+            alert("{% trans 'Error adding to booking.' %}");
         }
     }
 </script>

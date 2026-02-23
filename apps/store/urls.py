@@ -29,6 +29,7 @@ urlpatterns = [
     # API endpoints (Core Functions)
     path('api/check-availability/', booking.check_availability_api, name='api_check_availability'),
     path('api/check-cart/', booking.check_cart_availability_api, name='api_check_cart_availability'),
+    path('api/check-promo/', booking.check_promo_api, name='api_check_promo'),
     path('api/booking/create/', booking.create_booking_api, name='api_create_booking'),
     path('api/booking/<int:booking_id>/cancel/', booking.cancel_booking_api, name='api_cancel_booking'),
     path('api/calendar/events/', calendar.calendar_events_api, name='api_calendar_events'),

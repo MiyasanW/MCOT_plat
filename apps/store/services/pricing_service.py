@@ -56,34 +56,75 @@ class PricingService:
         """
         คำนวณราคารวมทั้งหมดของการจอง (Grand Total)
         รวม: สินค้า (Items) + สตูดิโอ (Studios) + แพ็คเกจ (Packages)
+        รองรับ: หักส่วนลด (Promotions/Partner) และ บวกเพิ่มค่าปรับ (Penalties)
         
         Args:
             booking_instance (Booking): อ็อบเจกต์การจองที่ต้องการคำนวณ
-            update_db (bool): (Future Use) ถ้าเป็น True จะบันทึกค่าลงฐานข้อมูล
+            update_db (bool): ถ้าเป็น True จะบันทึกค่าลงฐานข้อมูล
+        
+        Returns:
+            dict: { 'subtotal': Decimal, 'discount': Decimal, 'penalty': Decimal, 'grand_total': Decimal }
         """
         # 1. คำนวณจำนวนวัน
         rental_days = PricingService.calculate_rental_days(booking_instance.start_time, booking_instance.end_time)
-        grand_total = Decimal('0.00')
+        subtotal = Decimal('0.00')
 
         # 2. รวมราคาสินค้ารายชิ้น (Product Items)
         for item in booking_instance.items.all():
-            grand_total += PricingService.calculate_item_price(item.price_at_booking, item.quantity, rental_days)
+            subtotal += PricingService.calculate_item_price(item.price_at_booking, item.quantity, rental_days)
 
         # 3. รวมราคาสตูดิโอ (Studios)
         for studio_item in booking_instance.booked_studios.all():
-            # ใช้ราคาจาก Snapshot (BookingStudio)
-            grand_total += (studio_item.price_at_booking * rental_days)
+            subtotal += (studio_item.price_at_booking * rental_days)
 
         # 4. รวมราคาแพ็คเกจ (Packages)
         for pkg_item in booking_instance.booked_packages.all():
-             grand_total += PricingService.calculate_item_price(pkg_item.price_at_booking, pkg_item.quantity, rental_days)
+             subtotal += PricingService.calculate_item_price(pkg_item.price_at_booking, pkg_item.quantity, rental_days)
 
         # 5. รวมค่าแรงพนักงาน (Staff)
         for staff_item in booking_instance.booked_staff.all():
-            # ใช้ราคาจาก Snapshot (BookingStaff)
-            grand_total += (staff_item.daily_rate_at_booking * rental_days)
+            subtotal += (staff_item.daily_rate_at_booking * rental_days)
         
-        return grand_total
+        # 6. คำนวณส่วนลด (Discount)
+        discount = Decimal('0.00')
+        
+        # 6.1 ส่วนลด Partner (เปอร์เซ็นต์)
+        if booking_instance.created_by and hasattr(booking_instance.created_by, 'profile'):
+            profile = booking_instance.created_by.profile
+            if profile.is_partner:
+                partner_discount = subtotal * (Decimal(profile.partner_discount_percent) / Decimal('100.0'))
+                discount += partner_discount
+
+        # 6.2 ส่วนลด Promotion Code 
+        if booking_instance.promotion and booking_instance.promotion.is_valid():
+            if booking_instance.promotion.discount_percent > 0:
+                promo_discount = subtotal * (Decimal(booking_instance.promotion.discount_percent) / Decimal('100.0'))
+                discount += promo_discount
+            elif booking_instance.promotion.discount_amount > 0:
+                discount += booking_instance.promotion.discount_amount
+
+        # จำกัดส่วนลดไม่ให้เกินยอดรวม
+        if discount > subtotal:
+            discount = subtotal
+
+        # 7. ค่าปรับ (จากที่แอดมินหรือระบบใส่ไว้)
+        penalty = booking_instance.penalty_amount or Decimal('0.00')
+
+        # 8. คำนวณยอดสุทธิ
+        grand_total = (subtotal - discount) + penalty
+
+        if update_db:
+            booking_instance.total_price = grand_total
+            booking_instance.discount_amount = discount
+            booking_instance.deposit_amount = PricingService.calculate_deposit(grand_total)
+            booking_instance.save(update_fields=['total_price', 'discount_amount', 'deposit_amount'])
+
+        return {
+            'subtotal': subtotal,
+            'discount': discount,
+            'penalty': penalty,
+            'grand_total': grand_total
+        }
 
     @staticmethod
     def calculate_deposit(total_amount, percentage=0.3):

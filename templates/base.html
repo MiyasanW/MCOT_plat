@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="th">
 
@@ -89,14 +90,13 @@
     <div class="bg-[#050505] border-b border-white/10 text-[10px] text-gray-500 py-1.5 font-sans">
         <div class="max-w-[1600px] mx-auto px-4 flex justify-between items-center">
             <div class="flex gap-4">
-                <span class="hover:text-gray-300 cursor-default"><i class="fas fa-certificate text-mcot-orange"></i> ISO
-                    9001:2015 Certified</span>
+                <span class="hover:text-gray-300 cursor-default"><i class="fas fa-certificate text-mcot-orange"></i> {% trans "ISO 9001:2015 Certified" %}</span>
                 <span class="hidden sm:inline hover:text-gray-300 cursor-default"><i
-                        class="fas fa-building text-gray-600"></i> Government Enterprise Standard</span>
+                        class="fas fa-building text-gray-600"></i> {% trans "Government Enterprise Standard" %}</span>
             </div>
             <div class="flex gap-4">
-                <a href="#" class="hover:text-white transition-colors">Corporate Sales</a>
-                <a href="#" class="hover:text-white transition-colors">Vendor Registration</a>
+                <a href="#" class="hover:text-white transition-colors">{% trans "Corporate Sales" %}</a>
+                <a href="#" class="hover:text-white transition-colors">{% trans "Vendor Registration" %}</a>
                 <span class="text-gray-700">|</span>
                 <a href="#" class="text-white hover:text-mcot-orange">TH</a>
             </div>
@@ -142,7 +142,7 @@
 
                 <a href="{% url 'store:home' %}"
                     class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if url_name == 'home' %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
-                    <span class="relative z-10">HOME</span>
+                    <span class="relative z-10">{% trans "HOME" %}</span>
                     {% if url_name == 'home' %}
                     <div
                         class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-mcot-orange shadow-[0_0_10px_rgba(242,101,34,0.8)] rounded-full">
@@ -154,7 +154,7 @@
 
                 <a href="{% url 'store:catalog' %}"
                     class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'catalog' in url_name %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
-                    <span class="relative z-10">EQUIPMENT</span>
+                    <span class="relative z-10">{% trans "EQUIPMENT" %}</span>
                     {% if 'catalog' in url_name %}
                     <div
                         class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] rounded-full">
@@ -164,7 +164,7 @@
 
                 <a href="{% url 'store:package_list' %}"
                     class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'package' in url_name %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
-                    <span class="relative z-10">PACKAGES</span>
+                    <span class="relative z-10">{% trans "PACKAGES" %}</span>
                     {% if 'package' in url_name %}
                     <div
                         class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-mcot-orange shadow-[0_0_10px_rgba(242,101,34,0.8)] rounded-full">
@@ -174,7 +174,7 @@
 
                 <a href="{% url 'store:studio_list' %}"
                     class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'studio' in url_name %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
-                    <span class="relative z-10">STUDIOS</span>
+                    <span class="relative z-10">{% trans "STUDIOS" %}</span>
                     {% if 'studio' in url_name %}
                     <div
                         class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.8)] rounded-full">
@@ -184,7 +184,7 @@
 
                 <a href="{% url 'store:service_list' %}"
                     class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'service' in url_name %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
-                    <span class="relative z-10">SERVICES</span>
+                    <span class="relative z-10">{% trans "SERVICES" %}</span>
                     {% if 'service' in url_name %}
                     <div
                         class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)] rounded-full">
@@ -197,7 +197,7 @@
                     @mouseleave="open = false">
                     <button
                         class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden text-gray-400 hover:text-white hover:bg-white/5 flex items-center gap-1">
-                        <span class="relative z-10">ABOUT</span>
+                        <span class="relative z-10">{% trans "ABOUT" %}</span>
                         <i class="fas fa-chevron-down text-[10px] transition-transform duration-300"
                             :class="{'rotate-180': open}"></i>
                     </button>
@@ -213,15 +213,15 @@
 
                         <a href="{% url 'store:about' %}"
                             class="block px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
-                            About Us
+                            {% trans "About Us" %}
                         </a>
                         <a href="{% url 'store:faq' %}"
                             class="block px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
-                            Help Center (FAQ)
+                            {% trans "Help Center (FAQ)" %}
                         </a>
                         <a href="{% url 'store:contact' %}"
                             class="block px-4 py-3 text-sm text-mcot-orange font-bold hover:text-white hover:bg-mcot-orange/20 transition-colors">
-                            Contact Us
+                            {% trans "Contact Us" %}
                         </a>
                     </div>
                 </div>
@@ -236,13 +236,13 @@
                 <a href="{% url 'store:calendar' %}" 
                    class="hidden md:flex items-center gap-2 bg-mcot-purple hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-bold transition-all shadow-lg hover:shadow-purple-500/50 border border-white/10">
                     <i class="fas fa-calendar-alt"></i>
-                    <span>STAFF CALENDAR</span>
+                    <span>{% trans "STAFF CALENDAR" %}</span>
                 </a>
                 {% endif %}
 
                 <!-- Phone (Permanent Glow) -->
                 <div class="hidden xl:flex flex-col text-right group cursor-pointer">
-                    <span class="text-[10px] text-mcot-orange uppercase tracking-widest font-bold">Support 24/7</span>
+                    <span class="text-[10px] text-mcot-orange uppercase tracking-widest font-bold">{% trans "Support 24/7" %}</span>
                     <span
                         class="text-white font-mono text-sm font-bold text-mcot-orange drop-shadow-[0_0_8px_rgba(242,101,34,0.8)]">02-201-6000</span>
                 </div>
@@ -273,18 +273,18 @@
                          style="display: none;">
                         
                         <div class="p-4 border-b border-white/5 flex justify-between items-center bg-black/20">
-                            <h3 class="text-sm font-bold text-white">Notifications</h3>
-                            <button onclick="markAllRead()" class="text-[10px] text-mcot-orange hover:text-white transition-colors">Mark all read</button>
+                            <h3 class="text-sm font-bold text-white">{% trans "Notifications" %}</h3>
+                            <button onclick="markAllRead()" class="text-[10px] text-mcot-orange hover:text-white transition-colors">{% trans "Mark all read" %}</button>
                         </div>
                         
                         <div id="notif-list" class="max-h-64 overflow-y-auto custom-scrollbar">
                             <div class="p-8 text-center text-gray-500 text-xs">
-                                <i class="fas fa-spinner fa-spin mb-2"></i> Loading...
+                                <i class="fas fa-spinner fa-spin mb-2"></i> {% trans "Loading..." %}
                             </div>
                         </div>
                         
                         <div class="p-2 border-t border-white/5 bg-black/20 text-center">
-                            <a href="#" class="text-[10px] text-gray-400 hover:text-white transition-colors">View All Activities</a>
+                            <a href="#" class="text-[10px] text-gray-400 hover:text-white transition-colors">{% trans "View All Activities" %}</a>
                         </div>
                     </div>
                 </div>
@@ -315,17 +315,21 @@
                          class="absolute top-full right-0 mt-2 w-48 bg-[#1e1e1e] border border-white/10 rounded-xl shadow-xl overflow-hidden backdrop-blur-xl z-50">
                         <a href="{% url 'store:my_bookings' %}"
                            class="block px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
-                            <i class="fas fa-clipboard-list mr-2 text-mcot-orange/60"></i> การจองของฉัน
+                            <i class="fas fa-clipboard-list mr-2 text-mcot-orange/60"></i> {% trans "My Bookings" %}
+                        </a>
+                        <a href="{% url 'password_change' %}"
+                           class="block px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
+                            <i class="fas fa-key mr-2 text-mcot-orange/60"></i> {% trans "Change Password" %}
                         </a>
                         {% if user.is_staff %}
                         <a href="{% url 'admin:index' %}"
                            class="block px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
-                            <i class="fas fa-cog mr-2 text-mcot-orange/60"></i> Admin Panel
+                            <i class="fas fa-cog mr-2 text-mcot-orange/60"></i> {% trans "Admin Panel" %}
                         </a>
                         {% endif %}
                         <a href="{% url 'logout' %}"
                            class="block px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-colors">
-                            <i class="fas fa-sign-out-alt mr-2"></i> ออกจากระบบ
+                            <i class="fas fa-sign-out-alt mr-2"></i> {% trans "Log Out" %}
                         </a>
                     </div>
                 </div>
@@ -334,8 +338,7 @@
                     class="flex items-center gap-2 bg-mcot-orange/20 hover:bg-mcot-orange/30 border border-mcot-orange/50 px-4 py-2 rounded-full transition-all group shadow-[0_0_15px_rgba(242,101,34,0.3)] hover:shadow-[0_0_20px_rgba(242,101,34,0.5)]">
                     <i class="fas fa-user text-sm text-mcot-orange group-hover:text-white transition-colors"></i>
                     <span
-                        class="hidden lg:block text-xs font-bold uppercase tracking-wide text-white group-hover:text-white transition-colors">Sign
-                        In / Register</span>
+                        class="hidden lg:block text-xs font-bold uppercase tracking-wide text-white group-hover:text-white transition-colors">{% trans "Sign In / Register" %}</span>
                 </a>
                 {% endif %}
 
@@ -378,12 +381,11 @@
                 <div class="space-y-6">
                     <div>
                         <span class="font-display font-black text-xl text-white">MCOT</span>
-                        <span class="text-[10px] tracking-widest text-gray-500 uppercase block">Rental
-                            Platform</span>
+                        <span class="text-[10px] tracking-widest text-gray-500 uppercase block">{% trans "Rental Platform" %}</span>
                     </div>
                     <p class="text-gray-500 text-sm leading-relaxed font-light">
-                        ผู้ให้บริการเช่าอุปกรณ์ถ่ายทำครบวงจร โดย บมจ. อสมท <br>
-                        มาตรฐานการผลิตระดับประเทศ ยาวนานกว่า 70 ปี
+                        {% trans "ผู้ให้บริการเช่าอุปกรณ์ถ่ายทำครบวงจร โดย บมจ. อสมท" %} <br>
+                        {% trans "มาตรฐานการผลิตระดับประเทศ ยาวนานกว่า 70 ปี" %}
                     </p>
                     <div class="flex gap-4">
                         <a href="#"
@@ -400,39 +402,38 @@
 
                 <!-- Product Links -->
                 <div>
-                    <h4 class="text-white font-bold mb-6">บริการของเรา</h4>
+                    <h4 class="text-white font-bold mb-6">{% trans "Our Services" %}</h4>
                     <ul class="space-y-3 text-sm text-gray-500 font-light">
-                        <li><a href="#" class="hover:text-mcot-orange transition-colors">เช่ากล้องถ่ายภาพยนตร์</a></li>
-                        <li><a href="#" class="hover:text-mcot-orange transition-colors">เลนส์ Anamorphic</a>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">{% trans "Camera Rental" %}</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">{% trans "Anamorphic Lenses" %}</a>
                         </li>
-                        <li><a href="#" class="hover:text-mcot-orange transition-colors">บริการรถ OB</a></li>
-                        <li><a href="#" class="hover:text-mcot-orange transition-colors">เช่าสตูดิโอขนาดใหญ่</a>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">{% trans "OB Van Service" %}</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">{% trans "Studio Rental" %}</a>
                         </li>
-                        <li><a href="#" class="hover:text-mcot-orange transition-colors">สินค้ามาใหม่</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">{% trans "New Arrivals" %}</a></li>
                     </ul>
                 </div>
 
                 <!-- Support Links -->
                 <div>
-                    <h4 class="text-white font-bold mb-6">เกี่ยวกับเรา</h4>
+                    <h4 class="text-white font-bold mb-6">{% trans "About Us" %}</h4>
                     <ul class="space-y-3 text-sm text-gray-500 font-light">
-                        <li><a href="{% url 'store:about' %}" class="hover:text-mcot-orange transition-colors">รู้จัก
-                                MCOT Rental</a></li>
+                        <li><a href="{% url 'store:about' %}" class="hover:text-mcot-orange transition-colors">{% trans "MCOT Rental Profile" %}</a></li>
                         <li><a href="{% url 'store:contact' %}"
-                                class="hover:text-mcot-orange transition-colors">ติดต่อเจ้าหน้าที่</a></li>
+                                class="hover:text-mcot-orange transition-colors">{% trans "Contact Staff" %}</a></li>
                         <li><a href="{% url 'store:faq' %}"
-                                class="hover:text-mcot-orange transition-colors">คำถามที่พบบ่อย (FAQ)</a></li>
-                        <li><a href="#" class="hover:text-mcot-orange transition-colors">เงื่อนไขการให้บริการ</a></li>
-                        <li><a href="#" class="hover:text-mcot-orange transition-colors">นโยบายความเป็นส่วนตัว</a></li>
+                                class="hover:text-mcot-orange transition-colors">{% trans "FAQ" %}</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">{% trans "Terms of Service" %}</a></li>
+                        <li><a href="#" class="hover:text-mcot-orange transition-colors">{% trans "Privacy Policy" %}</a></li>
                     </ul>
                 </div>
 
                 <!-- Contact -->
                 <div>
-                    <h4 class="text-white font-bold mb-6">สำนักงานใหญ่</h4>
+                    <h4 class="text-white font-bold mb-6">{% trans "Headquarters" %}</h4>
                     <address class="text-sm text-gray-500 not-italic leading-relaxed mb-4 font-light">
-                        เลขที่ 63/1 ถ.พระราม 9 แขวงห้วยขวาง<br>
-                        เขตห้วยขวาง กรุงเทพฯ 10310
+                        {% trans "63/1 Rama 9 Road, Huai Khwang" %}<br>
+                        {% trans "Huai Khwang, Bangkok 10310" %}
                     </address>
                     <p class="text-sm text-white font-bold mb-1">02-201-6000</p>
                     <p class="text-sm text-mcot-orange">rental@mcot.net</p>
@@ -442,11 +443,11 @@
             <!-- Bottom Bar -->
             <div
                 class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600 font-light">
-                <p>&copy; {% now "Y" %} บมจ. อสมท (MCOT Public Company Limited). สงวนลิขสิทธิ์.</p>
+                <p>&copy; {% now "Y" %} {% trans "MCOT Public Company Limited. All rights reserved." %}</p>
                 <div class="flex gap-6">
-                    <a href="#" class="hover:text-gray-400">ผังเว็บไซต์</a>
-                    <a href="#" class="hover:text-gray-400">การใช้คุกกี้</a>
-                    <a href="#" class="hover:text-gray-400">ความปลอดภัย</a>
+                    <a href="#" class="hover:text-gray-400">{% trans "Sitemap" %}</a>
+                    <a href="#" class="hover:text-gray-400">{% trans "Cookies Usage" %}</a>
+                    <a href="#" class="hover:text-gray-400">{% trans "Security" %}</a>
                 </div>
             </div>
         </div>

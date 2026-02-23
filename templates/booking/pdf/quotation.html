@@ -198,6 +198,37 @@
                     </td>
                 </tr>
                 {% endfor %}
+
+                {% for pkg in packages %}
+                <tr>
+                    <td>-</td>
+                    <td>
+                        {{ pkg.package.name }} 
+                        <br><span style="font-size:10px; color:#666;">(Package)</span>
+                    </td>
+                    <td class="text-right">{{ pkg.price_at_booking|intcomma }}</td>
+                    <td class="text-center">{{ pkg.quantity }}</td>
+                    <td class="text-right">
+                        {% widthratio pkg.price_at_booking 1 pkg.quantity as pkg_total %}
+                        {{ pkg_total|intcomma }}
+                    </td>
+                </tr>
+                {% endfor %}
+
+                {% for studio in studios %}
+                <tr>
+                    <td>-</td>
+                    <td>
+                        {{ studio.studio.name }} 
+                        <br><span style="font-size:10px; color:#666;">(Studio)</span>
+                    </td>
+                    <td class="text-right">{{ studio.price_at_booking|intcomma }}</td>
+                    <td class="text-center">1</td>
+                    <td class="text-right">
+                        {{ studio.price_at_booking|intcomma }}
+                    </td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
 
