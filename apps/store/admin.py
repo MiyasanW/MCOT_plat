@@ -323,7 +323,7 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
     inlines = [BookingItemInline, BookingStudioInline, BookingStaffInline, BookingPackageInline]
 
     # --- Batch Actions ---
-    actions = ['action_approve', 'action_confirm_payment', 'action_cancel', 'action_mark_active', 'action_mark_completed', 'action_calculate_penalty']
+    actions = ['action_approve', 'action_confirm_payment', 'action_cancel', 'action_mark_active', 'action_mark_overdue', 'action_mark_completed', 'action_calculate_penalty']
 
     @admin.action(description='⚠️ คำนวณค่าปรับคืนช้า (Calculate Penalty)')
     def action_calculate_penalty(self, request, queryset):
@@ -399,8 +399,15 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
 
     @admin.action(description='✔ คืนของครบ (Completed)')
     def action_mark_completed(self, request, queryset):
-        updated = queryset.filter(status='active').update(status='completed')
+        # We can complete from active or overdue
+        updated = queryset.filter(status__in=['active', 'overdue']).update(status='completed')
         self.message_user(request, f'✔ คืนของครบแล้ว {updated} รายการ')
+
+    @admin.action(description='⚠️ เกินกำหนด (Overdue)')
+    def action_mark_overdue(self, request, queryset):
+        updated = queryset.filter(status='active').update(status='overdue')
+        from django.contrib import messages
+        self.message_user(request, f'⚠️ ปรับเป็นเกินกำหนดแล้ว {updated} รายการ', level=messages.WARNING)
 
     # --- Group-based Permissions ---
     def has_view_permission(self, request, obj=None):
@@ -461,6 +468,7 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
             'pending': ('#2196F3', '#fff'),
             'approved': ('#4CAF50', '#fff'),
             'active': ('#FF9800', '#fff'),
+            'overdue': ('#D32F2F', '#fff'),
             'completed': ('#9E9E9E', '#fff'),
             'cancelled': ('#f44336', '#fff'),
         }

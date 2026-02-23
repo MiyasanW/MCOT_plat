@@ -3,170 +3,205 @@
 {% load humanize %}
 {% load i18n %}
 
-{% block title %}{{ studio.name }} | MCOT Rental{% endblock %}
+{% block title %}{{ studio.name }} | MCOT Rental Platform{% endblock %}
 
 {% block content %}
-<div class="min-h-screen pb-20 pt-8 bg-[#2A2A2A]">
-    <div class="max-w-[1600px] mx-auto px-6">
+<div class="min-h-screen bg-[#1A1A1A] pb-24 relative overflow-hidden">
+    <!-- Ambient Background -->
+    <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-mcot-purple/10 rounded-full blur-[150px] pointer-events-none"></div>
+    <div class="absolute bottom-1/4 left-0 w-[600px] h-[600px] bg-mcot-orange/10 rounded-full blur-[150px] pointer-events-none"></div>
 
-        <nav class="flex items-center gap-2 text-xs text-gray-500 mb-8 uppercase tracking-wider font-medium">
-            <a href="/" class="hover:text-white transition-colors">{% trans "Home" %}</a>
+    <!-- Hero Image Banner -->
+    <div class="w-full h-[50vh] min-h-[500px] relative mt-0">
+        {% if studio.image %}
+        <img src="{{ studio.image.url }}" alt="{{ studio.name }}" class="w-full h-full object-cover">
+        {% else %}
+        <div class="w-full h-full bg-[#222] flex items-center justify-center relative overflow-hidden">
+            <div class="absolute inset-0" style="background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;"></div>
+            <i class="fas fa-warehouse text-8xl text-white/5"></i>
+        </div>
+        {% endif %}
+        
+        <!-- Deep Gradient Fade -->
+        <div class="absolute inset-0 bg-gradient-to-t from-[#1A1A1A] via-[#1A1A1A]/60 to-transparent"></div>
+        <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#1A1A1A] to-transparent"></div>
+    </div>
+
+    <div class="max-w-[1600px] mx-auto px-6 -mt-40 relative z-20">
+        <!-- Breadcrumbs -->
+        <nav class="flex items-center gap-3 text-xs text-gray-400 mb-8 uppercase tracking-widest font-bold backdrop-blur-md inline-flex p-3 rounded-2xl bg-black/20 border border-white/5">
+            <a href="/" class="hover:text-white transition-colors"><i class="fas fa-home"></i></a>
             <span class="text-white/20">/</span>
             <a href="{% url 'store:studio_list' %}" class="hover:text-white transition-colors">{% trans "Studios" %}</a>
             <span class="text-white/20">/</span>
-            <span class="text-purple-400">
+            <span class="text-mcot-orange">
                 {{ studio.name }}
             </span>
         </nav>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
-
-            <!-- Left: Visual & Details -->
-            <div class="lg:col-span-7 xl:col-span-8 space-y-6">
-                <!-- Image Stage -->
-                <div
-                    class="aspect-video w-full bg-[#151515] rounded-3xl overflow-hidden relative group border border-white/5 flex items-center justify-center p-8 shadow-2xl">
-                    {% if studio.image %}
-                    <img src="{{ studio.image.url }}" alt="{{ studio.name }}"
-                        class="w-full h-full object-cover filter brightness-90 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700">
-                    {% else %}
-                    <div class="text-gray-700 flex flex-col items-center">
-                        <i class="fas fa-warehouse text-6xl mb-4"></i>
-                        <span class="text-sm font-mono uppercase">{% trans "Image Unavailable" %}</span>
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-8 lg:gap-12">
+            
+            <!-- Left Content Column -->
+            <div class="xl:col-span-8 space-y-8">
+                
+                <!-- Title & Brief -->
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 border border-white/20 rounded-full text-[10px] font-bold text-white tracking-wider uppercase mb-4 shadow-lg backdrop-blur-md">
+                        <i class="fas fa-star text-xs text-mcot-orange"></i> {% trans "Premium Facility" %}
                     </div>
-                    {% endif %}
+                    <h1 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-100 to-gray-400 mb-6 leading-tight font-display tracking-tight drop-shadow-xl">
+                        {{ studio.name }}
+                    </h1>
                 </div>
 
-                <!-- Facilities -->
-                <div class="bg-[#353535] rounded-2xl p-8 border border-white/5 shadow-xl">
-                    <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fas fa-tools text-purple-400"></i> {% trans "Studio Facilities" %}
-                    </h2>
+                <!-- Glass Technical Specs -->
+                <div class="glass-panel p-8 md:p-10 !rounded-3xl shadow-2xl relative overflow-hidden group">
+                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl group-hover:bg-mcot-orange/10 transition-colors duration-700"></div>
+                    
+                    <h3 class="text-xl font-bold text-white mb-8 flex items-center gap-3 font-display">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-mcot-orange to-purple-600 flex items-center justify-center p-[1px] shadow-lg">
+                            <div class="w-full h-full bg-[#252525] rounded-[11px] flex items-center justify-center text-white">
+                                <i class="fas fa-sliders-h"></i>
+                            </div>
+                        </div>
+                        {% trans "Technical Specifications" %}
+                    </h3>
 
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-ruler-combined text-purple-400 mt-1"></i>
-                            <div>
-                                <h4 class="text-white font-bold text-sm">{% trans "Spacious Area" %}</h4>
-                                <p class="text-xs text-gray-500">120 {% trans "Sq.m working space" %}</p>
+                    <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Spec Item -->
+                        <div class="bg-black/30 border border-white/5 rounded-2xl p-5 hover:border-white/10 hover:bg-black/40 transition-colors">
+                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-mcot-orange mb-3">
+                                <i class="fas fa-ruler-combined text-sm"></i>
                             </div>
+                            <h4 class="text-white font-bold text-sm mb-1">{% trans "Dimensions" %}</h4>
+                            <p class="text-xs text-gray-400 font-mono">120 {% trans "Sq.m" %} (10x12m)</p>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-bolt text-purple-400 mt-1"></i>
-                            <div>
-                                <h4 class="text-white font-bold text-sm">{% trans "Power Supply" %}</h4>
-                                <p class="text-xs text-gray-500">3-{% trans "Phase 100A ready" %}</p>
+                        
+                        <!-- Spec Item -->
+                        <div class="bg-black/30 border border-white/5 rounded-2xl p-5 hover:border-white/10 hover:bg-black/40 transition-colors">
+                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-purple-400 mb-3">
+                                <i class="fas fa-bolt text-sm"></i>
                             </div>
+                            <h4 class="text-white font-bold text-sm mb-1">{% trans "Power Supply" %}</h4>
+                            <p class="text-xs text-gray-400 font-mono">3-Phase 100A / Camlock</p>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-wind text-purple-400 mt-1"></i>
-                            <div>
-                                <h4 class="text-white font-bold text-sm">{% trans "Climate Control" %}</h4>
-                                <p class="text-xs text-gray-500">{% trans "Silent AC System" %}</p>
+
+                        <!-- Spec Item -->
+                        <div class="bg-black/30 border border-white/5 rounded-2xl p-5 hover:border-white/10 hover:bg-black/40 transition-colors">
+                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-blue-400 mb-3">
+                                <i class="fas fa-fan text-sm"></i>
                             </div>
+                            <h4 class="text-white font-bold text-sm mb-1">{% trans "Climate Setup" %}</h4>
+                            <p class="text-xs text-gray-400 font-mono">Ultrasilent AC System</p>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-wifi text-purple-400 mt-1"></i>
-                            <div>
-                                <h4 class="text-white font-bold text-sm">{% trans "Connectivity" %}</h4>
-                                <p class="text-xs text-gray-500">{% trans "Fiber Internet 1Gbps" %}</p>
+
+                        <!-- Spec Item -->
+                        <div class="bg-black/30 border border-white/5 rounded-2xl p-5 hover:border-white/10 hover:bg-black/40 transition-colors">
+                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-green-400 mb-3">
+                                <i class="fas fa-wifi text-sm"></i>
                             </div>
+                            <h4 class="text-white font-bold text-sm mb-1">{% trans "Network" %}</h4>
+                            <p class="text-xs text-gray-400 font-mono">1 Gbps Dedicated Fiber</p>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-parking text-purple-400 mt-1"></i>
-                            <div>
-                                <h4 class="text-white font-bold text-sm">{% trans "Accessibility" %}</h4>
-                                <p class="text-xs text-gray-500">{% trans "Ground floor loading" %}</p>
+
+                        <!-- Spec Item -->
+                        <div class="bg-black/30 border border-white/5 rounded-2xl p-5 hover:border-white/10 hover:bg-black/40 transition-colors">
+                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-yellow-400 mb-3">
+                                <i class="fas fa-car text-sm"></i>
                             </div>
+                            <h4 class="text-white font-bold text-sm mb-1">{% trans "Access" %}</h4>
+                            <p class="text-xs text-gray-400 font-mono">Ground Floor Loading</p>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-couch text-purple-400 mt-1"></i>
-                            <div>
-                                <h4 class="text-white font-bold text-sm">{% trans "Amenities" %}</h4>
-                                <p class="text-xs text-gray-500">{% trans "Dressing room & Lounge" %}</p>
+
+                        <!-- Spec Item -->
+                        <div class="bg-black/30 border border-white/5 rounded-2xl p-5 hover:border-white/10 hover:bg-black/40 transition-colors">
+                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-pink-400 mb-3">
+                                <i class="fas fa-couch text-sm"></i>
                             </div>
+                            <h4 class="text-white font-bold text-sm mb-1">{% trans "Amenities" %}</h4>
+                            <p class="text-xs text-gray-400 font-mono">Makeup Room & Lounge</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Description -->
-                <div class="bg-[#353535] rounded-2xl p-8 border border-white/5 shadow-xl">
-                    <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fas fa-info-circle text-purple-400"></i> {% trans "About Space" %}
-                    </h2>
-                    <div class="prose prose-invert prose-p:text-gray-400 max-w-none">
-                        {{ studio.description|safe|linebreaks|default:_("Contact us for full technical specifications.") }}
+                <!-- Description Rich Text -->
+                <div class="glass-panel p-8 md:p-10 !rounded-3xl shadow-2xl mt-8">
+                    <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-3 font-display">
+                        <i class="fas fa-align-left text-mcot-orange pl-2"></i> {% trans "Facility Overview" %}
+                    </h3>
+                    <div class="prose prose-invert prose-lg prose-p:text-gray-300 prose-headings:text-white max-w-none leading-relaxed">
+                        {{ studio.description|safe|linebreaks|default:"<p>Please contact our sale representative to request a full technical rider and equipment manifest for this studio.</p>" }}
                     </div>
                 </div>
             </div>
 
-            <!-- Right: Booking Sidebar -->
-            <div class="lg:col-span-5 xl:col-span-4 relative">
-                <div class="sticky top-24 space-y-6">
+            <!-- Right Booking Sidebar (Sticky) -->
+            <div class="xl:col-span-4 relative mt-12 xl:mt-0">
+                <div class="sticky top-28">
+                    
+                    <!-- Floating Booking Card -->
+                    <div class="glass-panel !rounded-[2rem] p-8 lg:p-10 shadow-2xl border border-white/10 relative overflow-hidden backdrop-blur-2xl bg-[#2A2A2A]/80">
+                        <!-- Card Glow -->
+                        <div class="absolute -right-32 -top-32 w-64 h-64 bg-gradient-to-br from-mcot-orange/20 to-mcot-purple/20 rounded-full blur-[80px]"></div>
 
-                    <div
-                        class="bg-[#353535] rounded-3xl p-8 border border-white/5 shadow-[0_0_50px_rgba(0,0,0,0.3)] relative overflow-hidden">
-                        <div
-                            class="absolute -top-20 -right-20 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl pointer-events-none">
-                        </div>
-
-                        <div class="relative">
-                            <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">
-                                {% trans "Professional Studio" %}
-                            </p>
-                            <h1 class="text-3xl lg:text-4xl font-black text-white mb-6 leading-tight font-display">
-                                {{ studio.name }}
-                            </h1>
-
-                            <div class="flex items-baseline gap-2 mb-8 pb-8 border-b border-white/5">
-                                <span class="text-5xl font-bold text-purple-400 tracking-tight">
-                                    ฿{{ studio.daily_rate|intcomma }}
-                                </span>
-                                <span class="text-gray-400 font-medium">/ {% trans "day" %}</span>
+                        <div class="relative z-10">
+                            <!-- Price Block -->
+                            <div class="mb-8 pb-8 border-b border-white/10">
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">{% trans "Daily Booking Rate" %}</span>
+                                <div class="flex items-end gap-2 text-white">
+                                    <span class="text-4xl lg:text-5xl font-black font-mono tracking-tighter drop-shadow-md">฿{{ studio.daily_rate|floatformat:0|intcomma }}</span>
+                                    <span class="text-gray-400 text-sm font-medium mb-1">/ {% trans "day" %}</span>
+                                </div>
+                                <p class="text-[10px] text-mcot-orange mt-3 font-semibold tracking-wide"><i class="fas fa-bolt mr-1"></i> {% trans "Includes standard power & AC usage" %}</p>
                             </div>
 
-                            <!-- Date Picker -->
-                            <div class="bg-[#2A2A2A] rounded-xl p-5 mb-8 border border-white/5">
-                                <label
-                                    class="block text-xs text-gray-500 uppercase font-bold tracking-wider mb-3">{% trans "Select Dates" %}</label>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <input type="text" id="studio-start-date" placeholder="{% trans 'Check-in' %}"
-                                            class="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-purple-500 focus:outline-none placeholder-gray-600">
+                            <!-- Interactive Date Selection -->
+                            <div class="space-y-5 mb-8">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                                        <i class="far fa-calendar-alt text-white mr-1"></i> {% trans "Check-in Date" %}
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" id="studio-start-date" placeholder="Select start date"
+                                               class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white text-sm font-medium shadow-inner focus:border-white/30 focus:ring-1 focus:ring-white/30 outline-none transition-all placeholder-gray-500 cursor-pointer">
+                                        <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none"></i>
                                     </div>
-                                    <div>
-                                        <input type="text" id="studio-end-date" placeholder="{% trans 'Check-out' %}"
-                                            class="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-purple-500 focus:outline-none placeholder-gray-600">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                                        <i class="far fa-calendar-alt text-white mr-1"></i> {% trans "Check-out Date" %}
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" id="studio-end-date" placeholder="Select end date"
+                                               class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white text-sm font-medium shadow-inner focus:border-white/30 focus:ring-1 focus:ring-white/30 outline-none transition-all placeholder-gray-500 cursor-pointer">
+                                        <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none"></i>
                                     </div>
                                 </div>
                             </div>
+                            
+                            <!-- Notice Box -->
+                            <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-8 flex gap-3 text-blue-200">
+                                <i class="fas fa-info-circle text-blue-400 mt-0.5"></i>
+                                <div class="text-xs leading-relaxed opacity-90">
+                                    {% trans "Studios are automatically allocated a 2-hour buffer time for cleaning and setup between bookings to ensure readiness." %}
+                                </div>
+                            </div>
 
-                            <button
-                                onclick="addStudioToCart('{{ studio.id }}', '{{ studio.name|escapejs }}', {{ studio.daily_rate|default:0 }})"
-                                class="w-full py-5 rounded-2xl font-bold text-base uppercase tracking-widest transition-all transform hover:-translate-y-1 hover:shadow-2xl flex items-center justify-center gap-3 group bg-purple-600 text-white hover:bg-white hover:text-black shadow-[0_10px_30px_rgba(147,51,234,0.3)]">
-                                <span>{% trans "Book Studio" %}</span>
-                                <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            <!-- CTA Button -->
+                            <button onclick="addStudioToCart('{{ studio.id }}', '{{ studio.name|escapejs }}', {{ studio.daily_rate|default:0 }})"
+                                class="w-full relative group overflow-hidden rounded-xl font-bold text-base uppercase tracking-widest transition-all">
+                                <div class="absolute inset-0 bg-white/10 transition-transform group-hover:scale-105 group-hover:bg-white/20 border border-white/20"></div>
+                                <div class="relative flex items-center justify-center gap-3 py-5 backdrop-blur-sm text-white shadow-xl">
+                                    <span>{% trans "Reserve Space" %}</span>
+                                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform text-mcot-orange"></i>
+                                </div>
                             </button>
-
-                            <p class="text-center text-xs text-gray-500 mt-4">
-                                *{% trans "Includes basic lighting grip & power" %}
+                            
+                            <p class="text-center text-xs text-gray-500 mt-4 font-medium flex items-center justify-center gap-2">
+                                <i class="fas fa-lock text-gray-600 text-[10px]"></i> {% trans "Secure Booking Process" %}
                             </p>
                         </div>
                     </div>
-
-                    <div class="bg-[#2A2A2A] rounded-2xl p-6 border border-white/5 flex flex-col gap-4">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-purple-400">
-                                <i class="fas fa-calendar-check text-xs"></i>
-                            </div>
-                            <div class="text-xs text-gray-400">
-                                <span class="block text-white font-bold mb-0.5">{% trans "Flexible Booking" %}</span>
-                                {% trans "Hourly rates available via phone" %}
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>
@@ -183,10 +218,15 @@
             dateFormat: "Y-m-d",
             minDate: "today",
             theme: "dark",
+            disableMobile: true,
             onChange: function (selectedDates, dateStr, instance) {
                 if (selectedDates.length > 0) {
                     const endDatePicker = document.querySelector("#studio-end-date")._flatpickr;
                     endDatePicker.set('minDate', dateStr);
+                    // Optionally set default end date if none selected
+                    if (!endDatePicker.selectedDates.length) {
+                        endDatePicker.setDate(dateStr);
+                    }
                 }
             }
         });
@@ -196,7 +236,8 @@
             altFormat: "F j, Y",
             dateFormat: "Y-m-d",
             minDate: "today",
-            theme: "dark"
+            theme: "dark",
+            disableMobile: true
         });
     });
 
@@ -206,13 +247,21 @@
             const endDate = document.getElementById('studio-end-date').value;
 
             if (!startDate || !endDate) {
-                alert('{% trans "Please select check-in and check-out dates." %}');
+                // Shake the inputs to guide the user visually
+                document.getElementById('studio-start-date').parentElement.classList.add('animate-pulse', 'border', 'border-red-500');
+                document.getElementById('studio-end-date').parentElement.classList.add('animate-pulse', 'border', 'border-red-500');
+                
+                setTimeout(() => {
+                    document.getElementById('studio-start-date').parentElement.classList.remove('animate-pulse', 'border-red-500');
+                    document.getElementById('studio-end-date').parentElement.classList.remove('animate-pulse', 'border-red-500');
+                }, 2000);
+                
+                alert('{% trans "Please select both Check-in and Check-out dates to proceed." %}');
                 return;
             }
 
             let cart = JSON.parse(localStorage.getItem('mcot_cart') || '[]');
             const itemId = 'studio_' + id;
-
             const existingIndex = cart.findIndex(item => item.id == itemId);
 
             if (existingIndex > -1) {
@@ -225,20 +274,21 @@
                     type: 'studio',
                     image: '',
                     quantity: 1,
-                    dates: { start: startDate, end: endDate } // Store dates in item for now
+                    dates: { start: startDate, end: endDate }
                 });
             }
 
             localStorage.setItem('mcot_cart', JSON.stringify(cart));
             window.dispatchEvent(new Event('cartUpdated'));
 
-            if (confirm('{% trans "Studio added to booking list! Go to checkout?" %}')) {
+            // SweetAlert or standard confirm
+            if (confirm('{% trans "Studio reserved successfully! Would you like to proceed to checkout?" %}')) {
                 window.location.href = "{% url 'store:cart' %}";
             }
 
         } catch (e) {
             console.error(e);
-            alert("{% trans 'Error adding to booking.' %}");
+            alert("{% trans 'An error occurred while adding to your booking.' %}");
         }
     }
 </script>

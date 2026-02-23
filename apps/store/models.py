@@ -192,6 +192,7 @@ class Booking(models.Model):
         ('pending', 'รออนุมัติ (Pending)'),
         ('approved', 'อนุมัติแล้ว (Approved)'),
         ('active', 'กำลังใช้งาน (Active)'),
+        ('overdue', 'เกินกำหนด (Overdue)'),
         ('completed', 'คืนของครบ (Completed)'),
         ('cancelled', 'ยกเลิก (Cancelled)'),
     ]
