@@ -3,7 +3,9 @@ from django.utils import timezone
 from datetime import datetime
 from apps.store.models import Product, ProductCategory, Studio, Package, Staff
 from apps.store.services.availability import AvailabilityService
+from apps.store.utils.ratelimit import ratelimit
 
+@ratelimit(key_prefix='catalog', rate=20, period=60, block=True)
 def catalog(request):
     """
     หน้าแสดงรายการสินค้า (Catalog Page)
@@ -85,6 +87,7 @@ def catalog(request):
     }
     return render(request, 'store/catalog.html', context)
 
+@ratelimit(key_prefix='studio_list', rate=30, period=60, block=True)
 def studio_list(request):
     """
     หน้าแสดงรายการสตูดิโอ (Studio List)
@@ -96,6 +99,7 @@ def studio_list(request):
     return render(request, 'store/studio_list.html', context)
 
 
+@ratelimit(key_prefix='studio_detail', rate=30, period=60, block=True)
 def studio_detail(request, studio_id):
     """
     หน้าละเอียดสตูดิโอ (Studio Detail)
@@ -106,6 +110,7 @@ def studio_detail(request, studio_id):
     }
     return render(request, 'store/studio_detail.html', context)
 
+@ratelimit(key_prefix='package_list', rate=30, period=60, block=True)
 def package_list(request):
     """
     หน้าแสดงรายการแพ็คเกจ (Package List)
@@ -185,6 +190,7 @@ def package_detail(request, package_id):
     }
     return render(request, 'store/package_detail.html', context)
 
+@ratelimit(key_prefix='service_list', rate=30, period=60, block=True)
 def service_list(request):
     """
     หน้าแสดงบริการ (Services: Crew Only for now)
@@ -204,6 +210,7 @@ def service_list(request):
     }
     return render(request, 'store/service_list.html', context)
 
+@ratelimit(key_prefix='product_detail', rate=30, period=60, block=True)
 def product_detail(request, product_id):
     """
     หน้าละเอียดสินค้า (Product Detail)

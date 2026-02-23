@@ -57,7 +57,7 @@
                            {% if field.field.required %}required{% endif %}>
                     
                     {% if field.help_text %}
-                    <p class="text-[10px] text-gray-500 mt-1">{{ field.help_text }}</p>
+                    <div class="text-[11px] text-gray-400 mt-2">{{ field.help_text|safe }}</div>
                     {% endif %}
                     {% endif %}
                     

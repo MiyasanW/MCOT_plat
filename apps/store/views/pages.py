@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from apps.store.models import Product, Booking, BookingStudio, Studio
 from django.utils import timezone
+from apps.store.utils.ratelimit import ratelimit
 
+@ratelimit(key_prefix='home', rate=30, period=60, block=True)
 def home(request):
     """
     หน้าแรก (Home Page)
@@ -50,6 +52,7 @@ def home(request):
     }
     return render(request, 'pages/home.html', context)
 
+@ratelimit(key_prefix='about', rate=30, period=60, block=True)
 def about(request):
     """About Us page"""
     return render(request, 'pages/corporate/about.html')

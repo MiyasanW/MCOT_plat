@@ -40,13 +40,21 @@ class UserRegisterForm(UserCreationForm):
         self.fields['username'].help_text = "ใช้ตัวอักษรภาษาอังกฤษ, ตัวเลข และ @. + - _ เท่านั้น"
         
         # Password
+        # Password
         if 'password1' in self.fields:
             self.fields['password1'].label = "รหัสผ่าน"
-            self.fields['password1'].help_text = "ต้องมีความยาวอย่างน้อย 8 ตัวอักษร"
+            self.fields['password1'].help_text = mark_safe(
+                "<ul class='list-disc pl-4 mt-2 space-y-1'>"
+                "<li>รหัสผ่านต้องไม่คล้ายกับข้อมูลส่วนตัวอื่นๆ ของคุณมากเกินไป</li>"
+                "<li>รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร</li>"
+                "<li>รหัสผ่านต้องไม่ใช่รหัสผ่านที่เดาง่ายหรือใช้กันทั่วไป</li>"
+                "<li>รหัสผ่านต้องไม่เป็นตัวเลขเพียงอย่างเดียว</li>"
+                "</ul>"
+            )
             
         if 'password2' in self.fields:
             self.fields['password2'].label = "ยืนยันรหัสผ่าน"
-            self.fields['password2'].help_text = "ใส่รหัสผ่านเหมือนช่องบนอีกครั้ง"
+            self.fields['password2'].help_text = "ใส่รหัสผ่านให้ตรงกับช่องด้านบนอีกครั้ง"
 
     def clean(self):
         cleaned_data = super().clean()
