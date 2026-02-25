@@ -47,7 +47,7 @@
                 <!-- Title & Brief -->
                 <div>
                     <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 border border-white/20 rounded-full text-[10px] font-bold text-white tracking-wider uppercase mb-4 shadow-lg backdrop-blur-md">
-                        <i class="fas fa-star text-xs text-mcot-orange"></i> {% trans "Premium Facility" %}
+                        <i class="fas fa-star text-xs text-mcot-orange"></i> พื้นที่ระดับพรีเมียม
                     </div>
                     <h1 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-100 to-gray-400 mb-6 leading-tight font-display tracking-tight drop-shadow-xl">
                         {{ studio.name }}
@@ -64,7 +64,7 @@
                                 <i class="fas fa-sliders-h"></i>
                             </div>
                         </div>
-                        {% trans "Technical Specifications" %}
+                        ข้อมูลจำเพาะทางเทคนิค
                     </h3>
 
                     <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
@@ -73,8 +73,8 @@
                             <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-mcot-orange mb-3">
                                 <i class="fas fa-ruler-combined text-sm"></i>
                             </div>
-                            <h4 class="text-white font-bold text-sm mb-1">{% trans "Dimensions" %}</h4>
-                            <p class="text-xs text-gray-400 font-mono">120 {% trans "Sq.m" %} (10x12m)</p>
+                            <h4 class="text-white font-bold text-sm mb-1">ขนาดพื้นที่</h4>
+                            <p class="text-xs text-gray-400 font-mono">120 ตร.ม. (10x12m)</p>
                         </div>
                         
                         <!-- Spec Item -->
@@ -82,7 +82,7 @@
                             <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-purple-400 mb-3">
                                 <i class="fas fa-bolt text-sm"></i>
                             </div>
-                            <h4 class="text-white font-bold text-sm mb-1">{% trans "Power Supply" %}</h4>
+                            <h4 class="text-white font-bold text-sm mb-1">ระบบจ่ายไฟ</h4>
                             <p class="text-xs text-gray-400 font-mono">3-Phase 100A / Camlock</p>
                         </div>
 
@@ -91,8 +91,8 @@
                             <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-blue-400 mb-3">
                                 <i class="fas fa-fan text-sm"></i>
                             </div>
-                            <h4 class="text-white font-bold text-sm mb-1">{% trans "Climate Setup" %}</h4>
-                            <p class="text-xs text-gray-400 font-mono">Ultrasilent AC System</p>
+                            <h4 class="text-white font-bold text-sm mb-1">ระบบปรับอากาศ</h4>
+                            <p class="text-xs text-gray-400 font-mono">ระบบแอร์เงียบ (Ultrasilent AC)</p>
                         </div>
 
                         <!-- Spec Item -->
@@ -100,8 +100,8 @@
                             <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-green-400 mb-3">
                                 <i class="fas fa-wifi text-sm"></i>
                             </div>
-                            <h4 class="text-white font-bold text-sm mb-1">{% trans "Network" %}</h4>
-                            <p class="text-xs text-gray-400 font-mono">1 Gbps Dedicated Fiber</p>
+                            <h4 class="text-white font-bold text-sm mb-1">เครือข่ายอินเทอร์เน็ต</h4>
+                            <p class="text-xs text-gray-400 font-mono">ไฟเบอร์เฉพาะกิจ 1 Gbps</p>
                         </div>
 
                         <!-- Spec Item -->
@@ -109,8 +109,8 @@
                             <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-yellow-400 mb-3">
                                 <i class="fas fa-car text-sm"></i>
                             </div>
-                            <h4 class="text-white font-bold text-sm mb-1">{% trans "Access" %}</h4>
-                            <p class="text-xs text-gray-400 font-mono">Ground Floor Loading</p>
+                            <h4 class="text-white font-bold text-sm mb-1">การเข้าถึงพื้นที่</h4>
+                            <p class="text-xs text-gray-400 font-mono">รถขนของเข้าถึงชั้น 1 ได้โดยตรง</p>
                         </div>
 
                         <!-- Spec Item -->
@@ -118,8 +118,8 @@
                             <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-pink-400 mb-3">
                                 <i class="fas fa-couch text-sm"></i>
                             </div>
-                            <h4 class="text-white font-bold text-sm mb-1">{% trans "Amenities" %}</h4>
-                            <p class="text-xs text-gray-400 font-mono">Makeup Room & Lounge</p>
+                            <h4 class="text-white font-bold text-sm mb-1">สิ่งอำนวยความสะดวก</h4>
+                            <p class="text-xs text-gray-400 font-mono">ห้องแต่งตัวและห้องรับรอง</p>
                         </div>
                     </div>
                 </div>
@@ -127,10 +127,10 @@
                 <!-- Description Rich Text -->
                 <div class="glass-panel p-8 md:p-10 !rounded-3xl shadow-2xl mt-8">
                     <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-3 font-display">
-                        <i class="fas fa-align-left text-mcot-orange pl-2"></i> {% trans "Facility Overview" %}
+                        <i class="fas fa-align-left text-mcot-orange pl-2"></i> ภาพรวมพื้นที่
                     </h3>
                     <div class="prose prose-invert prose-lg prose-p:text-gray-300 prose-headings:text-white max-w-none leading-relaxed">
-                        {{ studio.description|safe|linebreaks|default:"<p>Please contact our sale representative to request a full technical rider and equipment manifest for this studio.</p>" }}
+                        {{ studio.description|safe|linebreaks|default:"<p>กรุณาติดต่อฝ่ายขายของเราเพื่อขอรับรายละเอียดทางเทคนิคทั้งหมดและรายการอุปกรณ์สำหรับสตูดิโอนี้</p>" }}
                     </div>
                 </div>
             </div>
@@ -147,32 +147,32 @@
                         <div class="relative z-10">
                             <!-- Price Block -->
                             <div class="mb-8 pb-8 border-b border-white/10">
-                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">{% trans "Daily Booking Rate" %}</span>
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">อัตราค่าเช่า / วัน</span>
                                 <div class="flex items-end gap-2 text-white">
                                     <span class="text-4xl lg:text-5xl font-black font-mono tracking-tighter drop-shadow-md">฿{{ studio.daily_rate|floatformat:0|intcomma }}</span>
-                                    <span class="text-gray-400 text-sm font-medium mb-1">/ {% trans "day" %}</span>
+                                    <span class="text-gray-400 text-sm font-medium mb-1">/ วัน</span>
                                 </div>
-                                <p class="text-[10px] text-mcot-orange mt-3 font-semibold tracking-wide"><i class="fas fa-bolt mr-1"></i> {% trans "Includes standard power & AC usage" %}</p>
+                                <p class="text-[10px] text-mcot-orange mt-3 font-semibold tracking-wide"><i class="fas fa-bolt mr-1"></i> รวมค่าไฟและแอร์มาตรฐานแล้ว</p>
                             </div>
 
                             <!-- Interactive Date Selection -->
                             <div class="space-y-5 mb-8">
                                 <div>
                                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
-                                        <i class="far fa-calendar-alt text-white mr-1"></i> {% trans "Check-in Date" %}
+                                        <i class="far fa-calendar-alt text-white mr-1"></i> วันที่เริ่มต้น (Check-in)
                                     </label>
                                     <div class="relative">
-                                        <input type="text" id="studio-start-date" placeholder="Select start date"
+                                        <input type="text" id="studio-start-date" placeholder="เลือกวันที่เริ่มเช่า"
                                                class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white text-sm font-medium shadow-inner focus:border-white/30 focus:ring-1 focus:ring-white/30 outline-none transition-all placeholder-gray-500 cursor-pointer">
                                         <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none"></i>
                                     </div>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
-                                        <i class="far fa-calendar-alt text-white mr-1"></i> {% trans "Check-out Date" %}
+                                        <i class="far fa-calendar-alt text-white mr-1"></i> วันที่สิ้นสุด (Check-out)
                                     </label>
                                     <div class="relative">
-                                        <input type="text" id="studio-end-date" placeholder="Select end date"
+                                        <input type="text" id="studio-end-date" placeholder="เลือกวันสิ้นสุด"
                                                class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white text-sm font-medium shadow-inner focus:border-white/30 focus:ring-1 focus:ring-white/30 outline-none transition-all placeholder-gray-500 cursor-pointer">
                                         <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none"></i>
                                     </div>
@@ -183,7 +183,7 @@
                             <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-8 flex gap-3 text-blue-200">
                                 <i class="fas fa-info-circle text-blue-400 mt-0.5"></i>
                                 <div class="text-xs leading-relaxed opacity-90">
-                                    {% trans "Studios are automatically allocated a 2-hour buffer time for cleaning and setup between bookings to ensure readiness." %}
+                                    ระบบจะเพิ่มเวลาจัดเตรียมและทำความสะอาด (Buffer Time) ให้อัตโนมัติ 2 ชั่วโมง ระหว่างคิวจอง เพื่อให้พื้นที่พร้อมใช้งานสำหรับลูกค้าทุกท่าน
                                 </div>
                             </div>
 
@@ -192,13 +192,13 @@
                                 class="w-full relative group overflow-hidden rounded-xl font-bold text-base uppercase tracking-widest transition-all">
                                 <div class="absolute inset-0 bg-white/10 transition-transform group-hover:scale-105 group-hover:bg-white/20 border border-white/20"></div>
                                 <div class="relative flex items-center justify-center gap-3 py-5 backdrop-blur-sm text-white shadow-xl">
-                                    <span>{% trans "Reserve Space" %}</span>
+                                    <span>จองพื้นที่นี้</span>
                                     <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform text-mcot-orange"></i>
                                 </div>
                             </button>
                             
                             <p class="text-center text-xs text-gray-500 mt-4 font-medium flex items-center justify-center gap-2">
-                                <i class="fas fa-lock text-gray-600 text-[10px]"></i> {% trans "Secure Booking Process" %}
+                                <i class="fas fa-lock text-gray-600 text-[10px]"></i> ทำรายการอย่างปลอดภัย (Secure Booking Process)
                             </p>
                         </div>
                     </div>
@@ -256,7 +256,7 @@
                     document.getElementById('studio-end-date').parentElement.classList.remove('animate-pulse', 'border-red-500');
                 }, 2000);
                 
-                alert('{% trans "Please select both Check-in and Check-out dates to proceed." %}');
+                alert('กรุณาเลือกวันที่ Check-in และ Check-out ก่อนดำเนินการต่อ');
                 return;
             }
 
@@ -282,13 +282,13 @@
             window.dispatchEvent(new Event('cartUpdated'));
 
             // SweetAlert or standard confirm
-            if (confirm('{% trans "Studio reserved successfully! Would you like to proceed to checkout?" %}')) {
+            if (confirm('จองพื้นที่สตูดิโอสำเร็จ! คุณต้องการไปที่หน้าตะกร้าสินค้าเพื่อตรวจสอบหรือไม่?')) {
                 window.location.href = "{% url 'store:cart' %}";
             }
 
         } catch (e) {
             console.error(e);
-            alert("{% trans 'An error occurred while adding to your booking.' %}");
+            alert("เกิดข้อผิดพลาดในการเพิ่มลงตะกร้าสินค้า");
         }
     }
 </script>

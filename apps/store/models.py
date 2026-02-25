@@ -311,7 +311,7 @@ class BookingItem(models.Model):
     notes = models.TextField(blank=True, null=True, verbose_name="หมายเหตุ (สภาพตอนคืน)")
 
     def save(self, *args, **kwargs):
-        if not self.price_at_booking and self.product:
+        if self.price_at_booking is None and self.product:
             self.price_at_booking = self.product.price
         super().save(*args, **kwargs)
 
@@ -321,7 +321,7 @@ class BookingStudio(models.Model):
     price_at_booking = models.DecimalField(max_digits=10, decimal_places=2, help_text="ราคาต่อวัน ณ วันจอง")
 
     def save(self, *args, **kwargs):
-        if not self.price_at_booking and self.studio:
+        if self.price_at_booking is None and self.studio:
             self.price_at_booking = self.studio.daily_rate
         super().save(*args, **kwargs)
 

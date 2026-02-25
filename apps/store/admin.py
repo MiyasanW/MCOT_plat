@@ -234,11 +234,11 @@ class ProductionVehicleAdmin(ModelAdmin):
 @admin.register(Equipment)
 class EquipmentAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
     # Added 'usage_count' and 'last_used' to list display
-    list_display = ['product', 'serial_number', 'inventory_number', 'status', 'usage_count', 'last_used']
+    list_display = ['asset_tag', 'serial_number', 'product', 'status', 'usage_count', 'last_used']
+    list_display_links = ['asset_tag', 'serial_number']
     # Added inventory_number to search fields
     search_fields = ['serial_number', 'inventory_number', 'asset_tag', 'product__name']
-    search_fields = ['serial_number', 'inventory_number', 'asset_tag', 'product__name']
-    list_filter = ['status', 'product']
+    list_filter = ['status', 'product__category', 'product']
     autocomplete_fields = ['product']
 
     def get_queryset(self, request):

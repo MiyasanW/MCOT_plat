@@ -65,25 +65,7 @@ class AvailabilityService:
         # 1. รวมจำนวน (Sum) จากทุก BookingItem ที่เข้าเงื่อนไข (สินค้าชิ้นเดี่ยว)
         booked_qty_direct = BookingItem.objects.filter(query).aggregate(Sum('quantity'))['quantity__sum'] or 0
         
-        # 2. ค้นหาใน BookingPackage ที่จัดชุดรายการสินค้านี้เข้ามา (สินค้าในแพ็คเกจ)
-        from apps.store.models import BookingPackage
-        package_query = status_filter & \
-                        Q(package__packageitem__product=product) & \
-                        Q(booking__start_time__lt=end_time) & \
-                        Q(booking__end_time__gt=start_time)
-        
-        if exclude_booking_id:
-            package_query &= ~Q(booking__id=exclude_booking_id)
-            
-        booked_qty_packages = 0
-        booking_packages = BookingPackage.objects.filter(package_query).prefetch_related('package__packageitem_set')
-        # วนลูปหาจำนวนสินค้าเฉพาะตัวนี้ที่ต้องถูกดึงออกไปกับแพ็คเกจ
-        for bp in booking_packages:
-            for p_item in bp.package.packageitem_set.all():
-                if p_item.product_id == product.id:
-                    booked_qty_packages += (bp.quantity * p_item.quantity)
-
-        return booked_qty_direct + booked_qty_packages
+        return booked_qty_direct
 
     @staticmethod
     def get_available_quantity(product, start_time, end_time, exclude_booking_id=None):

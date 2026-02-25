@@ -135,6 +135,16 @@ class BookingService:
                             quantity=qty_requested,
                             price_at_booking=package_obj.price
                         )
+                        
+                        # สร้างรายการสินค้าย่อยในแพ็คเกจเพื่อให้สามารถผูกเลขเครื่อง (serial number) ได้
+                        for p_item in package_obj.packageitem_set.all():
+                            BookingItem.objects.create(
+                                booking=new_booking,
+                                product=p_item.product,
+                                quantity=p_item.quantity * qty_requested,
+                                price_at_booking=0,  # ราคา 0 เพราะรวมอยู่ในแพ็คเกจแล้ว
+                                notes=f"(รวมอยู่ในแพ็คเกจ {package_obj.name})"
+                            )
 
                     # --- Case 3: Product (Default) ---
                     else:

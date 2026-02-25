@@ -155,6 +155,9 @@
                 <td class="col-no">{{ forloop.counter }}</td>
                 <td class="col-item">
                     {{ item.product.name }}
+                    {% if item.notes %}
+                        <br><span style="color:#f26522; font-size:10px; font-style:italic;">{{ item.notes }}</span>
+                    {% endif %}
                     {% if item.equipment %}
                         <br><span style="color:#666; font-size:10px;">{{ item.equipment.inventory_number }}</span>
                     {% endif %}

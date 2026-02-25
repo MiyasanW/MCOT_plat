@@ -26,7 +26,11 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.serveo.net',
-    'https://*.serveousercontent.com'
+    'https://*.serveousercontent.com',
+    'https://*.ngrok.io',
+    'https://*.ngrok.app',
+    'https://*.ngrok-free.app',
+    'https://unscored-subfrontal-melodee.ngrok-free.dev',
 ]
 
 # Application definition
