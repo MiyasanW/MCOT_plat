@@ -169,8 +169,8 @@ class BookingService:
                 new_booking.discount_amount = totals['discount']
                 new_booking.deposit_amount = PricingService.calculate_deposit(totals['grand_total']) # 30%
                 
-                # Set Expiration (24h)
-                new_booking.expires_at = timezone.now() + timedelta(hours=24)
+                # Staff will set Expiration (24h) when approving the draft
+                # new_booking.expires_at = timezone.now() + timedelta(hours=24)
                 new_booking.save()
                 
         except Exception as e:

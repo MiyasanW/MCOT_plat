@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="min-h-screen pt-24 pb-20">
+    <div class="container mx-auto px-4 max-w-6xl">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <a href="{% url 'admin:store_booking_changelist' %}" class="text-gray-400 hover:text-white transition-colors text-sm mb-2 inline-flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i> กลับไปหน้าระบบหลังบ้าน (Admin)
+                </a>
+                <h1 class="text-3xl font-bold text-white flex items-center gap-3">
+                    <i class="fas fa-chart-line text-mcot-orange"></i> ภาพรวมสถิติ (Analytics)
+                </h1>
+                <p class="text-gray-400 mt-2">สรุปรายได้และสถิติการเช่าอุปกรณ์ (เฉพาะใบจองที่ถูกอนุมัติหรือชำระเงินแล้ว)</p>
+            </div>
+        </div>
+
+        <!-- 4 KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Revenue -->
+            <div class="glass-panel p-6 rounded-2xl border border-white/10 relative overflow-hidden group">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-500/20 rounded-full blur-2xl group-hover:bg-green-500/30 transition-all duration-500"></div>
+                <div class="flex items-center justify-between mb-4 relative z-10">
+                    <h3 class="text-gray-400 font-bold text-sm tracking-widest uppercase">รายได้รวมสุทธิ</h3>
+                    <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                </div>
+                <div class="relative z-10">
+                    <h2 class="text-3xl font-black text-white">฿<span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">{{ total_revenue|intcomma }}</span></h2>
+                </div>
+            </div>
+
+            <!-- Total Bookings -->
+            <div class="glass-panel p-6 rounded-2xl border border-white/10 relative overflow-hidden group">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl group-hover:bg-blue-500/30 transition-all duration-500"></div>
+                <div class="flex items-center justify-between mb-4 relative z-10">
+                    <h3 class="text-gray-400 font-bold text-sm tracking-widest uppercase">จำนวนใบจอง (สำเร็จ)</h3>
+                    <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                </div>
+                <div class="relative z-10">
+                    <h2 class="text-3xl font-black text-white">{{ total_bookings|intcomma }} <span class="text-lg text-gray-500 font-normal">รายการ</span></h2>
+                </div>
+            </div>
+
+            <!-- Active Rentals -->
+            <div class="glass-panel p-6 rounded-2xl border border-white/10 relative overflow-hidden group">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/20 rounded-full blur-2xl group-hover:bg-purple-500/30 transition-all duration-500"></div>
+                <div class="flex items-center justify-between mb-4 relative z-10">
+                    <h3 class="text-gray-400 font-bold text-sm tracking-widest uppercase">กำลังเช่าอยู่ (Active)</h3>
+                    <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                </div>
+                <div class="relative z-10">
+                    <h2 class="text-3xl font-black text-white">{{ active_bookings|intcomma }} <span class="text-lg text-gray-500 font-normal">รายการ</span></h2>
+                </div>
+            </div>
+
+            <!-- Completed Rentals -->
+            <div class="glass-panel p-6 rounded-2xl border border-white/10 relative overflow-hidden group">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-gray-500/20 rounded-full blur-2xl group-hover:bg-gray-500/30 transition-all duration-500"></div>
+                <div class="flex items-center justify-between mb-4 relative z-10">
+                    <h3 class="text-gray-400 font-bold text-sm tracking-widest uppercase">คืนของแล้วจบบิล</h3>
+                    <div class="w-10 h-10 rounded-full bg-gray-500/20 flex items-center justify-center text-gray-400">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="relative z-10">
+                    <h2 class="text-3xl font-black text-white">{{ completed_bookings|intcomma }} <span class="text-lg text-gray-500 font-normal">รายการ</span></h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Revenue Chart -->
+            <div class="glass-panel p-6 rounded-2xl border border-white/10 flex flex-col h-full min-h-[400px]">
+                <h3 class="text-lg font-bold text-white mb-6"><i class="fas fa-chart-area text-mcot-orange mr-2"></i> รายได้ย้อนหลัง 6 เดือน</h3>
+                <div class="flex-grow w-full h-[300px] relative">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Products Chart -->
+            <div class="glass-panel p-6 rounded-2xl border border-white/10 flex flex-col h-full min-h-[400px]">
+                <h3 class="text-lg font-bold text-white mb-6"><i class="fas fa-chart-bar text-purple-400 mr-2"></i> สินค้ายอดนิยม (Top 5)</h3>
+                <div class="flex-grow w-full h-[300px] relative">
+                    <canvas id="productsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+.glass-panel {
+    background: rgba(26, 26, 26, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+</style>
+
+<!-- Chart.js 3+ -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // กำหนด Theme ให้เข้ากับเว็บแบบ Dark Mode (Glassmorphism)
+    Chart.defaults.color = '#9ca3af'; // text-gray-400
+    Chart.defaults.font.family = "'Inter', 'IBM Plex Sans Thai', sans-serif";
+    
+    // --- Chart 1: Revenue Line Chart ---
+    const monthLabels = JSON.parse('{{ months_json|escapejs|safe }}');
+    const revenueData = JSON.parse('{{ revenues_json|escapejs|safe }}');
+    
+    // Gradient fill สำหรับ Line Chart
+    let ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+    let gradientRevenue = ctxRevenue.createLinearGradient(0, 0, 0, 400);
+    gradientRevenue.addColorStop(0, 'rgba(255, 107, 0, 0.5)');   // MCOT Orange 50%
+    gradientRevenue.addColorStop(1, 'rgba(255, 107, 0, 0.0)');   // MCOT Orange 0%
+
+    new Chart(ctxRevenue, {
+        type: 'line',
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                label: 'รายได้ (บาท)',
+                data: revenueData,
+                borderColor: '#ff6b00',
+                backgroundColor: gradientRevenue,
+                borderWidth: 3,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#ff6b00',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true,
+                tension: 0.4 // ทำเส้นโค้งสวยงาม
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    titleColor: '#fff',
+                    bodyColor: '#ff6b00',
+                    callbacks: {
+                        label: function(context) {
+                            let value = context.parsed.y;
+                            return '฿' + value.toLocaleString();
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                    ticks: {
+                        callback: function(value) { return '฿' + value.toLocaleString(); }
+                    }
+                }
+            }
+        }
+    });
+
+    // --- Chart 2: Top Products Bar Chart ---
+    const productLabels = JSON.parse('{{ product_names_json|escapejs|safe }}');
+    const productData = JSON.parse('{{ product_counts_json|escapejs|safe }}');
+
+    let ctxProducts = document.getElementById('productsChart').getContext('2d');
+    let gradientBar = ctxProducts.createLinearGradient(0, 0, 0, 400);
+    gradientBar.addColorStop(0, 'rgba(168, 85, 247, 0.8)'); // Purple 500
+    gradientBar.addColorStop(1, 'rgba(79, 70, 229, 0.8)');  // Indigo 600
+
+    new Chart(ctxProducts, {
+        type: 'bar',
+        data: {
+            labels: productLabels,
+            datasets: [{
+                label: 'จำนวนที่ถูกเช่า (ชิ้น/วัน)',
+                data: productData,
+                backgroundColor: gradientBar,
+                borderRadius: 6,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false, drawBorder: false },
+                    ticks: {
+                        autoSkip: false,
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

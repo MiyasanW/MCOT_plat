@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     
     # --- Local Apps ---
     'apps.store',  # Main Rental App
+    'simple_history', # Track model changes
 ]
 
 MIDDLEWARE = [
@@ -63,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware', # Assign history_user automatically
 ]
 
 ROOT_URLCONF = 'config.urls'

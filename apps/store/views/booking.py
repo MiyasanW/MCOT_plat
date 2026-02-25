@@ -158,11 +158,16 @@ def create_booking_api(request):
         payload = json.loads(request.body)
         cart_items = payload.get('items', [])
         
+        phone = payload.get('phone')
+        import re
+        if phone and not re.match(r'^[0-9\-\+\s\(\)]+$', phone):
+            return JsonResponse({"success": False, "message": "เบอร์โทรศัพท์ไม่ถูกต้อง กรุณากรอกเฉพาะตัวเลข"}, status=400)
+            
         # Prepare Data
         booking_data = {
             'customer_name': payload.get('customer_name') or request.user.get_full_name() or request.user.username,
             'customer_email': payload.get('customer_email') or (request.user.email if request.user.is_authenticated else ''),
-            'customer_phone': payload.get('phone'),
+            'customer_phone': phone,
             'project_name': payload.get('project_name'),
             'note': payload.get('note'),
             'promotion_code': payload.get('promotion_code'),

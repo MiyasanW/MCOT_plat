@@ -219,7 +219,7 @@
                             {% endif %}
                             {% else %}
                             {% if product.quantity > 0 %}
-                            <a href="{% url 'store:product_detail' product.id %}"
+                            <a href="{% url 'store:product_detail' product.id %}{% if selected_start_date and selected_end_date %}?start_date={{ selected_start_date }}&end_date={{ selected_end_date }}{% endif %}"
                                 class="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-mcot-orange text-white hover:text-black transition-colors border border-white/10">
                                 <i class="fas fa-arrow-right text-xs"></i>
                             </a>
@@ -231,7 +231,7 @@
                     </div>
 
                     <!-- Full Link -->
-                    <a href="{% url 'store:product_detail' product.id %}?start_date={{ selected_start_date }}&end_date={{ selected_end_date }}"
+                    <a href="{% url 'store:product_detail' product.id %}{% if selected_start_date and selected_end_date %}?start_date={{ selected_start_date }}&end_date={{ selected_end_date }}{% endif %}"
                         class="absolute inset-0 z-10"></a>
                 </div>
                 {% endfor %}

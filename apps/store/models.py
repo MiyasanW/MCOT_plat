@@ -206,6 +206,7 @@ class Booking(models.Model):
     project_name = models.CharField(max_length=200, verbose_name="ชื่อโปรเจค/งาน", blank=True, null=True)
     phone = models.CharField(max_length=20, verbose_name="เบอร์โทรศัพท์ติดต่อ", blank=True, null=True)
     note = models.TextField(verbose_name="หมายเหตุ", blank=True, null=True)
+    internal_notes = models.TextField(verbose_name="บันทึกภายใน (Staff Only)", blank=True, null=True)
 
     # Coordinator
     coordinator = models.ForeignKey(
@@ -266,6 +267,28 @@ class Booking(models.Model):
         if isinstance(totals, dict):
             return totals.get('grand_total', 0)
         return totals
+
+    @property
+    def item_total(self):
+        return sum((item.price_at_booking * item.quantity) for item in self.items.all())
+
+    @property
+    def studio_total(self):
+        return sum(bs.price_at_booking for bs in self.booked_studios.all())
+        
+    @property
+    def package_total(self):
+        return sum((bp.price_at_booking * bp.quantity) for bp in self.booked_packages.all())
+        
+    @property
+    def rental_days(self):
+        if not self.start_time or not self.end_time:
+            return 1
+        return max(1, (self.end_time.date() - self.start_time.date()).days + 1)
+        
+    @property
+    def calculated_total_price(self):
+        return (self.item_total + self.studio_total + self.package_total) * self.rental_days
 
 # --- 4. Intermediary (Through) Models with Snapshots ---
 class BookingItem(models.Model):

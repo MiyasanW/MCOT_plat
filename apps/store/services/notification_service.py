@@ -34,8 +34,8 @@ class NotificationService:
             for staff in staff_users:
                 Notification.objects.create(
                     recipient=staff,
-                    message=f"📦 New Booking #{booking.id} by {booking.customer_name}",
-                    link=f"/admin/store/booking/{booking.id}/change/",
+                    message=f"📦 ใบจองใหม่ #{booking.id}: กรุณาตรวจสอบและแจ้งยอดชำระ",
+                    link=f"/staff/booking/{booking.id}/summary/",
                     notification_type='info'
                 )
             
@@ -76,7 +76,7 @@ class NotificationService:
                 Notification.objects.create(
                     recipient=staff,
                     message=f"💰 New Slip Uploaded: Booking #{booking.id}",
-                    link=f"/admin/store/booking/{booking.id}/change/",
+                    link=f"/staff/booking/{booking.id}/summary/",
                     notification_type='warning'
                 )
             

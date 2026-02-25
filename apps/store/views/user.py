@@ -13,25 +13,12 @@ def my_bookings(request):
         'items__product', 'booked_studios__studio', 'booked_packages__package'
     )
     
-    # คำนวณ total สำหรับแต่ละ booking
+    # We no longer need to calculate totals manually here since we added properties to the Booking model:
+    # booking.item_total, booking.studio_total, booking.package_total, booking.rental_days, booking.calculated_total_price
+    # The template can access them directly or we can attach them to avoid template changes.
     for booking in bookings:
-        item_total = sum(
-            item.price_at_booking * item.quantity 
-            for item in booking.items.all()
-        )
-        studio_total = sum(
-            bs.price_at_booking 
-            for bs in booking.booked_studios.all()
-        )
-        package_total = sum(
-            bp.price_at_booking * bp.quantity 
-            for bp in booking.booked_packages.all()
-        )
-        
-        # จำนวนวัน
-        days = max(1, (booking.end_time.date() - booking.start_time.date()).days + 1)
-        booking.calculated_total = (item_total + studio_total + package_total) * days
-        booking.num_days = days
+        booking.calculated_total = booking.calculated_total_price
+        booking.num_days = booking.rental_days
     
     context = {
         'bookings': bookings,

@@ -25,6 +25,9 @@ urlpatterns = [
     
     path('staff/history/', staff.equipment_history_search, name='equipment_history_search'),
     path('staff/history/<int:equipment_id>/', staff.equipment_history_detail, name='equipment_history_detail'),
+    path('staff/booking/<int:booking_id>/summary/', staff.booking_summary, name='staff_booking_summary'),
+    path('api/staff/booking/<int:booking_id>/action/', staff.booking_action_api, name='api_staff_booking_action'),
+    path('staff/analytics/', staff.staff_analytics, name='staff_analytics'),
     
     # API endpoints (Core Functions)
     path('api/check-availability/', booking.check_availability_api, name='api_check_availability'),

@@ -185,58 +185,100 @@
                                 <p class="text-gray-400 text-xs mt-1">ขอบคุณที่ใช้บริการครับ</p>
                             </div>
                         {% else %}
-                            <!-- Pending Message (If uploaded) -->
-                            {% if booking.payment_status == 'pending' %}
-                                <div class="bg-yellow-500/10 p-4 rounded-xl text-center border border-yellow-500/20 mb-4">
-                                    <i class="fas fa-hourglass-half text-2xl text-yellow-400 mb-2"></i>
-                                    <h3 class="text-yellow-400 font-bold">กำลังตรวจสอบหลักฐาน</h3>
-                                    <p class="text-gray-400 text-xs mt-1">คุณสามารถอัปโหลดสลิปใหม่ได้หากต้องการแก้ไข</p>
+                            <!-- Draft Message (Waiting for Staff) -->
+                            {% if booking.status == 'draft' %}
+                                <div class="bg-blue-500/10 p-4 rounded-xl text-center border border-blue-500/20 mb-4">
+                                    <i class="fas fa-hourglass-start text-3xl text-blue-400 mb-3 mt-2"></i>
+                                    <h3 class="text-blue-400 font-bold text-lg">กำลังรอเจ้าหน้าที่ตรวจสอบ</h3>
+                                    <p class="text-gray-400 text-sm mt-2 leading-relaxed">กรุณารอเจ้าหน้าที่ตรวจสอบสถานะสินค้าและสรุปยอดเงินสุทธิ<br>ระบบจะแจ้งให้ท่านทราบเมื่อพร้อมชำระดัมจำ</p>
                                 </div>
-                            {% else %}
-                                <!-- Expiration Timer -->
-                                {% if booking.expires_at and not booking.is_expired %}
-                                <div class="bg-red-500/10 p-4 rounded-xl text-center border border-red-500/20 mb-4">
-                                    <div class="text-red-400 font-bold text-sm mb-1">⏰ กรุณาชำระเงินภายใน</div>
-                                    <div id="countdown" class="text-2xl font-mono text-white font-bold" data-expire="{{ booking.expires_at|date:'Y-m-d H:i:s' }}">--:--:--</div>
-                                </div>
-                                {% elif booking.is_expired %}
-                                <div class="bg-red-500/10 p-4 rounded-xl text-center border border-red-500/20 mb-4">
-                                    <i class="fas fa-times-circle text-2xl text-red-500 mb-2"></i>
-                                    <h3 class="text-red-500 font-bold">หมดเวลาชำระเงิน</h3>
-                                    <p class="text-gray-400 text-xs mt-1">ใบจองนี้ถูกยกเลิกแล้ว</p>
-                                </div>
+                            
+                            <!-- Pending Payment Message/UI -->
+                            {% elif booking.status == 'pending' %}
+                                <!-- Pending Verification (Uploaded) -->
+                                {% if booking.payment_status == 'pending' %}
+                                    <div class="bg-yellow-500/10 p-4 rounded-xl text-center border border-yellow-500/20 mb-4">
+                                        <i class="fas fa-hourglass-half text-2xl text-yellow-400 mb-2"></i>
+                                        <h3 class="text-yellow-400 font-bold">กำลังตรวจสอบหลักฐาน</h3>
+                                        <p class="text-gray-400 text-xs mt-1">คุณสามารถอัปโหลดสลิปใหม่ได้หากต้องการแก้ไข</p>
+                                    </div>
+                                {% else %}
+                                    <!-- Expiration Timer -->
+                                    {% if booking.expires_at and not booking.is_expired %}
+                                    <div class="bg-red-500/10 p-4 rounded-xl text-center border border-red-500/20 mb-4">
+                                        <div class="text-red-400 font-bold text-sm mb-1">⏰ กรุณาชำระเงินภายใน</div>
+                                        <div id="countdown" class="text-2xl font-mono text-white font-bold" data-expire="{{ booking.expires_at|date:'Y-m-d H:i:s' }}">--:--:--</div>
+                                    </div>
+                                    {% elif booking.is_expired %}
+                                    <div class="bg-red-500/10 p-4 rounded-xl text-center border border-red-500/20 mb-4">
+                                        <i class="fas fa-times-circle text-2xl text-red-500 mb-2"></i>
+                                        <h3 class="text-red-500 font-bold">หมดเวลาชำระเงิน</h3>
+                                        <p class="text-gray-400 text-xs mt-1">ใบจองนี้ถูกยกเลิกแล้ว</p>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- QR Code & Bank Details (Hide if expired) -->
+                                    {% if not booking.is_expired %}
+                                    <div class="bg-white p-4 rounded-xl text-center mb-4">
+                                        <div class="w-full aspect-square bg-gray-200 rounded-lg flex items-center justify-center mb-2">
+                                            <i class="fas fa-qrcode text-6xl text-gray-400"></i>
+                                        </div>
+                                        <p class="text-black font-bold text-sm">Scan เพื่อชำระมัดจำ</p>
+                                        <p class="text-mcot-orange font-bold text-lg">฿{{ booking.deposit_amount|intcomma }}</p>
+                                        
+                                        <!-- Bank Account Details -->
+                                        <div class="mt-4 pt-4 border-t border-gray-100 text-left">
+                                            <p class="text-gray-500 text-xs mb-2">หรือโอนเข้าบัญชีธนาคาร:</p>
+                                            <div class="bg-gray-50 rounded-lg p-3">
+                                                <div class="flex items-center gap-3 mb-2">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Krung_Thai_Bank_logo.svg/1024px-Krung_Thai_Bank_logo.svg.png" alt="KTB" class="h-6 object-contain">
+                                                    <div>
+                                                        <p class="text-sm font-bold text-gray-800">ธนาคารกรุงไทย (KTB)</p>
+                                                        <p class="text-xs text-gray-500">สาขาอโศก</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex justify-between items-center bg-white p-2 border border-gray-200 rounded mt-2">
+                                                    <div>
+                                                        <p class="text-xs text-gray-500">ชื่อบัญชี</p>
+                                                        <p class="text-sm font-bold text-gray-800">บมจ. อสมท (MCOT Public Company Limited)</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex justify-between items-center bg-white p-2 border border-gray-200 rounded mt-2">
+                                                    <div>
+                                                        <p class="text-xs text-gray-500">เลขที่บัญชี</p>
+                                                        <p class="text-base font-mono font-bold text-gray-800 tracking-wider">015-0-00000-0</p>
+                                                    </div>
+                                                    <button type="button" onclick="navigator.clipboard.writeText('0150000000'); Swal.fire({title:'คัดลอกเลขบัญชีแล้ว', icon:'success', timer:1500, showConfirmButton:false, customClass:{popup:'swal2-glass'}})" class="text-mcot-orange hover:text-orange-600 transition-colors" title="คัดลอกเลขบัญชี">
+                                                        <i class="far fa-copy text-lg"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
                                 {% endif %}
 
-                                <!-- QR Code (Hide if expired) -->
+                                <!-- Upload Form (Show for pending status, whether unpaid or pending verification) -->
                                 {% if not booking.is_expired %}
-                                <div class="bg-white p-4 rounded-xl text-center mb-4">
-                                    <div class="w-full aspect-square bg-gray-200 rounded-lg flex items-center justify-center mb-2">
-                                        <i class="fas fa-qrcode text-6xl text-gray-400"></i>
+                                <form id="slip-form" class="space-y-4">
+                                    <div>
+                                        <label class="block text-gray-400 text-xs mb-2">
+                                            {% if booking.payment_status == 'pending' %}อัปโหลดสลิปใหม่{% else %}แนบสลิปโอนเงิน{% endif %} (Image only)
+                                        </label>
+                                        <input type="file" id="slip-input" accept="image/*" class="block w-full text-sm text-gray-400
+                                          file:mr-4 file:py-2 file:px-4
+                                          file:rounded-full file:border-0
+                                          file:text-xs file:font-semibold
+                                          file:bg-mcot-orange file:text-white
+                                          hover:file:bg-orange-600
+                                        "/>
                                     </div>
-                                    <p class="text-black font-bold text-sm">Scan เพื่อชำระมัดจำ</p>
-                                    <p class="text-mcot-orange font-bold text-lg">฿{{ booking.deposit_amount|intcomma }}</p>
-                                </div>
+                                    <button type="button" onclick="uploadSlip()" id="btn-upload" class="w-full bg-mcot-orange hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-orange-500/30">
+                                        {% if booking.payment_status == 'pending' %}ส่งหลักฐานใหม่{% else %}แจ้งชำระเงิน{% endif %} <i class="fas fa-file-upload ml-2"></i>
+                                    </button>
+                                </form>
                                 {% endif %}
                             {% endif %}
-
-                            <!-- Upload Form (Always show unless paid) -->
-                            <form id="slip-form" class="space-y-4">
-                                <div>
-                                    <label class="block text-gray-400 text-xs mb-2">
-                                        {% if booking.payment_status == 'pending' %}อัปโหลดสลิปใหม่{% else %}แนบสลิปโอนเงิน{% endif %} (Image only)
-                                    </label>
-                                    <input type="file" id="slip-input" accept="image/*" class="block w-full text-sm text-gray-400
-                                      file:mr-4 file:py-2 file:px-4
-                                      file:rounded-full file:border-0
-                                      file:text-xs file:font-semibold
-                                      file:bg-mcot-orange file:text-white
-                                      hover:file:bg-orange-600
-                                    "/>
-                                </div>
-                                <button type="button" onclick="uploadSlip()" id="btn-upload" class="w-full bg-mcot-orange hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-orange-500/30">
-                                    {% if booking.payment_status == 'pending' %}ส่งหลักฐานใหม่{% else %}แจ้งชำระเงิน{% endif %} <i class="fas fa-file-upload ml-2"></i>
-                                </button>
-                            </form>
                         {% endif %}
                     </div>
                 </div>

@@ -309,7 +309,7 @@ class StudioAdmin(ModelAdmin):
 @admin.register(Booking)
 class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
     # --- List View ---
-    list_display = ['id', 'customer_name', 'project_name', 'coordinator', 'status_badge', 'payment_status', 'payment_slip_preview',
+    list_display = ['id', 'booking_summary_link', 'customer_name', 'project_name', 'coordinator', 'status_badge', 'payment_status', 'payment_slip_preview',
                      'total_price_display', 'penalty_amount', 'start_time', 'end_time']
     list_display_links = ['id', 'customer_name']
     search_fields = ['customer_name', 'project_name', 'phone', 'id']
@@ -323,7 +323,7 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
     inlines = [BookingItemInline, BookingStudioInline, BookingStaffInline, BookingPackageInline]
 
     # --- Batch Actions ---
-    actions = ['action_approve', 'action_confirm_payment', 'action_cancel', 'action_mark_active', 'action_mark_overdue', 'action_mark_completed', 'action_calculate_penalty']
+    actions = ['action_request_payment', 'action_approve', 'action_confirm_payment', 'action_cancel', 'action_mark_active', 'action_mark_overdue', 'action_mark_completed', 'action_calculate_penalty']
 
     @admin.action(description='⚠️ คำนวณค่าปรับคืนช้า (Calculate Penalty)')
     def action_calculate_penalty(self, request, queryset):
@@ -360,6 +360,26 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
         updated = queryset.filter(payment_status='pending').update(payment_status='paid')
         self.message_user(request, f'💰 ยืนยันการชำระเงินแล้ว {updated} รายการ')
 
+    @admin.action(description='📨 ขอเรียกเก็บมัดจำ (Request Payment)')
+    def action_request_payment(self, request, queryset):
+        if not (request.user.is_superuser or is_web_admin(request.user)):
+             self.message_user(request, '❌ คุณไม่มีสิทธิ์', level='error')
+             return
+             
+        from django.utils import timezone
+        from datetime import timedelta
+        from apps.store.services.notification_service import NotificationService
+        
+        count = 0
+        for booking in queryset.filter(status='draft'):
+            booking.status = 'pending'
+            booking.expires_at = timezone.now() + timedelta(hours=24) # ให้เวลาชำระเงิน 24 ชม. หลังจากกดขอเรียกเก็บ
+            booking.save(update_fields=['status', 'expires_at'])
+            NotificationService.send_notification(booking, 'pending_deposit')
+            count += 1
+            
+        self.message_user(request, f'📨 ส่งเรื่องขอเรียกเก็บเงินแล้ว {count} รายการ')
+
     @admin.action(description='✅ อนุมัติ (Approve)')
     def action_approve(self, request, queryset):
         if not (request.user.is_superuser or is_web_admin(request.user)):
@@ -374,7 +394,14 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
             NotificationService.send_notification(booking, 'approved')
             count += 1
             
-        self.message_user(request, f'✅ อนุมัติแล้ว {count} รายการ')
+        self.message_user(request, f'✅ อนุมัติการจองแล้ว {count} รายการ (ส่งอีเมลแจ้งลูกค้าแล้ว)')
+
+    def booking_summary_link(self, obj):
+        from django.urls import reverse
+        from django.utils.html import format_html
+        url = reverse('store:staff_booking_summary', args=[obj.id])
+        return format_html('<a class="button" href="{}" target="_blank" style="background-color: #ff6b00 !important; color: white !important; padding: 4px 10px !important; border-radius: 4px !important; font-weight: bold !important; text-decoration: none !important; white-space: nowrap !important; display: inline-block !important; font-size: 11px !important;">🔍 Summary</a>', url)
+    booking_summary_link.short_description = "Staff View"
 
     @admin.action(description='❌ ยกเลิก (Cancel)')
     def action_cancel(self, request, queryset):
@@ -443,7 +470,7 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
     def payment_slip_preview(self, obj):
         if obj.payment_slip:
             return format_html(
-                '<a href="{}" target="_blank"><img src="{}" style="height:50px; border-radius:4px; border:1px solid #ccc;"></a>',
+                '<a href="{}" target="_blank"><img src="{}" style="height:40px !important; max-width:60px !important; object-fit:cover !important; border-radius:4px !important; border:1px solid #ccc !important;"></a>',
                 obj.payment_slip.url,
                 obj.payment_slip.url
             )

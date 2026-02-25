@@ -3,6 +3,7 @@ from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_GET
 from apps.store.models import Notification
+import re
 
 @login_required
 @require_GET
@@ -15,10 +16,16 @@ def get_notifications_api(request):
     
     data = []
     for notif in notifications:
+        link = notif.link
+        
+        # Rewrite legacy admin links to the new Staff Summary Dashboard
+        if link and request.user.is_staff:
+            link = re.sub(r'/admin/store/booking/(\d+)/change/?', r'/staff/booking/\1/summary/', link)
+            
         data.append({
             'id': notif.id,
             'message': notif.message,
-            'link': notif.link,
+            'link': link,
             'is_read': notif.is_read,
             'type': notif.notification_type,
             'created_at': notif.created_at.strftime("%d/%m %H:%M")

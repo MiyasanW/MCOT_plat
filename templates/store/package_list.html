@@ -164,7 +164,7 @@
 
                             <!-- Call to Action -->
                             <div class="mt-8 pt-8 border-t border-white/5 flex flex-wrap gap-4 items-center">
-                                <a href="{% url 'store:package_detail' pkg.id %}"
+                                <a href="{% url 'store:package_detail' pkg.id %}{% if selected_start_date and selected_end_date %}?start_date={{ selected_start_date }}&end_date={{ selected_end_date }}{% endif %}"
                                     class="px-8 py-4 bg-white text-black text-sm font-bold uppercase tracking-widest hover:bg-mcot-orange hover:text-white transition-all transform hover:-translate-y-1 shadow-[0_10px_30px_rgba(255,255,255,0.1)] rounded-xl flex items-center gap-2">
                                     ดูรายละเอียด & จอง <i class="fas fa-arrow-right"></i>
                                 </a>
@@ -260,7 +260,7 @@
                                     <span class="font-mono text-2xl font-bold leading-none tracking-tight">฿{{ pkg.price|intcomma }}</span>
                                 </div>
                             </div>
-                            <a href="{% url 'store:package_detail' pkg.id %}"
+                            <a href="{% url 'store:package_detail' pkg.id %}{% if selected_start_date and selected_end_date %}?start_date={{ selected_start_date }}&end_date={{ selected_end_date }}{% endif %}"
                                 class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white group-hover:bg-mcot-orange group-hover:border-mcot-orange transition-all duration-300">
                                 <i class="fas fa-arrow-right group-hover:translate-x-0.5 transition-transform"></i>
                             </a>

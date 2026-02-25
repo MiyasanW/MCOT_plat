@@ -96,7 +96,7 @@
                             </div>
                             <div>
                                 <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Phone Number" %}</label>
-                                <input type="tel" id="contact-phone" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm mb-1" value="{{ user.profile.phone|default:'' }}" placeholder="08x-xxx-xxxx">
+                                <input type="tel" id="contact-phone" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm mb-1" value="{{ user.profile.phone|default:'' }}" placeholder="08x-xxx-xxxx" oninput="this.value = this.value.replace(/[^0-9\-+() ]/g, '')">
                                 <p class="text-[10px] text-gray-500">*{% trans "Required" %}</p>
                             </div>
                             <div>
@@ -553,9 +553,9 @@
                 icon: 'warning',
                 title: 'ไม่พบวันที่เช่า',
                 text: 'กรุณาเลือกวันที่จากหน้าสินค้าก่อน',
-                background: '#1e1e1e',
-                color: '#fff',
-                confirmButtonColor: '#f26522'
+                customClass: {
+                    popup: 'swal2-glass'
+                }
             });
             return;
         }
@@ -565,9 +565,9 @@
                 icon: 'error',
                 title: 'สินค้าไม่ว่าง',
                 text: 'มีสินค้าบางรายการถูกจองเต็มแล้ว กรุณาลบออกก่อนยืนยัน',
-                background: '#1e1e1e',
-                color: '#fff',
-                confirmButtonColor: '#f26522'
+                customClass: {
+                    popup: 'swal2-glass'
+                }
             });
             return;
         }
@@ -577,10 +577,24 @@
             Swal.fire({
                 icon: 'warning',
                 title: 'ข้อมูลไม่ครบถ้วน',
-                text: 'กรุณาระบุเบอร์โทรศัพท์สำหรับติดต่อ',
-                background: '#1e1e1e',
-                color: '#fff',
-                confirmButtonColor: '#f26522'
+                text: 'กรุณากรอกเบอร์โทรศัพท์ติดต่อ',
+                customClass: {
+                    popup: 'swal2-glass'
+                }
+            });
+            document.getElementById('contact-phone').focus();
+            return;
+        }
+        
+        const phoneRegex = /^[0-9\-+\s()]+$/;
+        if (!phoneRegex.test(phoneInput)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'เบอร์โทรศัพท์ไม่ถูกต้อง',
+                text: 'กรุณากรอกเฉพาะตัวเลขและเครื่องหมาย (-, +) เท่านั้น',
+                customClass: {
+                    popup: 'swal2-glass'
+                }
             });
             document.getElementById('contact-phone').focus();
             return;
@@ -624,9 +638,9 @@
                     icon: 'success',
                     title: 'จองสำเร็จ!',
                     text: 'รหัสใบจอง #' + data.booking_id,
-                    background: '#1e1e1e',
-                    color: '#fff',
-                    confirmButtonColor: '#f26522',
+                    customClass: {
+                        popup: 'swal2-glass'
+                    },
                     timer: 2000,
                     showConfirmButton: false
                 }).then(() => {
@@ -643,9 +657,9 @@
                     icon: 'error',
                     title: 'จองไม่สำเร็จ',
                     text: errorMsg,
-                    background: '#1e1e1e',
-                    color: '#fff',
-                    confirmButtonColor: '#f26522'
+                    customClass: {
+                        popup: 'swal2-glass'
+                    }
                 });
                 
                 checkoutBtn.disabled = false;
@@ -658,9 +672,9 @@
                 icon: 'error',
                 title: 'ข้อผิดพลาดระบบ',
                 text: 'เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่',
-                background: '#1e1e1e',
-                color: '#fff',
-                confirmButtonColor: '#f26522'
+                customClass: {
+                    popup: 'swal2-glass'
+                }
             });
             checkoutBtn.disabled = false;
             checkoutBtn.innerHTML = '<span>ยืนยันการจอง</span> <i class="fas fa-arrow-right"></i>';

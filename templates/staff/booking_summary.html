@@ -1,0 +1,462 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="min-h-screen pt-24 pb-20">
+    <div class="container mx-auto px-4 max-w-6xl">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <a href="{% url 'admin:store_booking_changelist' %}" class="text-gray-400 hover:text-white transition-colors text-sm mb-2 inline-flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i> กลับไปหน้าระบบหลังบ้าน (Admin)
+                </a>
+                <h1 class="text-3xl font-bold text-white flex items-center gap-3">
+                    สรุปใบจอง #{{ booking.id }}
+                    <span class="px-3 py-1 rounded-full text-xs font-bold border
+                        {% if booking.status == 'draft' %}bg-blue-500/20 text-blue-400 border-blue-500/30
+                        {% elif booking.status == 'pending' %}bg-yellow-500/20 text-yellow-400 border-yellow-500/30
+                        {% elif booking.status == 'approved' %}bg-green-500/20 text-green-400 border-green-500/30
+                        {% elif booking.status == 'active' %}bg-purple-500/20 text-purple-400 border-purple-500/30
+                        {% elif booking.status == 'completed' %}bg-gray-500/20 text-gray-400 border-gray-500/30
+                        {% elif booking.status == 'cancelled' %}bg-red-500/20 text-red-400 border-red-500/30
+                        {% else %}bg-gray-500/20 text-gray-400 border-gray-500/30{% endif %}">
+                        {{ booking.get_status_display }}
+                    </span>
+                </h1>
+                <div class="text-gray-400 text-sm mt-2">วันที่สร้าง: {{ booking.created_at|date:"d M Y, H:i" }}</div>
+            </div>
+            <div class="text-right">
+                <span class="block text-xs text-gray-400 mb-1">สถานะการจ่ายเงิน</span>
+                <span class="px-4 py-2 rounded-full font-bold border inline-block
+                    {% if booking.payment_status == 'paid' %}bg-green-500/20 text-green-400 border-green-500/30
+                    {% elif booking.payment_status == 'pending' %}bg-yellow-500/20 text-yellow-400 border-yellow-500/30
+                    {% else %}bg-gray-500/20 text-gray-400 border-gray-500/30{% endif %}">
+                    {{ booking.get_payment_status_display }}
+                </span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- Left Column: Customer & Dates (1 Col) -->
+            <div class="space-y-6">
+                <!-- Customer Card -->
+                <div class="glass-panel p-5 rounded-2xl border border-white/10">
+                    <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-user-circle text-mcot-orange"></i> ข้อมูลลูกค้า
+                    </h2>
+                    <div class="space-y-3 text-sm">
+                        <div>
+                            <span class="text-gray-500 text-xs block">ชื่อผู้ติดต่อ / บริษัท</span>
+                            <span class="text-white">{{ booking.customer_name }}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 text-xs block">ชื่อโปรเจกต์งาน</span>
+                            <span class="text-white">{{ booking.project_name|default:"-" }}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 text-xs block">เบอร์โทร</span>
+                            <span class="text-white">{{ booking.phone|default:"-" }}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 text-xs block">อีเมล</span>
+                            <span class="text-white">{{ booking.customer_email|default:"-" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Card -->
+                <div class="glass-panel p-5 rounded-2xl border border-white/10">
+                    <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-clock text-mcot-orange"></i> วันเวลาที่ใช้งาน
+                    </h2>
+                    <div class="relative pl-6 border-l border-white/10 space-y-4">
+                        <div class="relative">
+                            <div class="absolute -left-[31px] w-3 h-3 bg-mcot-orange rounded-full mt-1.5 shadow-[0_0_10px_rgba(255,107,0,0.5)]"></div>
+                            <span class="text-xs text-gray-400 block">รับของ / เริ่มใช้</span>
+                            <span class="text-white font-bold">{{ booking.start_time|date:"d M Y" }}</span>
+                            <span class="text-gray-400 ml-2">{{ booking.start_time|time:"H:i" }} น.</span>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[31px] w-3 h-3 bg-red-500 rounded-full mt-1.5 shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
+                            <span class="text-xs text-gray-400 block">คืนของ / สิ้นสุด</span>
+                            <span class="text-white font-bold">{{ booking.end_time|date:"d M Y" }}</span>
+                            <span class="text-gray-400 ml-2">{{ booking.end_time|time:"H:i" }} น.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Internal Notes -->
+                <div class="glass-panel p-5 rounded-2xl border border-white/10 border-l-4 border-l-purple-500">
+                    <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                        <i class="fas fa-comment-dots text-purple-400"></i> บันทึกภายใน (Staff คุยกัน)
+                    </h2>
+                    <p class="text-xs text-gray-400 mb-3">ลูกค้าจะมองไม่เห็นข้อความนี้</p>
+                    <textarea id="internal-notes" rows="4" class="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-purple-500 placeholder-gray-600 mb-2">{{ booking.internal_notes|default:"" }}</textarea>
+                    <button onclick="saveNotes()" class="w-full py-2 bg-purple-500/20 hover:bg-purple-500/40 text-purple-300 rounded-lg text-sm font-bold transition-colors">
+                        บันทึกข้อความ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Middle Column: Items & Financials (2 Cols) -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Items List -->
+                <div class="glass-panel p-6 rounded-2xl border border-white/10">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fas fa-box-open text-mcot-orange"></i> รายการของที่จอง
+                        </h2>
+                    </div>
+
+                    <div class="space-y-3">
+                        {% for item in items %}
+                        <div class="p-4 bg-[#2A2A2A] rounded-xl border border-white/5">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex gap-3">
+                                    {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}" class="w-12 h-12 rounded object-cover">
+                                    {% else %}
+                                        <div class="w-12 h-12 rounded bg-gray-800 flex items-center justify-center">
+                                            <i class="fas fa-camera text-gray-600"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <h3 class="text-white font-bold text-sm">{{ item.product.name }}</h3>
+                                        <p class="text-gray-500 text-xs">หมวดหมู่: {{ item.product.category.name }} | {{ item.quantity }} ชิ้น</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-white font-bold">฿{{ item.price_at_booking|intcomma }} / วัน</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Equipment Check-out Field (Staff Only) -->
+                            <div class="mt-3 pt-3 border-t border-white/5 bg-black/20 p-3 rounded-lg flex items-center gap-2">
+                                <i class="fas fa-barcode text-gray-500"></i>
+                                <span class="text-xs text-gray-400 w-24">รหัสเครื่อง:</span>
+                                {% if booking.status == 'active' or booking.status == 'approved' or booking.status == 'completed' %}
+                                    <div class="flex-1 flex gap-2">
+                                        <select id="eq-{{ item.id }}" class="flex-1 bg-black border border-white/20 rounded px-2 py-1 text-xs text-white uppercase focus:border-mcot-orange outline-none">
+                                            <option value="">-- ยังไม่ได้จับคู่ (เลือกเครื่อง) --</option>
+                                            
+                                            <!-- Show currently assigned equipment even if it's technically "unavailable" right now due to this booking -->
+                                            {% if item.equipment %}
+                                                <option value="{{ item.equipment.asset_tag }}" selected>
+                                                    {{ item.equipment.asset_tag }} 
+                                                    {% if item.equipment.serial_number %}({{ item.equipment.serial_number }}){% endif %}
+                                                    [ใช้งานอยู่]
+                                                </option>
+                                            {% endif %}
+                                            
+                                            <!-- List available options -->
+                                            {% for eq in item.available_equipments %}
+                                                <!-- Skip if it's the one already assigned to avoid duplicates -->
+                                                {% if not item.equipment or item.equipment.id != eq.id %}
+                                                <option value="{{ eq.asset_tag }}">
+                                                    {{ eq.asset_tag }}
+                                                    {% if eq.serial_number %}({{ eq.serial_number }}){% endif %}
+                                                </option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        <button type="button" onclick="assignEquipment({{ item.id }})" class="px-3 py-1 bg-mcot-orange hover:bg-orange-600 text-white rounded text-xs transition-colors shadow-lg shadow-orange-500/20 whitespace-nowrap">
+                                            บันทึกเลขเครื่อง
+                                        </button>
+                                    </div>
+                                {% else %}
+                                    <span class="text-xs text-gray-500 italic">รอให้ลูกค้าชำระเงิน/อนุมัติก่อนถึงจะจับคู่เครื่องได้</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                            <p class="text-gray-500 text-sm italic">ไม่มีรายการอุปกรณ์</p>
+                        {% endfor %}
+
+                        {% for studio in studios %}
+                        <div class="p-4 bg-[#2A2A2A] rounded-xl border border-white/5 flex justify-between items-center">
+                            <div>
+                                <h3 class="text-white font-bold text-sm"><i class="fas fa-video text-gray-400 mr-2"></i> {{ studio.studio.name }}</h3>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-white font-bold">฿{{ studio.price_at_booking|intcomma }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        {% for pkg in packages %}
+                        <div class="p-4 bg-[#2A2A2A] rounded-xl border border-white/5 flex justify-between items-center">
+                            <div>
+                                <h3 class="text-white font-bold text-sm"><i class="fas fa-layer-group text-gray-400 mr-2"></i> {{ pkg.package.name }} x{{ pkg.quantity }}</h3>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-white font-bold">฿{{ pkg.price_at_booking|intcomma }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Financials -->
+                <div class="glass-panel p-6 rounded-2xl border border-white/10">
+                    <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-money-bill-wave text-green-400"></i> สรุปยอดและการเงิน
+                    </h2>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="bg-black/30 p-4 rounded-xl text-center border border-white/5">
+                            <span class="block text-gray-400 text-xs mb-1">ยอดรวมสุทธิ (Grand Total)</span>
+                            <span class="text-xl font-bold text-white">฿{{ booking.total_price|intcomma }}</span>
+                        </div>
+                        <div class="bg-black/30 p-4 rounded-xl text-center border border-mcot-orange/20">
+                            <span class="block text-gray-400 text-xs mb-1">ยอดมัดจำ 30%</span>
+                            <span class="text-xl font-bold text-mcot-orange">฿{{ booking.deposit_amount|intcomma }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Penalty Input Box -->
+                    <div class="mt-4 p-4 border border-red-500/20 bg-red-500/5 rounded-xl flex items-center justify-between">
+                        <div>
+                            <span class="block text-red-400 font-bold text-sm">ค่าปรับ / เก็บเพิ่ม (Penalty)</span>
+                            {% if preview_penalty > 0 and booking.penalty_amount == 0 %}
+                                <span class="text-xs text-gray-500 block mt-1">⏳ ประเมินคืนช้า: ฿{{ preview_penalty|intcomma }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-white">฿</span>
+                            <input type="number" id="penalty-input" value="{{ booking.penalty_amount|default:0 }}" class="w-24 bg-black border border-white/20 rounded px-2 py-1 text-white text-right focus:border-red-500 outline-none">
+                            <button onclick="savePenalty()" class="px-3 py-1 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded transition-colors text-sm">บันทึก</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Quick Actions & Slip (1 Col) -->
+            <div class="space-y-6">
+                <!-- Actions Box -->
+                <div class="glass-panel p-5 rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black">
+                    <h2 class="text-sm font-bold text-gray-400 mb-4 tracking-wider uppercase">การจัดการสถานะ (Quick Actions)</h2>
+                    
+                    <div class="space-y-3">
+                        {% if booking.status == 'draft' %}
+                        <button onclick="doAction('request_payment', 'แจ้งยอดลูกค้าเพื่อให้ชำระดัมจำ? ระบบจะเริ่มนับถอยหลัง 24 ชม. ให้ลูกค้าเงิน')" class="w-full relative group overflow-hidden bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg shadow-blue-500/20 text-sm flex items-center justify-center gap-2">
+                            <i class="fas fa-paper-plane"></i> 1. ขอเรียกเก็บมัดจำ
+                        </button>
+                        {% endif %}
+
+                        {% if booking.status == 'pending' %}
+                            {% if booking.payment_status == 'pending' %}
+                            <div class="p-3 border border-yellow-500/30 bg-yellow-500/10 rounded-xl mb-2 text-center">
+                                <i class="fas fa-exclamation-triangle text-yellow-400 block mb-1"></i>
+                                <span class="text-xs text-yellow-500">ลูกค้าส่งสลิปมาใหม่ ตรวจสอบด้านล่าง</span>
+                            </div>
+                            {% endif %}
+                            {% if booking.payment_status != 'paid' %}
+                            <button onclick="doAction('confirm_payment', 'ยืนยันว่าได้รับยอดเงินมัดจำเรียบร้อยแล้วใช่หรือไม่?')" class="w-full relative group overflow-hidden bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg shadow-green-500/20 text-sm flex items-center justify-center gap-2">
+                                <i class="fas fa-check-circle"></i> 2. ยืนยันว่าได้รับเงินแล้ว
+                            </button>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if booking.status == 'approved' or booking.status == 'pending' and booking.payment_status == 'paid' %}
+                        <button onclick="doAction('mark_active', 'เปลี่ยนสถานะเป็น กำลังใช้งาน (พนักงานส่งมอบของให้ลูกค้าแล้ว)?')" class="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-purple-500/20 flex justify-center items-center gap-2">
+                            <i class="fas fa-play"></i> 3. ปล่อยของ / เริ่มใช้งาน
+                        </button>
+                        {% endif %}
+
+                        {% if booking.status == 'active' %}
+                        <button onclick="doAction('mark_completed', 'ลูกค้าคืนของครบถ้วนแล้วและต้องการปิดใบจองนี้?')" class="w-full py-3 bg-gray-600 hover:bg-gray-500 text-white rounded-xl text-sm font-bold transition-all flex justify-center items-center gap-2">
+                            <i class="fas fa-box"></i> 4. คืนของจบบิล (Complete)
+                        </button>
+                        {% endif %}
+
+                        {% if booking.status != 'completed' and booking.status != 'cancelled' %}
+                        <div class="pt-4 mt-2 border-t border-white/5">
+                            <button onclick="cancelBooking()" class="w-full py-2 bg-transparent border border-red-500/30 hover:bg-red-500/10 text-red-500 rounded-lg text-sm transition-colors">
+                                <i class="fas fa-times mr-1"></i> ยกเลิกใบจอง (Cancel)
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Payment Slip View -->
+                {% if booking.payment_slip %}
+                <div class="glass-panel p-5 rounded-2xl border border-white/10">
+                    <h2 class="text-sm font-bold text-gray-400 mb-3 tracking-wider uppercase">หลักฐานการชำระเงิน</h2>
+                    <div class="rounded-lg overflow-hidden border border-white/10 bg-black relative group cursor-pointer" onclick="window.open('{{ booking.payment_slip.url }}', '_blank')">
+                        <img src="{{ booking.payment_slip.url }}" class="w-full object-cover max-h-48 group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span class="bg-white text-black text-xs font-bold px-3 py-1 rounded-full"><i class="fas fa-search-plus mr-1"></i> ดูสลิปเต็ม</span>
+                        </div>
+                    </div>
+                    <!-- Upload Time -->
+                    <p class="text-xs text-gray-500 mt-2 text-center">หลักฐานถูกอัปโหลดเข้าระบบแล้ว</p>
+                </div>
+                {% endif %}
+
+                <!-- Print Documents -->
+                <div class="glass-panel p-5 rounded-2xl border border-white/10">
+                    <h2 class="text-sm font-bold text-gray-400 mb-3 tracking-wider uppercase">พิมพ์เอกสาร</h2>
+                    <div class="space-y-2">
+                        <a href="{% url 'store:download_booking_pdf' booking.id %}" target="_blank" class="w-full flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-gray-300 transition-colors">
+                            <span><i class="fas fa-print mr-2 text-mcot-orange"></i> ใบเบิกอุปกรณ์ (Staff)</span>
+                            <i class="fas fa-external-link-alt text-xs"></i>
+                        </a>
+                        <a href="{% url 'store:download_quotation_pdf' booking.id %}" target="_blank" class="w-full flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-gray-300 transition-colors">
+                            <span><i class="fas fa-file-invoice-dollar mr-2 text-blue-400"></i> ใบเสนอราคา (ลูกค้า)</span>
+                            <i class="fas fa-external-link-alt text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Activity Log / History -->
+                <div class="glass-panel p-5 rounded-2xl border border-white/10">
+                    <h2 class="text-sm font-bold text-gray-400 border-b border-white/10 pb-3 mb-4 tracking-wider uppercase flex items-center justify-between">
+                        <span><i class="fas fa-history text-mcot-orange mr-2"></i> ประวัติการเปลี่ยนแปลง</span>
+                        <span class="bg-white/10 text-[10px] px-2 py-1 rounded-full">{{ history_logs|length }} รายการ</span>
+                    </h2>
+                    
+                    <div class="space-y-0 max-h-80 overflow-y-auto pr-2 custom-scrollbar ml-1">
+                        {% for log in history_logs %}
+                        <div class="relative pl-6 pb-6 border-l-2 border-white/10 ml-[11px] last:border-transparent last:pb-0">
+                            <!-- Timeline Dot -->
+                            <div class="absolute -left-[13px] top-0 w-[24px] h-[24px] rounded-full bg-[#2A2A2A] border-2 flex items-center justify-center shrink-0 z-10 {% if forloop.first %}border-mcot-orange{% else %}border-gray-500{% endif %}">
+                                <div class="w-1.5 h-1.5 rounded-full {% if forloop.first %}bg-mcot-orange shadow-[0_0_8px_#F26522]{% else %}bg-gray-500{% endif %}"></div>
+                            </div>
+                            
+                            <!-- Content -->
+                            <div class="bg-white/5 rounded-xl p-3 border border-white/5 hover:bg-white/10 transition-colors -mt-2">
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="text-xs font-bold {% if forloop.first %}text-mcot-orange{% else %}text-gray-300{% endif %}">
+                                        <i class="fas fa-user-circle mr-1 opacity-70"></i> {{ log.user }}
+                                    </span>
+                                    <span class="text-[10px] text-gray-500">{{ log.date|date:"d M Y, H:i" }}</span>
+                                </div>
+                                <p class="text-xs text-gray-400 leading-snug">{{ log.changes }}</p>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center text-sm text-gray-500 py-4 italic">ไม่มีประวัติการเปลี่ยนแปลง</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Base Glassmorphism classes inherited from base.html but in case we need specifics */
+.glass-panel {
+    background: rgba(26, 26, 26, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+.swal2-glass {
+    background: rgba(30, 30, 30, 0.9) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 20px !important;
+    color: white !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const API_URL = "{% url 'store:api_staff_booking_action' booking.id %}";
+    
+    function csrfToken() {
+        return document.cookie.split('; ').find(row => row.startsWith('csrftoken=')).split('=')[1];
+    }
+
+    async function sendCommand(action, data = {}) {
+        try {
+            const body = { action: action, ...data };
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken()
+                },
+                body: JSON.stringify(body)
+            });
+            const result = await response.json();
+            if(result.success) {
+                Swal.fire({
+                    title: 'สำเร็จ!',
+                    text: result.message,
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    customClass: { popup: 'swal2-glass' }
+                }).then(() => location.reload());
+            } else {
+                Swal.fire({
+                    title: 'เกิดข้อผิดพลาด',
+                    text: result.message,
+                    icon: 'error',
+                    customClass: { popup: 'swal2-glass' }
+                });
+            }
+        } catch(e) {
+            Swal.fire('Error', 'Connection failed.', 'error');
+        }
+    }
+
+    function doAction(action, confirmMessage) {
+        Swal.fire({
+            title: 'ยืนยันการดำเนินการ',
+            text: confirmMessage,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'ยืนยัน',
+            cancelButtonText: 'ยกเลิก',
+            confirmButtonColor: '#ff6b00',
+            cancelButtonColor: '#4b5563',
+            customClass: { popup: 'swal2-glass' }
+        }).then((result) => {
+            if(result.isConfirmed) {
+                sendCommand(action);
+            }
+        });
+    }
+
+    function cancelBooking() {
+        Swal.fire({
+            title: 'ยกเลิกใบจอง',
+            text: 'โปรดระบุสาเหตุการยกเลิก (ลูกค้าจะไม่เห็น แต่ Staff จะเห็นในบันทึก)',
+            input: 'text',
+            inputPlaceholder: 'เช่น ลูกค้าไม่โอนเงิน, ของพัง...',
+            showCancelButton: true,
+            confirmButtonText: 'ยืนยันยกเลิก',
+            confirmButtonColor: '#ef4444',
+            customClass: { popup: 'swal2-glass' }
+        }).then((result) => {
+            if(result.isConfirmed) {
+                sendCommand('cancel', { reason: result.value });
+            }
+        });
+    }
+
+    function saveNotes() {
+        const notes = document.getElementById('internal-notes').value;
+        sendCommand('update_notes', { notes: notes });
+    }
+
+    function savePenalty() {
+        const amount = document.getElementById('penalty-input').value;
+        sendCommand('save_penalty', { amount: amount });
+    }
+
+    function assignEquipment(itemId) {
+        const assetTag = document.getElementById(`eq-${itemId}`).value;
+        sendCommand('assign_equipment', { item_id: itemId, asset_tag: assetTag });
+    }
+</script>
+{% endblock %}

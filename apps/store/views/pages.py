@@ -17,32 +17,9 @@ def home(request):
     # 2. New Arrivals (Latest 4)
     new_arrivals = Product.objects.filter(is_active=True).order_by('-created_at', '-id')[:4]
 
-    # 3. Facility Status (Live Data)
-    today = timezone.now().date()
-    
-    # A. Pickup Queue (Based on today's bookings)
-    bookings_today_count = Booking.objects.filter(start_time__date=today).count()
-    if bookings_today_count < 3:
-        queue_status = {'label': 'Low Traffic', 'color': 'green'}
-    elif bookings_today_count < 7:
-        queue_status = {'label': 'Medium Traffic', 'color': 'yellow'}
-    else:
-        queue_status = {'label': 'High Traffic', 'color': 'red'}
-
-    # B. Studio Status
-    studios = Studio.objects.all()
-    studio_statuses = []
-    for studio in studios:
-        is_booked = BookingStudio.objects.filter(
-            studio=studio,
-            booking__start_time__date__lte=today,
-            booking__end_time__date__gte=today,
-            booking__status__in=['approved', 'active']
-        ).exists()
-        studio_statuses.append({
-            'name': studio.name,
-            'is_occupied': is_booked
-        })
+    # 3. Facility Status (Live Data) via Service Layer
+    from apps.store.services.dashboard_service import DashboardService
+    queue_status, studio_statuses = DashboardService.get_home_page_stats()
 
     context = {
         'featured_product': featured_product,

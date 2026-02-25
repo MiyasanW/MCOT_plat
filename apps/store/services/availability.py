@@ -50,7 +50,7 @@ class AvailabilityService:
         # 2. เป็นสถานะอื่นๆ ที่ไม่ใช่ draft (Confirmed/Active etc.)
         
         status_filter = Q(booking__status='draft', booking__created_at__gte=expiry_time) | \
-                        Q(booking__status__in=['pending_deposit', 'approved', 'active'])
+                        Q(booking__status__in=['pending', 'approved', 'active', 'overdue'])
         
         # สูตรหาการทับซ้อนของช่วงเวลา (Overlap Logic):
         # จองเริ่ม < เวลาที่เช็คจบ AND จองจบ > เวลาที่เช็คเริ่ม
@@ -62,9 +62,28 @@ class AvailabilityService:
         if exclude_booking_id:
             query &= ~Q(booking__id=exclude_booking_id)
 
-        # รวมจำนวน (Sum) จากทุก BookingItem ที่เข้าเงื่อนไข
-        booked_qty = BookingItem.objects.filter(query).aggregate(Sum('quantity'))['quantity__sum'] or 0
-        return booked_qty
+        # 1. รวมจำนวน (Sum) จากทุก BookingItem ที่เข้าเงื่อนไข (สินค้าชิ้นเดี่ยว)
+        booked_qty_direct = BookingItem.objects.filter(query).aggregate(Sum('quantity'))['quantity__sum'] or 0
+        
+        # 2. ค้นหาใน BookingPackage ที่จัดชุดรายการสินค้านี้เข้ามา (สินค้าในแพ็คเกจ)
+        from apps.store.models import BookingPackage
+        package_query = status_filter & \
+                        Q(package__packageitem__product=product) & \
+                        Q(booking__start_time__lt=end_time) & \
+                        Q(booking__end_time__gt=start_time)
+        
+        if exclude_booking_id:
+            package_query &= ~Q(booking__id=exclude_booking_id)
+            
+        booked_qty_packages = 0
+        booking_packages = BookingPackage.objects.filter(package_query).prefetch_related('package__packageitem_set')
+        # วนลูปหาจำนวนสินค้าเฉพาะตัวนี้ที่ต้องถูกดึงออกไปกับแพ็คเกจ
+        for bp in booking_packages:
+            for p_item in bp.package.packageitem_set.all():
+                if p_item.product_id == product.id:
+                    booked_qty_packages += (bp.quantity * p_item.quantity)
+
+        return booked_qty_direct + booked_qty_packages
 
     @staticmethod
     def get_available_quantity(product, start_time, end_time, exclude_booking_id=None):
@@ -114,7 +133,7 @@ class AvailabilityService:
                                   (False, ConflictingBooking) ถ้ามีการจองซ้อน
         """
         # สถานะที่บล็อคทรัพยากร
-        blocking_statuses = ['approved', 'active', 'pending_deposit', 'verification_pending'] 
+        blocking_statuses = ['approved', 'active', 'pending', 'overdue'] 
         
         query = Q(status__in=blocking_statuses) & \
                 Q(start_time__lt=end_time) & \
@@ -140,7 +159,12 @@ class AvailabilityService:
         โดยการ Loop เช็คสินค้าทุกชิ้นที่อยู่ในแพ็คเกจนั้นว่าว่างพอหรือไม่
         """
         errors = []
-        for pkg_item in package.packageitem_set.select_related('product').all():
+        pkg_items = package.packageitem_set.select_related('product').all()
+        
+        if not pkg_items:
+            return False, "แพ็คเกจนี้ยังไม่มีสินค้าภายใน ไม่สามารถจองได้"
+            
+        for pkg_item in pkg_items:
             # จำนวนที่ต้องใช้ = (จำนวนในแพ็คเกจ x จำนวนชุดที่ลูกค้าจอง)
             required_qty = pkg_item.quantity * requested_quantity
             is_valid, msg = AvailabilityService.check_availability(

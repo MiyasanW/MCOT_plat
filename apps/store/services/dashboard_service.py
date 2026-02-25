@@ -16,6 +16,40 @@ class DashboardService:
     """
     
     @staticmethod
+    def get_home_page_stats():
+        """
+        Calculates live facility status (Pickup Queue and Studio Occupancy) for the Home Page.
+        """
+        today = timezone.now().date()
+        
+        # A. Pickup Queue (Based on today's bookings)
+        bookings_today_count = Booking.objects.filter(start_time__date=today).count()
+        if bookings_today_count < 3:
+            queue_status = {'label': 'Low Traffic', 'color': 'green'}
+        elif bookings_today_count < 7:
+            queue_status = {'label': 'Medium Traffic', 'color': 'yellow'}
+        else:
+            queue_status = {'label': 'High Traffic', 'color': 'red'}
+
+        # B. Studio Status
+        from apps.store.models import BookingStudio
+        studios = Studio.objects.all()
+        studio_statuses = []
+        for studio in studios:
+            is_booked = BookingStudio.objects.filter(
+                studio=studio,
+                booking__start_time__date__lte=today,
+                booking__end_time__date__gte=today,
+                booking__status__in=['approved', 'active']
+            ).exists()
+            studio_statuses.append({
+                'name': studio.name,
+                'is_occupied': is_booked
+            })
+            
+        return queue_status, studio_statuses
+
+    @staticmethod
     def get_admin_dashboard_stats():
         """
         รวบรวมสถิติภาพรวมสำหรับ Admin Dashboard
