@@ -3,178 +3,182 @@
 {% load humanize %}
 {% load i18n %}
 
-
 {% block title %}MCOT Rental - Professional Broadcast Equipment{% endblock %}
 
 {% block content %}
-<!-- Industrial Commerce Container -->
-<div class="max-w-[1600px] mx-auto px-4 py-6 min-h-screen bg-[#0F0F0F]">
+<!-- Light Ambient Orbs Background (Behind everything) -->
+<div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+    <div class="absolute top-[10%] left-[20%] w-[500px] h-[500px] bg-mcot-orange/5 rounded-full blur-[100px]"></div>
+    <div class="absolute bottom-[20%] right-[10%] w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px]"></div>
+</div>
+
+<!-- Modern Commerce Container -->
+<div class="max-w-[1600px] mx-auto px-4 py-8 min-h-screen">
 
     <div class="grid grid-cols-12 gap-6">
 
         <!-- COLUMN 1: SIDEBAR NAV (2/12) -->
         <div class="hidden lg:block col-span-2 space-y-6">
-            <!-- Categories -->
-            <div class="bg-[#151515] border border-white/10 overflow-hidden">
-                <div class="bg-[#202020] px-4 py-3 border-b border-white/10">
-                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">{% trans "Department" %}</h3>
+            <!-- Categories (Frosted Glass) -->
+            <div class="bg-white/60 backdrop-blur-md shadow-xl border border-white/60 rounded-2xl overflow-hidden">
+                <div class="bg-gray-200/50 px-4 py-4 border-b border-gray-100">
+                    <h3 class="text-xs font-bold text-gray-900 uppercase tracking-wider">{% trans "Department" %}</h3>
                 </div>
-                <div class="flex flex-col">
+                <div class="flex flex-col py-2">
                     <a href="{% url 'store:catalog' %}?category=camera"
-                        class="px-4 py-2 text-[13px] text-gray-400 hover:text-white hover:bg-white/5 border-b border-white/5 flex justify-between items-center group transition-colors">
+                        class="px-4 py-2.5 text-[13px] text-gray-600 hover:text-mcot-orange hover:bg-mcot-orange/5 flex justify-between items-center group transition-colors">
                         {% trans "Camera Systems" %} <i
                             class="fas fa-caret-right text-[10px] opacity-0 group-hover:opacity-100 text-mcot-orange"></i>
                     </a>
                     <a href="{% url 'store:catalog' %}?category=lens"
-                        class="px-4 py-2 text-[13px] text-gray-400 hover:text-white hover:bg-white/5 border-b border-white/5 flex justify-between items-center group transition-colors">
+                        class="px-4 py-2.5 text-[13px] text-gray-600 hover:text-mcot-orange hover:bg-mcot-orange/5 flex justify-between items-center group transition-colors">
                         {% trans "Lenses & Filters" %} <i
                             class="fas fa-caret-right text-[10px] opacity-0 group-hover:opacity-100 text-mcot-orange"></i>
                     </a>
                     <a href="{% url 'store:catalog' %}?category=lighting"
-                        class="px-4 py-2 text-[13px] text-gray-400 hover:text-white hover:bg-white/5 border-b border-white/5 flex justify-between items-center group transition-colors">
+                        class="px-4 py-2.5 text-[13px] text-gray-600 hover:text-mcot-orange hover:bg-mcot-orange/5 flex justify-between items-center group transition-colors">
                         {% trans "Lighting & Grip" %} <i
                             class="fas fa-caret-right text-[10px] opacity-0 group-hover:opacity-100 text-mcot-orange"></i>
                     </a>
                     <a href="{% url 'store:catalog' %}?category=audio"
-                        class="px-4 py-2 text-[13px] text-gray-400 hover:text-white hover:bg-white/5 border-b border-white/5 flex justify-between items-center group transition-colors">
+                        class="px-4 py-2.5 text-[13px] text-gray-600 hover:text-mcot-orange hover:bg-mcot-orange/5 flex justify-between items-center group transition-colors">
                         {% trans "Audio / Sound" %} <i
                             class="fas fa-caret-right text-[10px] opacity-0 group-hover:opacity-100 text-mcot-orange"></i>
                     </a>
                     <a href="{% url 'store:catalog' %}?category=monitor"
-                        class="px-4 py-2 text-[13px] text-gray-400 hover:text-white hover:bg-white/5 border-b border-white/5 flex justify-between items-center group transition-colors">
+                        class="px-4 py-2.5 text-[13px] text-gray-600 hover:text-mcot-orange hover:bg-mcot-orange/5 flex justify-between items-center group transition-colors">
                         {% trans "Monitors & Video" %} <i
                             class="fas fa-caret-right text-[10px] opacity-0 group-hover:opacity-100 text-mcot-orange"></i>
                     </a>
                     <a href="{% url 'store:catalog' %}?category=broadcast"
-                        class="px-4 py-2 text-[13px] text-gray-400 hover:text-white hover:bg-white/5 border-b border-white/5 flex justify-between items-center group transition-colors">
+                        class="px-4 py-2.5 text-[13px] text-gray-600 hover:text-mcot-orange hover:bg-mcot-orange/5 flex justify-between items-center group transition-colors">
                         {% trans "Live / Broadcast" %} <i
                             class="fas fa-caret-right text-[10px] opacity-0 group-hover:opacity-100 text-mcot-orange"></i>
                     </a>
+                    <div class="h-px bg-gray-200 my-2 mx-4"></div>
                     <a href="{% url 'store:studio_list' %}"
-                        class="px-4 py-2 text-[13px] text-mcot-orange font-bold hover:text-white hover:bg-mcot-orange transition-colors flex justify-between items-center">
+                        class="mx-4 mt-1 px-4 py-2.5 text-[13px] text-white bg-mcot-orange rounded-xl font-bold hover:bg-orange-600 transition-colors shadow-md shadow-orange-500/20 flex justify-between items-center">
                         {% trans "Studio Booking" %} <i class="fas fa-building text-[10px]"></i>
                     </a>
                 </div>
             </div>
 
             <!-- Quick Links -->
-            <div class="bg-[#151515] border border-white/10 p-4">
-                <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">{% trans "Resources" %}</h3>
-                <ul class="space-y-2">
-                    <li><a href="#" class="text-xs text-mcot-orange hover:underline">{% trans "Download Price List (PDF)" %}</a></li>
-                    <li><a href="#" class="text-xs text-gray-400 hover:text-white">{% trans "Equipment Insurance" %}</a></li>
-                    <li><a href="#" class="text-xs text-gray-400 hover:text-white">{% trans "Rental Terms" %}</a></li>
+            <div class="bg-white/60 backdrop-blur-md shadow-lg border border-white/60 rounded-2xl p-5">
+                <h3 class="text-xs font-bold text-gray-400 uppercase mb-4 tracking-wider">{% trans "Resources" %}</h3>
+                <ul class="space-y-3 relative z-10">
+                    <li><a href="#" class="text-xs text-mcot-orange font-medium hover:underline flex items-center gap-2"><i class="fas fa-file-pdf"></i> {% trans "Price List (PDF)" %}</a></li>
+                    <li><a href="#" class="text-xs text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2"><i class="fas fa-shield-alt"></i> {% trans "Equipment Insurance" %}</a></li>
+                    <li><a href="#" class="text-xs text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2"><i class="fas fa-file-contract"></i> {% trans "Rental Terms" %}</a></li>
                 </ul>
             </div>
         </div>
 
         <!-- COLUMN 2: MAIN CONTENT (8/12) -->
-        <div class="col-span-12 lg:col-span-8 space-y-6">
+        <div class="col-span-12 lg:col-span-8 space-y-8">
 
-            <!-- Hero Banner (Functional) -->
-            <!-- Hero Banner (Functional) -->
+            <!-- Hero Banner (Hybrid Glass) -->
             {% if featured_product %}
-            <div class="relative h-[320px] bg-[#151515] border border-white/10 overflow-hidden flex group">
-                <div class="w-1/2 p-10 flex flex-col justify-center z-10 relative">
+            <div class="relative h-[360px] bg-white/70 backdrop-blur-xl shadow-2xl border border-white/60 rounded-3xl overflow-hidden flex group">
+                <div class="w-1/2 p-12 flex flex-col justify-center z-20 relative">
                     <span
-                        class="inline-block px-2 py-1 bg-mcot-orange text-black text-[10px] font-bold uppercase tracking-widest mb-4 w-fit">{% trans "Featured" %}</span>
-                    <h1 class="text-4xl font-bold text-white mb-2 font-display leading-tight truncate">{{ featured_product.name }}</h1>
-                    <p class="text-gray-400 text-sm mb-6 leading-relaxed line-clamp-2">
+                        class="inline-block px-3 py-1 bg-gray-900 text-white rounded-full text-[10px] font-bold uppercase tracking-widest mb-4 w-fit shadow-sm">{% trans "Featured" %}</span>
+                    <h1 class="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 font-display leading-tight truncate">{{ featured_product.name }}</h1>
+                    <p class="text-gray-600 text-sm mb-8 leading-relaxed line-clamp-2">
                         {{ featured_product.description|striptags|truncatewords:20 }}
                     </p>
                     <div class="flex gap-4">
                         <a href="{% url 'store:product_detail' featured_product.id %}"
-                            class="px-6 py-2 bg-white text-black text-xs font-bold uppercase hover:bg-gray-200 transition-colors">{% trans "Rent Now" %}</a>
+                            class="px-8 py-3 bg-mcot-orange text-white text-xs font-bold uppercase rounded-full hover:bg-orange-600 hover:-translate-y-0.5 shadow-lg shadow-orange-500/30 transition-all">{% trans "Rent Now" %}</a>
                         <a href="{% url 'store:product_detail' featured_product.id %}"
-                            class="px-6 py-2 border border-white/30 text-white text-xs font-bold uppercase hover:bg-white/10 transition-colors">{% trans "View Specs" %}</a>
+                            class="px-8 py-3 border-2 border-gray-200 text-gray-700 text-xs font-bold uppercase rounded-full hover:bg-gray-200 hover:border-gray-300 transition-all">{% trans "View Specs" %}</a>
                     </div>
                 </div>
-                <div class="w-2/3 absolute right-0 top-0 h-full mask-image-linear-l flex items-center justify-center bg-black">
+                <!-- Image Side with Fade -->
+                <div class="w-1/2 absolute right-0 top-0 h-full flex items-center justify-center p-8">
+                    <div class="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent z-10"></div>
                     {% if featured_product.image %}
-                    <img src="{{ featured_product.image.url }}" class="h-full object-contain opacity-80 group-hover:scale-105 transition-transform duration-700">
+                    <img src="{{ featured_product.image.url }}" class="w-full h-full object-contain relative z-0 mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700 drop-shadow-2xl">
                     {% else %}
-                    <div class="text-gray-700">
-                        <i class="fas fa-image text-9xl opacity-20"></i>
+                    <div class="text-gray-300">
+                        <i class="fas fa-image text-9xl"></i>
                     </div>
                     {% endif %}
-                    <div class="absolute inset-0 bg-gradient-to-r from-[#151515] via-[#151515]/50 to-transparent"></div>
                 </div>
             </div>
             {% endif %}
 
-            <!-- New Arrivals (Dense Grid) -->
+            <!-- New Arrivals (Light Glass Grid) -->
             <div>
-                <div class="flex justify-between items-end mb-4 border-b border-white/10 pb-2">
-                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                        <i class="fas fa-box-open text-mcot-orange"></i> {% trans "New Arrivals" %}
+                <div class="flex justify-between items-end mb-6">
+                    <h2 class="text-2xl font-extrabold text-gray-900 flex items-center gap-3">
+                        <i class="fas fa-bolt text-mcot-orange"></i> {% trans "New Arrivals" %}
                     </h2>
                     <a href="{% url 'store:catalog' %}"
-                        class="text-xs text-gray-500 hover:text-white uppercase font-bold tracking-wider">{% trans "View All" %} <i
+                        class="text-xs text-gray-500 hover:text-mcot-orange uppercase font-bold tracking-wider hover:underline flex items-center gap-1">{% trans "View All" %} <i
                             class="fas fa-chevron-right text-[10px]"></i></a>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
                     {% for product in new_arrivals %}
                     <div
-                        class="bg-[#151515] border border-white/10 hover:border-mcot-orange/50 transition-colors p-3 group relative">
-                        <a href="{% url 'store:product_detail' product.id %}" class="absolute inset-0 z-10"></a>
+                        class="bg-white/60 backdrop-blur-md border border-white/60 shadow-lg hover:shadow-2xl hover:border-white hover:-translate-y-1 rounded-2xl transition-all duration-300 p-4 group relative flex flex-col h-full">
+                        <a href="{% url 'store:product_detail' product.id %}" class="absolute inset-0 z-10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-mcot-orange"></a>
                         
                         <div
-                            class="aspect-[4/3] bg-black mb-3 relative overflow-hidden flex items-center justify-center">
+                            class="aspect-[4/3] bg-gray-200 rounded-xl mb-4 relative overflow-hidden flex items-center justify-center border border-gray-100">
                             {% if product.is_featured or forloop.first %}
                             <span
-                                class="absolute top-1 left-1 bg-blue-600 text-white text-[9px] px-1.5 py-0.5 font-bold uppercase z-20">{% trans "New" %}</span>
+                                class="absolute top-2 left-2 bg-mcot-orange text-white text-[9px] px-2 py-0.5 rounded-full font-bold uppercase z-20 shadow-sm">{% trans "New" %}</span>
                             {% endif %}
                             
                             {% if product.image %}
                             <img src="{{ product.image.url }}"
-                                class="w-full h-full object-contain p-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                                class="w-full h-full object-contain p-4 mix-blend-multiply group-hover:scale-110 transition-transform duration-500">
                             {% else %}
-                            <div class="w-full h-full flex items-center justify-center text-gray-700">
+                            <div class="w-full h-full flex items-center justify-center text-gray-300">
                                 <i class="fas fa-camera text-2xl"></i>
                             </div>
                             {% endif %}
                         </div>
                         
-                        <h4 class="text-xs font-bold text-white mb-1 truncate">{{ product.name }}</h4>
-                        <div class="flex flex-col gap-0.5 text-[10px] text-gray-500 mb-2 font-mono h-8 overflow-hidden">
-                            {% for spec in product.key_specs %}
-                            <span>{{ spec }}</span>
+                        <h4 class="text-sm font-bold text-gray-900 mb-1 line-clamp-2 leading-snug">{{ product.name }}</h4>
+                        <div class="flex flex-col gap-0.5 text-[10px] text-gray-500 mb-4 font-mono mt-auto pt-2">
+                            {% for spec in product.key_specs|slice:":2" %}
+                            <span class="truncate bg-gray-200 px-1.5 py-0.5 rounded text-gray-600 block w-fit">{{ spec }}</span>
                             {% empty %}
-                            <span>{{ product.category.name }}</span>
+                            <span class="truncate text-gray-400">{{ product.category.name }}</span>
                             {% endfor %}
                         </div>
                         
-                        <div class="flex justify-between items-center border-t border-white/10 pt-2">
-                            <span class="text-white font-bold text-sm">฿{{ product.price|intcomma }}</span>
-                            <button class="text-gray-400 hover:text-white z-20 relative" onclick="window.location.href='{% url 'store:product_detail' product.id %}'">
-                                <i class="fas fa-cart-plus"></i>
+                        <div class="flex justify-between items-center border-t border-gray-100 pt-3 mt-auto relative z-20">
+                            <span class="text-gray-900 font-extrabold text-sm">฿{{ product.price|intcomma }}<span class="text-[10px] font-normal text-gray-500">/day</span></span>
+                            <button class="w-8 h-8 rounded-full bg-gray-200 hover:bg-mcot-orange text-gray-400 hover:text-white flex items-center justify-center transition-colors border border-gray-200 hover:border-mcot-orange shadow-sm" onclick="window.location.href='{% url 'store:product_detail' product.id %}'">
+                                <i class="fas fa-cart-plus text-xs"></i>
                             </button>
                         </div>
                     </div>
                     {% empty %}
-                    <div class="col-span-full py-8 text-center text-gray-500 text-sm">
+                    <div class="col-span-full py-12 bg-white/50 rounded-2xl border border-dashed border-gray-300 text-center text-gray-500 text-sm">
                         {% trans "No products available." %}
                     </div>
                     {% endfor %}
                 </div>
             </div>
 
-            <!-- Studio Highlight (Horizontal Strip) -->
-            <div class="bg-[#151515] border border-white/10 p-4 flex items-center gap-6">
-                <div class="w-1/3 aspect-video bg-black relative">
+            <!-- Studio Highlight (Glass Horizontal Strip) -->
+            <div class="bg-white/70 backdrop-blur-xl shadow-xl border border-white/60 rounded-3xl p-5 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group hover:shadow-2xl transition-shadow">
+                <div class="w-full md:w-5/12 aspect-video bg-gray-200 rounded-2xl relative overflow-hidden flex-shrink-0 border border-gray-200">
                     <span
-                        class="absolute top-2 left-2 bg-mcot-purple text-white text-[9px] px-2 py-0.5 uppercase font-bold tracking-wide">Studio
-                        1</span>
-                    <!-- Img would go here -->
+                        class="absolute top-3 left-3 bg-white/70 backdrop-blur-md text-gray-900 text-[10px] px-3 py-1 rounded-full uppercase font-bold tracking-wide shadow-sm z-10">Studio 1</span>
                     <img src="https://broadcast-solutions.de/wp-content/uploads/2019/08/MCOT_HD_Studio_1.jpg"
-                        class="w-full h-full object-cover opacity-80">
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                 </div>
                 <div class="flex-1">
-                    <h3 class="text-lg font-bold text-white mb-1">{% trans "Professional Broadcast Studios" %}</h3>
-                    <p class="text-xs text-gray-400 mb-4 max-w-lg">{% trans "Full-scale studios equipped with lighting grids, cycloramas, and control rooms. Ideal for talk shows, live events, and commercial production." %}</p>
+                    <h3 class="text-2xl font-extrabold text-gray-900 mb-2">{% trans "Professional Broadcast Studios" %}</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-lg leading-relaxed">{% trans "Full-scale studios equipped with lighting grids, cycloramas, and control rooms. Ideal for talk shows, live events, and commercial production." %}</p>
                     <a href="{% url 'store:studio_list' %}"
-                        class="text-xs font-bold text-mcot-orange hover:text-white uppercase tracking-wider flex items-center gap-2">
+                        class="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-black transition-colors shadow-md hover:shadow-lg">
                         {% trans "View Studio Specs" %} <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
@@ -184,63 +188,70 @@
 
         <!-- COLUMN 3: WIDGETS (2/12) -->
         <div class="hidden lg:block col-span-2 space-y-6">
-            <!-- Operational Status -->
-            <div class="bg-[#151515] border border-white/10 p-4">
+            <!-- Operational Status (Light Glass) -->
+            <div class="bg-white/60 backdrop-blur-md shadow-lg border border-white/60 rounded-2xl p-5">
                 <h4
-                    class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 border-b border-white/10 pb-2">
+                    class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">
                     {% trans "Facility Status" %}</h4>
-                <div class="space-y-3">
+                <div class="space-y-4">
                     <!-- Dynamic Pickup Queue -->
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-white">{% trans "Pickup Queue" %}</span>
+                    <div class="flex justify-between items-center bg-gray-200 p-2 rounded-lg border border-gray-100">
+                        <span class="text-xs text-gray-700 font-medium">{% trans "Pickup Queue" %}</span>
                         <div class="flex items-center gap-2">
-                            <span class="text-[10px] text-gray-400 uppercase">{{ queue_status.label }}</span>
-                            <span class="w-2 h-2 rounded-full bg-{{ queue_status.color }}-500 {% if queue_status.color == 'red' %}animate-pulse{% endif %}"></span>
+                            <span class="text-[10px] font-bold uppercase text-{{ queue_status.color }}-600">{{ queue_status.label }}</span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-{{ queue_status.color }}-500 shadow-[0_0_8px_currentColor] {% if queue_status.color == 'red' %}animate-pulse{% endif %}"></span>
                         </div>
                     </div>
                     
                     <!-- Dynamic Studio Status -->
+                    <div class="space-y-2 pt-2">
                     {% for studio in studio_statuses %}
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-white">{{ studio.name }}</span>
+                    <div class="flex justify-between items-center px-1">
+                        <span class="text-xs text-gray-600 truncate mr-3">{{ studio.name }}</span>
                         {% if studio.is_occupied %}
-                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse" title="Occupied"></span>
+                        <span class="w-2 h-2 rounded-full bg-red-500 shadow-sm shadow-red-500/50 animate-pulse flex-shrink-0" title="Occupied"></span>
                         {% else %}
-                        <span class="w-2 h-2 rounded-full bg-green-500" title="Available"></span>
+                        <span class="w-2 h-2 rounded-full bg-green-500 shadow-sm shrink-0" title="Available"></span>
                         {% endif %}
                     </div>
                     {% empty %}
-                    <div class="text-[10px] text-gray-500 italic">{% trans "No studios configured." %}</div>
+                    <div class="text-[10px] text-gray-400 italic">{% trans "No studios configured." %}</div>
                     {% endfor %}
+                    </div>
                 </div>
             </div>
 
             <!-- Contact / Sales -->
-            <div class="bg-[#151515] border border-white/10 p-4">
+            <div class="bg-white/60 backdrop-blur-md shadow-lg border border-white/60 rounded-2xl p-5">
                 <h4
-                    class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 border-b border-white/10 pb-2">
+                    class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">
                     {% trans "Sales Support" %}</h4>
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 bg-orange-50 rounded-full flex items-center justify-center border border-mcot-orange/20">
                         <i class="fas fa-headset text-mcot-orange"></i>
                     </div>
                     <div>
-                        <span class="block text-xs font-bold text-white">{% trans "Call Center" %}</span>
+                        <span class="block text-xs font-bold text-gray-900">{% trans "Call Center" %}</span>
                         <span class="block text-[10px] text-gray-500">09:00 - 18:00</span>
                     </div>
                 </div>
                 <a href="tel:022016000"
-                    class="block w-full py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-center text-xs text-white transition-colors">
+                    class="block w-full py-2.5 bg-gray-200 hover:bg-gray-200 border border-gray-200 text-center text-xs font-bold text-gray-900 transition-colors rounded-xl shadow-sm">
                     02-201-6000
                 </a>
             </div>
 
-            <!-- Ad / Promo -->
-            <div class="bg-gradient-to-br from-mcot-purple/20 to-black border border-white/10 p-6 text-center">
-                <i class="fas fa-truck text-3xl text-gray-500 mb-2"></i>
-                <h4 class="text-sm font-bold text-white mb-1">{% trans "OB Truck Service" %}</h4>
-                <p class="text-[10px] text-gray-400 mb-3">{% trans "Live production on the go. 4K Ready." %}</p>
-                <a href="#" class="text-[10px] text-mcot-orange underline">{% trans "Request Quote" %}</a>
+            <!-- Ad / Promo (Clean Gradient) -->
+            <div class="bg-gradient-to-br from-blue-50 via-white to-orange-50 shadow-lg border border-white/60 rounded-2xl p-6 text-center relative overflow-hidden group">
+                <div class="absolute inset-0 bg-white/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="relative z-10">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-md border border-gray-100">
+                        <i class="fas fa-truck text-xl text-mcot-orange"></i>
+                    </div>
+                    <h4 class="text-sm font-bold text-gray-900 mb-2">{% trans "OB Truck Service" %}</h4>
+                    <p class="text-[10px] text-gray-600 mb-4 leading-relaxed">{% trans "Live production on the go. 4K Ready for massive events." %}</p>
+                    <a href="#" class="inline-block px-4 py-1.5 bg-gray-900 text-white text-[10px] font-bold rounded-full hover:bg-black transition-colors shadow-md">{% trans "Request Quote" %}</a>
+                </div>
             </div>
         </div>
 

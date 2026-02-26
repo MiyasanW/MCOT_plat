@@ -11,52 +11,52 @@
     <div class="max-w-6xl mx-auto px-6 py-12 relative z-10">
 
         <!-- Back Button -->
-        <a href="{% url 'store:equipment_history_search' %}" class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8 group">
-            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-mcot-orange group-hover:text-black transition-all">
+        <a href="{% url 'store:equipment_history_search' %}" class="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-8 group font-bold font-display">
+            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center group-hover:bg-mcot-orange group-hover:text-white transition-all shadow-sm border border-gray-200">
                 <i class="fas fa-arrow-left"></i>
             </div>
             <span>Back to Search</span>
         </a>
 
         <!-- Equipment Header Card -->
-        <div class="bg-[#1e1e1e]/80 backdrop-blur-xl border border-white/10 rounded-3xl p-8 mb-12 relative overflow-hidden shadow-2xl">
-            <div class="absolute top-0 right-0 p-10 opacity-10">
-                <i class="fas fa-camera text-9xl text-white"></i>
+        <div class="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-3xl p-8 mb-12 relative overflow-hidden shadow-lg">
+            <div class="absolute top-0 right-0 p-10 opacity-5">
+                <i class="fas fa-camera text-9xl text-gray-900"></i>
             </div>
             
             <div class="relative z-10 flex flex-col md:flex-row gap-8 items-start">
                 <!-- Image / Icon -->
-                <div class="w-32 h-32 rounded-2xl bg-black/50 border border-white/10 flex items-center justify-center flex-shrink-0 shadow-inner">
+                <div class="w-32 h-32 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-center flex-shrink-0 shadow-inner">
                     {% if equipment.product.image %}
                         <img src="{{ equipment.product.image.url }}" class="w-full h-full object-cover rounded-2xl">
                     {% else %}
-                        <i class="fas fa-cube text-5xl text-gray-600"></i>
+                        <i class="fas fa-cube text-5xl text-gray-400"></i>
                     {% endif %}
                 </div>
 
                 <div class="flex-grow">
                     <div class="flex items-center gap-4 mb-2">
-                        <h1 class="text-3xl font-bold text-white">{{ equipment.product.name }}</h1>
-                        <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider
-                            {% if equipment.status == 'available' %}bg-green-500/20 text-green-400 border border-green-500/30
-                            {% elif equipment.status == 'maintenance' %}bg-yellow-500/20 text-yellow-400 border border-yellow-500/30
-                            {% else %}bg-red-500/20 text-red-400 border border-red-500/30{% endif %}">
+                        <h1 class="text-3xl font-bold text-gray-900">{{ equipment.product.name }}</h1>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm
+                            {% if equipment.status == 'available' %}bg-green-50 text-green-600 border border-green-200
+                            {% elif equipment.status == 'maintenance' %}bg-yellow-50 text-yellow-600 border border-yellow-200
+                            {% else %}bg-red-50 text-red-600 border border-red-200{% endif %}">
                             {{ equipment.get_status_display }}
                         </span>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                        <div class="bg-black/30 p-4 rounded-xl border border-white/5">
-                            <span class="text-gray-500 text-xs uppercase block mb-1">Serial Number</span>
-                            <span class="text-white font-mono text-lg">{{ equipment.serial_number }}</span>
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-inner">
+                            <span class="text-gray-500 text-xs uppercase block mb-1 font-bold">Serial Number</span>
+                            <span class="text-gray-900 font-mono text-lg font-bold">{{ equipment.serial_number }}</span>
                         </div>
-                        <div class="bg-black/30 p-4 rounded-xl border border-white/5">
-                            <span class="text-gray-500 text-xs uppercase block mb-1">Inventory No.</span>
-                            <span class="text-white font-mono text-lg">{{ equipment.inventory_number|default:"-" }}</span>
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-inner">
+                            <span class="text-gray-500 text-xs uppercase block mb-1 font-bold">Inventory No.</span>
+                            <span class="text-gray-900 font-mono text-lg font-bold">{{ equipment.inventory_number|default:"-" }}</span>
                         </div>
-                        <div class="bg-black/30 p-4 rounded-xl border border-white/5">
-                            <span class="text-gray-500 text-xs uppercase block mb-1">Asset Tag</span>
-                            <span class="text-white font-mono text-lg">{{ equipment.asset_tag|default:"-" }}</span>
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-inner">
+                            <span class="text-gray-500 text-xs uppercase block mb-1 font-bold">Asset Tag</span>
+                            <span class="text-gray-900 font-mono text-lg font-bold">{{ equipment.asset_tag|default:"-" }}</span>
                         </div>
                     </div>
                 </div>
@@ -64,63 +64,63 @@
         </div>
 
         <!-- Timeline Section -->
-        <h2 class="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
             <span class="w-1 h-8 bg-mcot-orange rounded-full block"></span>
             Usage Timeline
         </h2>
 
-        <div class="relative border-l-2 border-white/10 ml-4 space-y-12 pb-12">
+        <div class="relative border-l-2 border-gray-200 ml-4 space-y-12 pb-12">
             
             {% for item in history_items %}
             <div class="relative pl-8 group">
                 <!-- Timeline Dot -->
-                <div class="absolute -left-[9px] top-0 w-5 h-5 rounded-full border-4 border-[#121212] 
+                <div class="absolute -left-[11px] top-0 w-5 h-5 rounded-full border-4 border-gray-50 
                     {% if item.status == 'returned' %}bg-green-500
                     {% elif item.status == 'damaged' or item.status == 'missing' %}bg-red-500
-                    {% else %}bg-mcot-orange{% endif %}">
+                    {% else %}bg-mcot-orange{% endif %} shadow-sm">
                 </div>
 
                 <!-- Content Card -->
-                <div class="bg-[#1e1e1e] border border-white/5 rounded-2xl p-6 hover:border-white/20 transition-all hover:bg-[#252525] shadow-lg">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 border-b border-white/5 pb-4">
+                <div class="bg-white border border-gray-200 rounded-2xl p-6 hover:border-mcot-orange/50 transition-all hover:shadow-lg shadow-sm">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 border-b border-gray-100 pb-4">
                         <div>
                             <span class="text-mcot-orange text-sm font-bold block mb-1">
                                 {{ item.booking.start_time|date:"d M Y" }} - {{ item.booking.end_time|date:"d M Y" }}
                             </span>
-                            <h4 class="text-white font-bold text-lg">
+                            <h4 class="text-gray-900 font-bold text-lg">
                                 Project: {{ item.booking.project_name|default:"General Rental" }}
                             </h4>
                         </div>
-                        <a href="{% url 'admin:store_booking_change' item.booking.id %}" class="bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white px-4 py-2 rounded-lg text-sm transition-colors border border-white/5">
+                        <a href="{% url 'admin:store_booking_change' item.booking.id %}" class="bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg text-sm transition-colors border border-gray-200 font-bold shadow-sm">
                             <i class="fas fa-external-link-alt mr-2"></i> Booking #{{ item.booking.id }}
                         </a>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                         <div>
-                            <p class="text-gray-500 mb-1">Customer / Contact</p>
-                            <p class="text-gray-300 font-medium">{{ item.booking.customer_name }}</p>
+                            <p class="text-gray-500 mb-1 font-bold uppercase tracking-wide text-[10px]">Customer / Contact</p>
+                            <p class="text-gray-900 font-bold">{{ item.booking.customer_name }}</p>
                             {% if item.booking.phone %}
-                            <p class="text-gray-500 text-xs mt-1"><i class="fas fa-phone mr-1"></i> {{ item.booking.phone }}</p>
+                            <p class="text-gray-600 font-medium text-xs mt-1"><i class="fas fa-phone mr-1"></i> {{ item.booking.phone }}</p>
                             {% endif %}
                         </div>
 
                         <div>
-                            <p class="text-gray-500 mb-1">Return Status</p>
+                            <p class="text-gray-500 mb-1 font-bold uppercase tracking-wide text-[10px]">Return Status</p>
                             <div class="flex items-center gap-2">
-                                <span class="px-2 py-1 rounded text-xs font-bold uppercase
-                                    {% if item.status == 'returned' %}bg-green-500/10 text-green-500
-                                    {% elif item.status == 'damaged' %}bg-red-500/10 text-red-500
-                                    {% elif item.status == 'missing' %}bg-red-500/10 text-red-500
-                                    {% else %}bg-blue-500/10 text-blue-500{% endif %}">
+                                <span class="px-2 py-1 rounded text-xs font-bold uppercase shadow-sm border
+                                    {% if item.status == 'returned' %}bg-green-50 text-green-600 border-green-200
+                                    {% elif item.status == 'damaged' %}bg-red-50 text-red-600 border-red-200
+                                    {% elif item.status == 'missing' %}bg-red-50 text-red-600 border-red-200
+                                    {% else %}bg-blue-50 text-blue-600 border-blue-200{% endif %}">
                                     {{ item.get_status_display }}
                                 </span>
                                 {% if item.returned_at %}
-                                <span class="text-gray-500 text-xs">@ {{ item.returned_at|date:"d/m/Y H:i" }}</span>
+                                <span class="text-gray-500 font-medium text-xs">@ {{ item.returned_at|date:"d/m/Y H:i" }}</span>
                                 {% endif %}
                             </div>
                             {% if item.notes %}
-                            <div class="mt-2 bg-red-500/10 border border-red-500/20 p-2 rounded text-red-400 text-xs">
+                            <div class="mt-2 bg-red-50 border border-red-200 p-2 rounded text-red-600 text-xs font-medium">
                                 <i class="fas fa-comment-alt mr-1"></i> Note: {{ item.notes }}
                             </div>
                             {% endif %}
@@ -130,7 +130,7 @@
             </div>
             {% empty %}
             <div class="pl-8">
-                <p class="text-gray-500 italic">No usage history found for this item.</p>
+                <p class="text-gray-500 italic font-medium">No usage history found for this item.</p>
             </div>
             {% endfor %}
 

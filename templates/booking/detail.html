@@ -3,106 +3,118 @@
 {% load humanize %}
 
 {% block content %}
-<div class="min-h-screen pt-24 pb-20">
-    <div class="container mx-auto px-4 max-w-4xl">
+<!-- BOOKING DETAIL REDESIGN - Hybrid Light Frosted Glass -->
+<div class="min-h-screen pb-20 pt-8 relative overflow-hidden bg-gray-200 z-0">
+    <!-- Ambient Light Background -->
+    <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-mcot-orange/5 rounded-full blur-[150px] pointer-events-none z-[-1]"></div>
+    <div class="absolute bottom-1/4 left-0 w-[600px] h-[600px] bg-mcot-purple/5 rounded-full blur-[150px] pointer-events-none z-[-1]"></div>
+
+    <div class="container mx-auto px-4 max-w-5xl relative z-10 pt-4">
         
         <!-- Header -->
-        <div class="flex items-center justify-between mb-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
             <div>
-                <a href="{% url 'store:my_bookings' %}" class="text-gray-400 hover:text-white transition-colors text-sm mb-2 inline-flex items-center">
+                <a href="{% url 'store:my_bookings' %}" class="text-gray-500 hover:text-mcot-orange transition-colors text-sm mb-3 inline-flex items-center font-bold">
                     <i class="fas fa-arrow-left mr-2"></i> กลับไปรายการจอง
                 </a>
-                <h1 class="text-3xl font-bold text-white">Booking #{{ booking.id }}</h1>
+                <h1 class="text-4xl font-black text-gray-900 font-display flex items-center gap-3 tracking-tight">
+                    Booking #{{ booking.id }}
+                </h1>
                 <div class="flex items-center gap-2 mt-2">
-                    <span class="text-gray-400 text-sm">Created: {{ booking.created_at|date:"d M Y, H:i" }}</span>
+                    <span class="text-gray-500 text-sm font-medium">ทำรายการเมื่อ: {{ booking.created_at|date:"d M Y, H:i" }}</span>
                 </div>
             </div>
             <div>
                 {% if booking.payment_status == 'paid' %}
-                    <span class="px-4 py-2 rounded-full bg-green-500/20 text-green-400 font-bold border border-green-500/30">
-                        <i class="fas fa-check-circle mr-2"></i> ชำระเงินแล้ว
+                    <span class="px-5 py-2.5 rounded-xl bg-green-50 text-green-600 font-bold border border-green-200 shadow-sm inline-flex items-center">
+                        <i class="fas fa-check-circle mr-2 text-green-500"></i> ชำระเงินแล้ว
                     </span>
                 {% elif booking.payment_status == 'pending' %}
-                    <span class="px-4 py-2 rounded-full bg-yellow-500/20 text-yellow-400 font-bold border border-yellow-500/30">
-                        <i class="fas fa-clock mr-2"></i> รอตรวจสอบสลิป
+                    <span class="px-5 py-2.5 rounded-xl bg-yellow-50 text-yellow-600 font-bold border border-yellow-200 shadow-sm inline-flex items-center">
+                        <i class="fas fa-clock mr-2 text-yellow-500"></i> รอตรวจสอบสลิป
                     </span>
                 {% else %}
-                    <span class="px-4 py-2 rounded-full bg-red-500/20 text-red-400 font-bold border border-red-500/30">
-                        <i class="fas fa-exclamation-circle mr-2"></i> ยังไม่ชำระมัดจำ
+                    <span class="px-5 py-2.5 rounded-xl bg-red-50 text-red-600 font-bold border border-red-200 shadow-sm inline-flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2 text-red-500"></i> ยังไม่ชำระมัดจำ
                     </span>
                 {% endif %}
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             <!-- Left: Items & Details -->
-            <div class="lg:col-span-2 space-y-6">
+            <div class="lg:col-span-2 space-y-8">
                 
                 <!-- Items Card -->
-                <div class="glass-panel p-6 rounded-2xl border border-white/10">
-                    <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                        <i class="fas fa-list text-mcot-orange"></i> รายการที่จอง
+                <div class="bg-white/70 backdrop-blur-xl p-8 rounded-[2rem] border border-white/60 shadow-xl overflow-hidden relative">
+                    <div class="absolute -left-20 -top-20 w-64 h-64 bg-gradient-to-br from-mcot-orange/10 to-transparent rounded-full blur-[80px] pointer-events-none"></div>
+
+                    <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3 relative z-10 font-display">
+                        <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-mcot-orange border border-mcot-orange/20 shadow-sm">
+                            <i class="fas fa-list text-sm"></i>
+                        </div>
+                        รายการที่จอง
                     </h2>
                     
-                    <div class="space-y-4">
+                    <div class="space-y-4 relative z-10">
                         {% for item in booking.items.all %}
-                        <div class="flex items-center justify-between p-4 bg-[#2A2A2A] rounded-xl border border-white/5">
+                        <div class="flex items-center justify-between p-4 sm:p-5 bg-gray-200 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all shadow-sm">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-lg bg-black border border-white/5 flex items-center justify-center overflow-hidden">
+                                <div class="w-14 h-14 rounded-xl bg-white border border-gray-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner p-1">
                                     {% if item.product.image %}
-                                        <img src="{{ item.product.image.url }}" class="w-full h-full object-contain">
+                                        <img src="{{ item.product.image.url }}" class="w-full h-full object-contain mix-blend-multiply">
                                     {% else %}
-                                        <i class="fas fa-image text-gray-600"></i>
+                                        <i class="fas fa-image text-gray-300 text-xl"></i>
                                     {% endif %}
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-white">{{ item.product.name }}</h4>
-                                    <div class="text-xs text-gray-500">{{ item.product.category.name }}</div>
+                                    <h4 class="font-bold text-gray-900 leading-tight mb-1">{{ item.product.name }}</h4>
+                                    <div class="text-[10px] uppercase tracking-widest text-mcot-orange font-bold">{{ item.product.category.name }}</div>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                <div class="text-white font-mono">x{{ item.quantity }}</div>
-                                <div class="text-gray-500 text-xs">฿{{ item.price_at_booking|intcomma }} / วัน</div>
+                            <div class="text-right shrink-0">
+                                <div class="text-gray-900 font-bold font-mono">x{{ item.quantity }}</div>
+                                <div class="text-gray-500 text-xs">฿{{ item.price_at_booking|intcomma }}<span class="font-medium text-[10px] ml-1">/ วัน</span></div>
                             </div>
                         </div>
                         {% endfor %}
 
                         {% for studio in booking.booked_studios.all %}
-                        <div class="flex items-center justify-between p-4 bg-[#2A2A2A] rounded-xl border border-white/5">
+                        <div class="flex items-center justify-between p-4 sm:p-5 bg-gray-200 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all shadow-sm">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-lg bg-black border border-white/5 flex items-center justify-center overflow-hidden">
-                                     <i class="fas fa-door-open text-gray-600"></i>
+                                <div class="w-14 h-14 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                                     <i class="fas fa-door-open text-purple-400 text-xl"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-white">{{ studio.studio.name }}</h4>
-                                    <div class="text-xs text-gray-500">Studio</div>
+                                    <h4 class="font-bold text-gray-900 leading-tight mb-1">{{ studio.studio.name }}</h4>
+                                    <div class="text-[10px] uppercase tracking-widest text-purple-500 font-bold">Studio</div>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                <div class="text-white font-mono">1 ห้อง</div>
-                                <div class="text-gray-500 text-xs">฿{{ studio.price_at_booking|intcomma }} / วัน</div>
+                            <div class="text-right shrink-0">
+                                <div class="text-gray-900 font-bold font-mono">1 ห้อง</div>
+                                <div class="text-gray-500 text-xs">฿{{ studio.price_at_booking|intcomma }}<span class="font-medium text-[10px] ml-1">/ วัน</span></div>
                             </div>
                         </div>
                         {% endfor %}
 
                         {% for pkg in booking.booked_packages.all %}
-                        <div class="flex items-center justify-between p-4 bg-[#2A2A2A] rounded-xl border border-white/5">
+                        <div class="flex items-center justify-between p-4 sm:p-5 bg-gray-200 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all shadow-sm">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-lg bg-black border border-white/5 flex items-center justify-center overflow-hidden">
+                                <div class="w-14 h-14 rounded-xl bg-white border border-gray-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner p-1">
                                     {% if pkg.package.image %}
-                                        <img src="{{ pkg.package.image.url }}" class="w-full h-full object-contain">
+                                        <img src="{{ pkg.package.image.url }}" class="w-full h-full object-contain mix-blend-multiply">
                                     {% else %}
-                                        <i class="fas fa-box text-gray-600"></i>
+                                        <i class="fas fa-box text-orange-400 text-xl border border-orange-200 rounded"></i>
                                     {% endif %}
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-white">{{ pkg.package.name }}</h4>
-                                    <div class="text-xs text-gray-500">Package</div>
+                                    <h4 class="font-bold text-gray-900 leading-tight mb-1">{{ pkg.package.name }}</h4>
+                                    <div class="text-[10px] uppercase tracking-widest text-mcot-orange font-bold">Package</div>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                <div class="text-white font-mono">x{{ pkg.quantity }}</div>
-                                <div class="text-gray-500 text-xs">฿{{ pkg.price_at_booking|intcomma }} / วัน</div>
+                            <div class="text-right shrink-0">
+                                <div class="text-gray-900 font-bold font-mono">x{{ pkg.quantity }}</div>
+                                <div class="text-gray-500 text-xs">฿{{ pkg.price_at_booking|intcomma }}<span class="font-medium text-[10px] ml-1">/ วัน</span></div>
                             </div>
                         </div>
                         {% endfor %}
@@ -110,23 +122,28 @@
                 </div>
 
                 <!-- Timeline -->
-                <div class="glass-panel p-6 rounded-2xl border border-white/10">
-                   <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                        <i class="fas fa-calendar-alt text-mcot-orange"></i> วันเวลา
-                    </h2>
-                    <div class="flex items-center justify-between text-white">
-                        <div>
-                            <span class="text-gray-400 block text-xs uppercase mb-1">รับของ/เริ่ม</span>
-                            <span class="text-lg font-bold">{{ booking.start_time|date:"d M Y" }}</span>
+                <div class="bg-white/70 backdrop-blur-xl p-8 rounded-[2rem] border border-white/60 shadow-xl overflow-hidden relative">
+                    <div class="absolute -right-20 -bottom-20 w-48 h-48 bg-gradient-to-tl from-mcot-purple/10 to-transparent rounded-full blur-[60px] pointer-events-none"></div>
+
+                    <h2 class="text-xl font-bold text-gray-900 mb-8 flex items-center gap-3 relative z-10 font-display">
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 border border-blue-100 shadow-sm">
+                            <i class="fas fa-calendar-alt text-sm"></i>
                         </div>
-                        <div class="h-px bg-white/20 flex-1 mx-8 relative">
-                             <div class="absolute inset-0 flex items-center justify-center -top-3">
-                                 <span class="bg-[#1E1E1E] px-2 text-xs text-gray-500">{{ booking.calculate_rental_days }} วัน</span>
+                        ระยะเวลาที่เช่า
+                    </h2>
+                    <div class="flex flex-col sm:flex-row items-center justify-between text-gray-900 relative z-10 gap-6 sm:gap-4">
+                        <div class="text-center sm:text-left bg-gray-200 p-4 rounded-xl border border-gray-100 shadow-sm sm:w-1/3">
+                            <span class="text-gray-400 block text-[10px] uppercase tracking-widest font-bold mb-1">รับของ/เริ่ม</span>
+                            <span class="text-lg font-bold font-mono">{{ booking.start_time|date:"d M Y" }}</span>
+                        </div>
+                        <div class="h-8 w-px sm:h-px sm:w-full bg-gray-200 flex-1 relative flex items-center justify-center">
+                             <div class="absolute sm:-top-3.5 bg-white border border-gray-200 shadow-sm px-3 py-1.5 rounded-lg text-xs text-gray-600 font-bold z-10 font-mono tracking-wider">
+                                 {{ booking.calculate_rental_days }} วัน
                              </div>
                         </div>
-                        <div class="text-right">
-                            <span class="text-gray-400 block text-xs uppercase mb-1">คืนของ/สิ้นสุด</span>
-                            <span class="text-lg font-bold">{{ booking.end_time|date:"d M Y" }}</span>
+                        <div class="text-center sm:text-right bg-gray-200 p-4 rounded-xl border border-gray-100 shadow-sm sm:w-1/3">
+                            <span class="text-gray-400 block text-[10px] uppercase tracking-widest font-bold mb-1">คืนของ/สิ้นสุด</span>
+                            <span class="text-lg font-bold font-mono">{{ booking.end_time|date:"d M Y" }}</span>
                         </div>
                     </div>
                 </div>
@@ -136,120 +153,135 @@
             <div class="lg:col-span-1 space-y-6">
                 
                 <!-- Helper Buttons -->
-                 <div class="glass-panel p-4 rounded-xl border border-white/10 text-center">
-                    <a href="{% url 'store:download_quotation_pdf' booking.id %}" target="_blank" class="block w-full bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-bold transition-all mb-2">
+                 <div class="bg-white/60 backdrop-blur p-4 rounded-2xl border border-white/60 shadow-md text-center">
+                    <a href="{% url 'store:download_quotation_pdf' booking.id %}" target="_blank" class="block w-full bg-white hover:bg-gray-200 border-2 border-gray-200 hover:border-mcot-orange text-gray-700 hover:text-mcot-orange py-3.5 rounded-xl font-extrabold transition-all mb-3 shadow-sm hover:shadow-md uppercase tracking-wide text-sm">
                         <i class="fas fa-file-invoice-dollar mr-2"></i> ดาวน์โหลดใบเสนอราคา
                     </a>
-                    <p class="text-xs text-gray-400">ใช้สำหรับทำเรื่องเบิกจ่าย หรือยืนยันการจอง</p>
+                    <p class="text-[11px] text-gray-500 font-medium">ใช้สำหรับทำเรื่องเบิกจ่าย หรือยืนยันการจอง</p>
                 </div>
 
                 <!-- Summary -->
-                <div class="glass-panel p-6 rounded-2xl border border-white/10">
-                    <h2 class="text-xl font-bold text-white mb-4">สรุปยอดเงิน</h2>
-                    <div class="space-y-3 pb-4 border-b border-white/10">
+                <div class="bg-white/70 backdrop-blur-xl p-8 rounded-[2rem] border border-white/60 shadow-xl overflow-hidden relative">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6 font-display flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-green-500 border border-green-100">
+                            <i class="fas fa-receipt text-xs"></i>
+                        </div>
+                        สรุปยอดเงิน
+                    </h2>
+                    <div class="space-y-4 pb-6 border-b border-gray-200 relative z-10">
                         {% if booking.discount_amount > 0 or booking.penalty_amount > 0 %}
-                        <div class="flex justify-between text-gray-400 text-sm">
+                        <div class="flex justify-between text-gray-600 text-sm font-medium">
                             <span>ราคารวมสินค้า (Subtotal)</span>
-                            <span class="text-white">฿{{ booking.total_price|add:booking.discount_amount|add:"-"|add:booking.penalty_amount|intcomma }}</span>
+                            <span class="text-gray-900 font-mono font-bold">฿{{ booking.total_price|add:booking.discount_amount|add:"-"|add:booking.penalty_amount|intcomma }}</span>
                         </div>
                         {% endif %}
                         
                         {% if booking.discount_amount > 0 %}
-                        <div class="flex justify-between text-green-400 text-sm">
+                        <div class="flex justify-between text-green-600 text-sm font-bold bg-green-50 px-2 py-1 rounded-md">
                             <span>ส่วนลด (Discount) {% if booking.promotion %}({{ booking.promotion.code }}){% endif %}</span>
-                            <span>-฿{{ booking.discount_amount|intcomma }}</span>
+                            <span class="font-mono">-฿{{ booking.discount_amount|intcomma }}</span>
                         </div>
                         {% endif %}
                         
                         {% if booking.penalty_amount > 0 %}
-                        <div class="flex justify-between text-red-400 text-sm">
+                        <div class="flex justify-between text-red-500 text-sm font-bold bg-red-50 px-2 py-1 rounded-md">
                             <span>ค่าปรับ (Penalty)</span>
-                            <span>+฿{{ booking.penalty_amount|intcomma }}</span>
+                            <span class="font-mono">+฿{{ booking.penalty_amount|intcomma }}</span>
                         </div>
                         {% endif %}
 
-                        <div class="flex justify-between text-gray-400">
+                        <div class="flex justify-between text-gray-600 font-bold mt-2 pt-2">
                             <span>ยอดสุทธิ (Grand Total)</span>
-                            <span class="text-white font-bold text-lg">฿{{ booking.total_price|intcomma }}</span>
+                            <span class="text-gray-900 font-black text-xl font-mono">฿{{ booking.total_price|intcomma }}</span>
                         </div>
-                        <div class="flex justify-between text-mcot-orange font-bold text-lg pt-2 border-t border-white/5">
-                            <span>ยอดชำระมัดจำ 30%</span>
-                            <span>฿{{ booking.deposit_amount|intcomma }}</span>
+                        <div class="flex justify-between items-center text-mcot-orange font-bold text-lg pt-4 border-t border-gray-100 bg-orange-50 -mx-8 px-8 py-4 mb--6 shadow-inner">
+                            <span class="text-sm uppercase tracking-wider">ยอดชำระมัดจำ 30%</span>
+                            <span class="font-black text-2xl font-mono tracking-tight drop-shadow-sm">฿{{ booking.deposit_amount|intcomma }}</span>
                         </div>
                     </div>
-                    <div class="mt-4">
+                    
+                    <div class="mt-8 relative z-10">
                         {% if booking.payment_status == 'paid' %}
-                            <div class="bg-green-500/10 p-4 rounded-xl text-center border border-green-500/20">
-                                <i class="fas fa-check-circle text-2xl text-green-400 mb-2"></i>
-                                <h3 class="text-green-400 font-bold">ชำระมัดจำเรียบร้อย</h3>
-                                <p class="text-gray-400 text-xs mt-1">ขอบคุณที่ใช้บริการครับ</p>
+                            <div class="bg-green-50 p-6 rounded-2xl text-center border border-green-200 shadow-sm">
+                                <div class="w-16 h-16 rounded-full bg-green-100 text-green-500 mx-auto flex items-center justify-center mb-3">
+                                    <i class="fas fa-check text-2xl"></i>
+                                </div>
+                                <h3 class="text-green-600 font-black text-lg">ชำระมัดจำเรียบร้อย</h3>
+                                <p class="text-green-500/80 font-bold text-xs mt-1">ขอบคุณที่ใช้บริการครับ</p>
                             </div>
                         {% else %}
                             <!-- Draft Message (Waiting for Staff) -->
                             {% if booking.status == 'draft' %}
-                                <div class="bg-blue-500/10 p-4 rounded-xl text-center border border-blue-500/20 mb-4">
-                                    <i class="fas fa-hourglass-start text-3xl text-blue-400 mb-3 mt-2"></i>
-                                    <h3 class="text-blue-400 font-bold text-lg">กำลังรอเจ้าหน้าที่ตรวจสอบ</h3>
-                                    <p class="text-gray-400 text-sm mt-2 leading-relaxed">กรุณารอเจ้าหน้าที่ตรวจสอบสถานะสินค้าและสรุปยอดเงินสุทธิ<br>ระบบจะแจ้งให้ท่านทราบเมื่อพร้อมชำระดัมจำ</p>
+                                <div class="bg-blue-50 p-6 rounded-2xl text-center border border-blue-200 mb-4 shadow-sm">
+                                    <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-500 mx-auto flex items-center justify-center mb-4">
+                                        <i class="fas fa-hourglass-start text-3xl"></i>
+                                    </div>
+                                    <h3 class="text-blue-600 font-bold text-lg mb-2">กำลังรอเจ้าหน้าที่ตรวจสอบ</h3>
+                                    <p class="text-blue-500/80 font-medium text-xs leading-relaxed">กรุณารอเจ้าหน้าที่ตรวจสอบสถานะสินค้าและสรุปยอดเงินสุทธิ<br>ระบบจะแจ้งให้ท่านทราบเมื่อพร้อมชำระดัมจำ</p>
                                 </div>
                             
                             <!-- Pending Payment Message/UI -->
                             {% elif booking.status == 'pending' %}
                                 <!-- Pending Verification (Uploaded) -->
                                 {% if booking.payment_status == 'pending' %}
-                                    <div class="bg-yellow-500/10 p-4 rounded-xl text-center border border-yellow-500/20 mb-4">
-                                        <i class="fas fa-hourglass-half text-2xl text-yellow-400 mb-2"></i>
-                                        <h3 class="text-yellow-400 font-bold">กำลังตรวจสอบหลักฐาน</h3>
-                                        <p class="text-gray-400 text-xs mt-1">คุณสามารถอัปโหลดสลิปใหม่ได้หากต้องการแก้ไข</p>
+                                    <div class="bg-yellow-50 p-6 rounded-2xl text-center border border-yellow-200 mb-6 shadow-sm">
+                                        <div class="w-16 h-16 rounded-full bg-yellow-100 text-yellow-500 mx-auto flex items-center justify-center mb-3">
+                                            <i class="fas fa-hourglass-half text-2xl"></i>
+                                        </div>
+                                        <h3 class="text-yellow-600 font-bold text-lg">กำลังตรวจสอบหลักฐาน</h3>
+                                        <p class="text-yellow-600/70 font-medium text-xs mt-2">คุณสามารถอัปโหลดสลิปใหม่ได้หากต้องการแก้ไข</p>
                                     </div>
                                 {% else %}
                                     <!-- Expiration Timer -->
                                     {% if booking.expires_at and not booking.is_expired %}
-                                    <div class="bg-red-500/10 p-4 rounded-xl text-center border border-red-500/20 mb-4">
-                                        <div class="text-red-400 font-bold text-sm mb-1">⏰ กรุณาชำระเงินภายใน</div>
-                                        <div id="countdown" class="text-2xl font-mono text-white font-bold" data-expire="{{ booking.expires_at|date:'Y-m-d H:i:s' }}">--:--:--</div>
+                                    <div class="bg-red-50 p-5 rounded-2xl text-center border border-red-200 mb-6 shadow-sm">
+                                        <div class="text-red-500 font-bold text-xs uppercase tracking-wider mb-2">⏰ กรุณาชำระเงินภายใน</div>
+                                        <div id="countdown" class="text-3xl font-mono text-red-600 font-black tracking-tight drop-shadow-sm" data-expire="{{ booking.expires_at|date:'Y-m-d H:i:s' }}">--:--:--</div>
                                     </div>
                                     {% elif booking.is_expired %}
-                                    <div class="bg-red-500/10 p-4 rounded-xl text-center border border-red-500/20 mb-4">
-                                        <i class="fas fa-times-circle text-2xl text-red-500 mb-2"></i>
-                                        <h3 class="text-red-500 font-bold">หมดเวลาชำระเงิน</h3>
-                                        <p class="text-gray-400 text-xs mt-1">ใบจองนี้ถูกยกเลิกแล้ว</p>
+                                    <div class="bg-red-50 p-6 rounded-2xl text-center border border-red-200 mb-6 shadow-sm">
+                                        <div class="w-16 h-16 rounded-full bg-red-100 text-red-500 mx-auto flex items-center justify-center mb-3">
+                                            <i class="fas fa-times text-2xl"></i>
+                                        </div>
+                                        <h3 class="text-red-600 font-bold text-lg">หมดเวลาชำระเงิน</h3>
+                                        <p class="text-red-500/80 font-medium text-xs mt-1">ใบจองนี้ถูกยกเลิกแล้ว</p>
                                     </div>
                                     {% endif %}
 
                                     <!-- QR Code & Bank Details (Hide if expired) -->
                                     {% if not booking.is_expired %}
-                                    <div class="bg-white p-4 rounded-xl text-center mb-4">
-                                        <div class="w-full aspect-square bg-gray-200 rounded-lg flex items-center justify-center mb-2">
-                                            <i class="fas fa-qrcode text-6xl text-gray-400"></i>
+                                    <div class="bg-white p-6 rounded-2xl text-center mb-6 shadow-md border border-gray-200 relative overflow-hidden">
+                                        <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-mcot-orange to-mcot-purple"></div>
+                                        <div class="w-48 h-48 mx-auto bg-gray-200 rounded-xl border border-gray-100 flex items-center justify-center mb-4 shadow-inner">
+                                            <i class="fas fa-qrcode text-6xl text-gray-300"></i>
                                         </div>
-                                        <p class="text-black font-bold text-sm">Scan เพื่อชำระมัดจำ</p>
-                                        <p class="text-mcot-orange font-bold text-lg">฿{{ booking.deposit_amount|intcomma }}</p>
+                                        <p class="text-gray-900 font-extrabold text-sm uppercase tracking-widest">Scan เพื่อชำระมัดจำ</p>
+                                        <p class="text-mcot-orange font-black text-2xl font-mono mt-1 drop-shadow-sm">฿{{ booking.deposit_amount|intcomma }}</p>
                                         
                                         <!-- Bank Account Details -->
-                                        <div class="mt-4 pt-4 border-t border-gray-100 text-left">
-                                            <p class="text-gray-500 text-xs mb-2">หรือโอนเข้าบัญชีธนาคาร:</p>
-                                            <div class="bg-gray-50 rounded-lg p-3">
-                                                <div class="flex items-center gap-3 mb-2">
+                                        <div class="mt-6 pt-5 border-t border-gray-100 text-left">
+                                            <p class="text-gray-400 font-bold text-[10px] uppercase tracking-widest mb-3">หรือโอนเข้าบัญชีธนาคาร:</p>
+                                            <div class="bg-gray-200 rounded-xl p-4 border border-gray-100 shadow-inner">
+                                                <div class="flex items-center gap-3 mb-3">
                                                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Krung_Thai_Bank_logo.svg/1024px-Krung_Thai_Bank_logo.svg.png" alt="KTB" class="h-6 object-contain">
                                                     <div>
-                                                        <p class="text-sm font-bold text-gray-800">ธนาคารกรุงไทย (KTB)</p>
-                                                        <p class="text-xs text-gray-500">สาขาอโศก</p>
+                                                        <p class="text-sm font-extrabold text-gray-900">ธนาคารกรุงไทย (KTB)</p>
+                                                        <p class="text-[10px] font-bold text-gray-500 uppercase">สาขาอโศก</p>
                                                     </div>
                                                 </div>
-                                                <div class="flex justify-between items-center bg-white p-2 border border-gray-200 rounded mt-2">
+                                                <div class="flex justify-between items-center bg-white p-3 border border-gray-100 rounded-lg mt-2 shadow-sm">
                                                     <div>
-                                                        <p class="text-xs text-gray-500">ชื่อบัญชี</p>
-                                                        <p class="text-sm font-bold text-gray-800">บมจ. อสมท (MCOT Public Company Limited)</p>
+                                                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">ชื่อบัญชี</p>
+                                                        <p class="text-xs font-bold text-gray-900 leading-tight mt-0.5">บมจ. อสมท (MCOT Public Company Limited)</p>
                                                     </div>
                                                 </div>
-                                                <div class="flex justify-between items-center bg-white p-2 border border-gray-200 rounded mt-2">
+                                                <div class="flex justify-between items-center bg-white p-3 border border-gray-100 rounded-lg mt-2 shadow-sm group">
                                                     <div>
-                                                        <p class="text-xs text-gray-500">เลขที่บัญชี</p>
-                                                        <p class="text-base font-mono font-bold text-gray-800 tracking-wider">015-0-00000-0</p>
+                                                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">เลขที่บัญชี</p>
+                                                        <p class="text-base font-mono font-black text-gray-900 tracking-wider mt-0.5">015-0-00000-0</p>
                                                     </div>
-                                                    <button type="button" onclick="navigator.clipboard.writeText('0150000000'); Swal.fire({title:'คัดลอกเลขบัญชีแล้ว', icon:'success', timer:1500, showConfirmButton:false, customClass:{popup:'swal2-glass'}})" class="text-mcot-orange hover:text-orange-600 transition-colors" title="คัดลอกเลขบัญชี">
-                                                        <i class="far fa-copy text-lg"></i>
+                                                    <button type="button" onclick="navigator.clipboard.writeText('0150000000'); Swal.fire({title:'คัดลอกเลขบัญชีแล้ว', icon:'success', timer:1500, showConfirmButton:false, customClass:{popup:'swal2-glass-light'}})" class="w-10 h-10 rounded-full bg-gray-200 hover:bg-orange-50 text-gray-400 hover:text-mcot-orange transition-colors flex items-center justify-center border border-gray-100 group-hover:border-orange-200" title="คัดลอกเลขบัญชี">
+                                                        <i class="far fa-copy text-sm"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -260,21 +292,25 @@
 
                                 <!-- Upload Form (Show for pending status, whether unpaid or pending verification) -->
                                 {% if not booking.is_expired %}
-                                <form id="slip-form" class="space-y-4">
+                                <form id="slip-form" class="space-y-4 bg-white/50 p-6 rounded-2xl border border-gray-200 shadow-sm">
                                     <div>
-                                        <label class="block text-gray-400 text-xs mb-2">
+                                        <label class="block text-gray-600 font-bold text-xs mb-3 uppercase tracking-wide">
                                             {% if booking.payment_status == 'pending' %}อัปโหลดสลิปใหม่{% else %}แนบสลิปโอนเงิน{% endif %} (Image only)
                                         </label>
-                                        <input type="file" id="slip-input" accept="image/*" class="block w-full text-sm text-gray-400
-                                          file:mr-4 file:py-2 file:px-4
-                                          file:rounded-full file:border-0
-                                          file:text-xs file:font-semibold
-                                          file:bg-mcot-orange file:text-white
-                                          hover:file:bg-orange-600
+                                        <input type="file" id="slip-input" accept="image/*" class="block w-full text-sm text-gray-700
+                                          file:mr-4 file:py-2.5 file:px-5
+                                          file:rounded-xl file:border-0
+                                          file:text-xs file:font-extrabold file:uppercase file:tracking-widest
+                                          file:bg-black file:text-white
+                                          hover:file:bg-gray-800 file:cursor-pointer file:transition-colors
+                                          file:shadow-md cursor-pointer
+                                          bg-white rounded-xl border border-gray-200 shadow-inner
                                         "/>
                                     </div>
-                                    <button type="button" onclick="uploadSlip()" id="btn-upload" class="w-full bg-mcot-orange hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-orange-500/30">
-                                        {% if booking.payment_status == 'pending' %}ส่งหลักฐานใหม่{% else %}แจ้งชำระเงิน{% endif %} <i class="fas fa-file-upload ml-2"></i>
+                                    <button type="button" onclick="uploadSlip()" id="btn-upload" class="w-full relative overflow-hidden group bg-gradient-to-r from-mcot-orange to-orange-500 text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all shadow-orange-500/30 uppercase tracking-widest text-sm flex items-center justify-center gap-2">
+                                        <div class="absolute inset-0 bg-white/20 transition-transform group-hover:scale-105 pointer-events-none opacity-0 group-hover:opacity-100"></div>
+                                        <span class="relative z-10">{% if booking.payment_status == 'pending' %}ส่งหลักฐานใหม่{% else %}แจ้งชำระเงิน{% endif %}</span> 
+                                        <i class="fas fa-file-upload relative z-10 group-hover:-translate-y-1 transition-transform"></i>
                                     </button>
                                 </form>
                                 {% endif %}
@@ -284,11 +320,11 @@
                 </div>
 
                 {% if booking.payment_slip %}
-                <div class="glass-panel p-6 rounded-2xl border border-white/10">
-                     <h2 class="text-sm font-bold text-gray-400 mb-4">หลักฐานการโอนปัจจุบัน</h2>
-                     <div class="rounded-lg overflow-hidden border border-white/10 bg-black/50 relative group">
-                         <img src="{{ booking.payment_slip.url }}" class="w-full object-contain max-h-96">
-                         <a href="{{ booking.payment_slip.url }}" target="_blank" class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold">
+                <div class="bg-white/70 backdrop-blur-xl p-6 rounded-[2rem] border border-white/60 shadow-xl overflow-hidden">
+                     <h2 class="text-xs font-bold text-gray-500 mb-4 uppercase tracking-widest text-center">หลักฐานการโอนปัจจุบัน</h2>
+                     <div class="rounded-xl overflow-hidden border border-gray-200 bg-gray-200 relative group shadow-inner">
+                         <img src="{{ booking.payment_slip.url }}" class="w-full object-contain max-h-96 mix-blend-multiply">
+                         <a href="{{ booking.payment_slip.url }}" target="_blank" class="absolute inset-0 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold tracking-widest uppercase text-sm">
                              <i class="fas fa-search-plus mr-2"></i> ดูรูปขยาย
                          </a>
                      </div>
@@ -299,13 +335,35 @@
     </div>
 </div>
 
+<style>
+    .swal2-glass-light {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        color: #111827 !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        border-radius: 1.5rem !important;
+    }
+    .swal2-glass-light .swal2-title {
+        color: #111827 !important;
+    }
+    .swal2-glass-light .swal2-html-container {
+        color: #4B5563 !important;
+    }
+</style>
+
 <script>
 async function uploadSlip() {
     const input = document.getElementById('slip-input');
     const btn = document.getElementById('btn-upload');
     
     if (input.files.length === 0) {
-        alert("กรุณาเลือกไฟล์สลิป");
+        Swal.fire({
+            icon: 'warning',
+            title: 'ข้อผิดพลาด',
+            text: 'กรุณาเลือกไฟล์สลิป',
+            customClass: { popup: 'swal2-glass-light' }
+        });
         return;
     }
 
@@ -317,8 +375,9 @@ async function uploadSlip() {
     const csrfToken = '{{ csrf_token }}';
 
     try {
+        const originalText = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังอัปโหลด...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> กำลังอัปโหลด...';
 
         const response = await fetch('{% url "store:api_upload_slip" booking.id %}', {
             method: 'POST',
@@ -331,17 +390,35 @@ async function uploadSlip() {
         const data = await response.json();
         
         if (data.success) {
-            alert("แจ้งชำระเงินเรียบร้อย! กรุณารอเจ้าหน้าที่ตรวจสอบ");
-            window.location.reload();
+            Swal.fire({
+                icon: 'success',
+                title: 'สำเร็จ!',
+                text: 'แจ้งชำระเงินเรียบร้อย! กรุณารอเจ้าหน้าที่ตรวจสอบ',
+                timer: 2000,
+                showConfirmButton: false,
+                customClass: { popup: 'swal2-glass-light' }
+            }).then(() => {
+                window.location.reload();
+            });
         } else {
-            alert("Error: " + data.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'อัปโหลดไม่สำเร็จ',
+                text: data.message,
+                customClass: { popup: 'swal2-glass-light' }
+            });
             btn.disabled = false;
-            btn.innerHTML = 'แจ้งชำระเงิน <i class="fas fa-file-upload ml-2"></i>';
+            btn.innerHTML = originalText;
         }
 
     } catch (e) {
         console.error(e);
-        alert("Upload Failed");
+        Swal.fire({
+            icon: 'error',
+            title: 'การเชื่อมต่อผิดพลาด',
+            text: 'ไม่สามารถอัปโหลดได้ กรุณาลองใหม่',
+            customClass: { popup: 'swal2-glass-light' }
+        });
         btn.disabled = false;
         btn.innerHTML = 'แจ้งชำระเงิน <i class="fas fa-file-upload ml-2"></i>';
     }
@@ -363,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (distance < 0) {
             timer.innerHTML = "EXPIRED";
-            timer.classList.add('text-red-500');
+            timer.classList.add('text-red-600');
             // Optionally reload to show expired status
             if (distance > -5000) window.location.reload(); 
             return;

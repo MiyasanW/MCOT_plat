@@ -76,7 +76,7 @@
         }
         
         body {
-            background-color: #2A2A2A; /* Even Lighter Gray */
+            background-color: #E5E7EB; /* Light Gray 200 */
         }
     </style>
 
@@ -84,44 +84,37 @@
 </head>
 
 <body
-    class="text-gray-200 min-h-screen flex flex-col font-sans antialiased selection:bg-mcot-orange selection:text-white">
+    class="text-gray-900 min-h-screen flex flex-col font-sans antialiased selection:bg-mcot-orange selection:text-white">
 
     <!-- Utility Bar (Global Corporate Links - Very Low Profile) -->
-    <div class="bg-[#050505] border-b border-white/10 text-[10px] text-gray-500 py-1.5 font-sans">
+    <div class="bg-white border-b border-gray-200 text-[10px] text-gray-500 py-1.5 font-sans relative z-50">
         <div class="max-w-[1600px] mx-auto px-4 flex justify-between items-center">
             <div class="flex gap-4">
-                <span class="hover:text-gray-300 cursor-default"><i class="fas fa-certificate text-mcot-orange"></i> {% trans "ISO 9001:2015 Certified" %}</span>
-                <span class="hidden sm:inline hover:text-gray-300 cursor-default"><i
-                        class="fas fa-building text-gray-600"></i> {% trans "Government Enterprise Standard" %}</span>
+                <span class="hover:text-mcot-orange cursor-default transition-colors"><i class="fas fa-certificate text-mcot-orange"></i> {% trans "ISO 9001:2015 Certified" %}</span>
+                <span class="hidden sm:inline hover:text-gray-900 cursor-default transition-colors"><i
+                        class="fas fa-building text-gray-400"></i> {% trans "Government Enterprise Standard" %}</span>
             </div>
             <div class="flex gap-4">
-                <a href="#" class="hover:text-white transition-colors">{% trans "Corporate Sales" %}</a>
-                <a href="#" class="hover:text-white transition-colors">{% trans "Vendor Registration" %}</a>
-                <span class="text-gray-700">|</span>
-                <a href="#" class="text-white hover:text-mcot-orange">TH</a>
+                <a href="#" class="hover:text-gray-900 transition-colors">{% trans "Corporate Sales" %}</a>
+                <a href="#" class="hover:text-gray-900 transition-colors">{% trans "Vendor Registration" %}</a>
+                <span class="text-gray-300">|</span>
+                <a href="#" class="text-gray-900 hover:text-mcot-orange font-bold">TH</a>
             </div>
         </div>
     </div>
 
-    <!-- Main Commerce Navbar (Premium Glass V5) -->
-    <!-- Background: Deep Gradient + Blur to remove "Gloom" -->
-    <!-- Main Commerce Navbar (Premium Glass V5) -->
-    <!-- Background: Deep Gradient + Blur to remove "Gloom" -->
-    <!-- Main Commerce Navbar (Premium Glass V5 - Decorated) -->
+    <!-- Main Commerce Navbar (Premium Light Glass V5) -->
     <nav
-        class="sticky top-0 z-50 bg-[#2A2A2A]/80 backdrop-blur-xl border-b border-white/5 shadow-2xl transition-all duration-300 group/nav">
+        class="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b-2 border-gray-400 shadow-lg transition-all duration-300 group/nav">
 
         <!-- 1. Ambient Gradient Glow (Top) -->
         <div
-            class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-mcot-orange/50 to-transparent opacity-0 group-hover/nav:opacity-100 transition-opacity duration-700 blur-sm">
+            class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-mcot-orange/20 to-transparent opacity-0 group-hover/nav:opacity-100 transition-opacity duration-700 blur-sm">
         </div>
 
         <!-- 2. Bottom Gradient Border (Animated) -->
         <div
-            class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-mcot-orange/50 to-transparent">
-        </div>
-        <div
-            class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-mcot-purple via-mcot-orange to-mcot-purple opacity-30 animate-pulse">
+            class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-mcot-orange/30 to-transparent">
         </div>
 
         <div class="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between relative">
@@ -129,65 +122,64 @@
             <!-- Logo (Glow Effect) -->
             <a href="/" class="flex items-center gap-3 group/logo flex-shrink-0 relative">
                 <div
-                    class="absolute inset-0 bg-mcot-orange/20 blur-xl rounded-full opacity-0 group-hover/logo:opacity-50 transition-opacity duration-500">
+                    class="absolute inset-0 bg-mcot-orange/10 blur-xl rounded-full opacity-0 group-hover/logo:opacity-50 transition-opacity duration-500">
                 </div>
+                <!-- Need Dark Logo or Drop Shadow for Light BG -->
                 <img src="{% static 'images/logo.png' %}" alt="MCOT Rental"
-                    class="h-10 w-auto object-contain relative z-10 transition-transform duration-300 group-hover/logo:scale-105 drop-shadow-[0_0_15px_rgba(242,101,34,0.4)]">
+                    class="h-10 w-auto object-contain relative z-10 transition-transform duration-300 group-hover/logo:scale-105 drop-shadow-md">
             </a>
 
-            <!-- Main Navigation (Pill & Glow) -->
+            <!-- Main Navigation (Pill For Light Theme) -->
             <div
-                class="hidden lg:flex items-center gap-2 ml-auto mr-12 bg-black/20 p-1 rounded-full border border-white/5 backdrop-blur-md">
+                class="hidden lg:flex items-center gap-2 ml-auto mr-12 bg-gray-50/80 p-1 rounded-full border border-gray-200 backdrop-blur-md shadow-sm">
                 {% with request.resolver_match.url_name as url_name %}
 
                 <a href="{% url 'store:home' %}"
-                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if url_name == 'home' %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if url_name == 'home' %}text-gray-900 bg-white shadow-sm border border-gray-100{% else %}text-gray-500 hover:text-gray-900 hover:bg-white/50{% endif %}">
                     <span class="relative z-10">{% trans "HOME" %}</span>
                     {% if url_name == 'home' %}
                     <div
-                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-mcot-orange shadow-[0_0_10px_rgba(242,101,34,0.8)] rounded-full">
+                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-mcot-orange shadow-[0_0_10px_rgba(242,101,34,0.5)] rounded-full">
                     </div>
                     {% endif %}
                 </a>
 
-                <!-- Staff Calendar Removed from Main Nav -->
-
                 <a href="{% url 'store:catalog' %}"
-                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'catalog' in url_name %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'catalog' in url_name %}text-blue-600 bg-blue-50/50 shadow-sm border border-blue-100{% else %}text-gray-500 hover:text-gray-900 hover:bg-white/50{% endif %}">
                     <span class="relative z-10">{% trans "EQUIPMENT" %}</span>
                     {% if 'catalog' in url_name %}
                     <div
-                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] rounded-full">
+                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)] rounded-full">
                     </div>
                     {% endif %}
                 </a>
 
                 <a href="{% url 'store:package_list' %}"
-                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'package' in url_name %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'package' in url_name %}text-mcot-orange bg-orange-50/50 shadow-sm border border-orange-100{% else %}text-gray-500 hover:text-gray-900 hover:bg-white/50{% endif %}">
                     <span class="relative z-10">{% trans "PACKAGES" %}</span>
                     {% if 'package' in url_name %}
                     <div
-                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-mcot-orange shadow-[0_0_10px_rgba(242,101,34,0.8)] rounded-full">
+                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-mcot-orange shadow-[0_0_10px_rgba(242,101,34,0.5)] rounded-full">
                     </div>
                     {% endif %}
                 </a>
 
                 <a href="{% url 'store:studio_list' %}"
-                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'studio' in url_name %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'studio' in url_name %}text-purple-600 bg-purple-50/50 shadow-sm border border-purple-100{% else %}text-gray-500 hover:text-gray-900 hover:bg-white/50{% endif %}">
                     <span class="relative z-10">{% trans "STUDIOS" %}</span>
                     {% if 'studio' in url_name %}
                     <div
-                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.8)] rounded-full">
+                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)] rounded-full">
                     </div>
                     {% endif %}
                 </a>
 
                 <a href="{% url 'store:service_list' %}"
-                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'service' in url_name %}text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'service' in url_name %}text-green-600 bg-green-50/50 shadow-sm border border-green-100{% else %}text-gray-500 hover:text-gray-900 hover:bg-white/50{% endif %}">
                     <span class="relative z-10">{% trans "SERVICES" %}</span>
                     {% if 'service' in url_name %}
                     <div
-                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)] rounded-full">
+                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)] rounded-full">
                     </div>
                     {% endif %}
                 </a>
@@ -196,7 +188,7 @@
                 <div x-data="{ open: false }" class="relative group/dropdown" @mouseenter="open = true"
                     @mouseleave="open = false">
                     <button
-                        class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden text-gray-400 hover:text-white hover:bg-white/5 flex items-center gap-1">
+                        class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden text-gray-500 hover:text-gray-900 hover:bg-white/50 flex items-center gap-1">
                         <span class="relative z-10">{% trans "ABOUT" %}</span>
                         <i class="fas fa-chevron-down text-[10px] transition-transform duration-300"
                             :class="{'rotate-180': open}"></i>
@@ -209,18 +201,18 @@
                         x-transition:leave="transition ease-in duration-150"
                         x-transition:leave-start="opacity-100 translate-y-0"
                         x-transition:leave-end="opacity-0 translate-y-2"
-                        class="absolute top-full right-0 mt-2 w-48 bg-[#1e1e1e] border border-white/10 rounded-xl shadow-xl overflow-hidden backdrop-blur-xl z-50">
+                        class="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden backdrop-blur-xl z-50">
 
                         <a href="{% url 'store:about' %}"
-                            class="block px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
+                            class="block px-4 py-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors border-b border-gray-100">
                             {% trans "About Us" %}
                         </a>
                         <a href="{% url 'store:faq' %}"
-                            class="block px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
+                            class="block px-4 py-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors border-b border-gray-100">
                             {% trans "Help Center (FAQ)" %}
                         </a>
                         <a href="{% url 'store:contact' %}"
-                            class="block px-4 py-3 text-sm text-mcot-orange font-bold hover:text-white hover:bg-mcot-orange/20 transition-colors">
+                            class="block px-4 py-3 text-sm text-mcot-orange font-bold hover:text-orange-700 hover:bg-orange-50 transition-colors">
                             {% trans "Contact Us" %}
                         </a>
                     </div>
@@ -249,20 +241,20 @@
                 <div class="hidden xl:flex flex-col text-right group cursor-pointer">
                     <span class="text-[10px] text-mcot-orange uppercase tracking-widest font-bold">{% trans "Support 24/7" %}</span>
                     <span
-                        class="text-white font-mono text-sm font-bold text-mcot-orange drop-shadow-[0_0_8px_rgba(242,101,34,0.8)]">02-201-6000</span>
+                        class="text-gray-900 font-mono text-sm font-bold text-mcot-orange drop-shadow-sm">02-201-6000</span>
                 </div>
 
-                <div class="h-8 w-px bg-white/10 hidden xl:block"></div>
+                <div class="h-8 w-px bg-gray-200 hidden xl:block"></div>
 
                 <!-- Account (Permanent Button Style) -->
                 {% if user.is_authenticated %}
                 <!-- Notification Bell (New) -->
                 <div class="relative group/notif mr-4" x-data="{ open: false }">
                     <button @click="open = !open" 
-                            class="relative p-2 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-all">
+                            class="relative p-2 rounded-full text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-all">
                         <i class="fas fa-bell text-xl"></i>
                         <!-- Unread Badge -->
-                        <span id="notif-badge" class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#2A2A2A] hidden"></span>
+                        <span id="notif-badge" class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white hidden"></span>
                     </button>
 
                     <!-- Dropdown -->
@@ -274,34 +266,34 @@
                          x-transition:leave="transition ease-in duration-150"
                          x-transition:leave-start="opacity-100 translate-y-0"
                          x-transition:leave-end="opacity-0 translate-y-2"
-                         class="absolute right-0 top-full mt-4 w-80 bg-[#353535] border border-white/10 rounded-2xl shadow-2xl backdrop-blur-xl z-50 overflow-hidden"
+                         class="absolute right-0 top-full mt-4 w-96 bg-white border border-gray-100 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] backdrop-blur-xl z-50 overflow-hidden"
                          style="display: none;">
                         
-                        <div class="p-4 border-b border-white/5 flex justify-between items-center bg-black/20">
-                            <h3 class="text-sm font-bold text-white">{% trans "Notifications" %}</h3>
-                            <button onclick="markAllRead()" class="text-[10px] text-mcot-orange hover:text-white transition-colors">{% trans "Mark all read" %}</button>
+                        <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/80 backdrop-blur-sm">
+                            <h3 class="text-sm font-extrabold text-gray-900 uppercase tracking-widest font-display">{% trans "Notifications" %}</h3>
+                            <button onclick="markAllRead()" class="text-[10px] bg-white border border-gray-200 shadow-sm px-2 py-1 rounded text-gray-600 font-bold hover:text-mcot-orange hover:border-mcot-orange transition-colors">{% trans "Mark all read" %}</button>
                         </div>
                         
-                        <div id="notif-list" class="max-h-64 overflow-y-auto custom-scrollbar">
-                            <div class="p-8 text-center text-gray-500 text-xs">
-                                <i class="fas fa-spinner fa-spin mb-2"></i> {% trans "Loading..." %}
+                        <div id="notif-list" class="max-h-[26rem] overflow-y-auto custom-scrollbar bg-white">
+                            <div class="p-8 text-center text-gray-400 text-xs">
+                                <i class="fas fa-spinner fa-spin mb-2 text-xl text-gray-300"></i><br>{% trans "Loading..." %}
                             </div>
                         </div>
                         
-                        <div class="p-2 border-t border-white/5 bg-black/20 text-center">
-                            <a href="#" class="text-[10px] text-gray-400 hover:text-white transition-colors">{% trans "View All Activities" %}</a>
+                        <div class="p-3 border-t border-gray-100 bg-gray-50/80 backdrop-blur-sm text-center">
+                            <a href="#" class="inline-block text-[11px] font-bold text-gray-500 uppercase tracking-widest hover:text-mcot-orange transition-colors py-1">{% trans "View All Activities" %}</a>
                         </div>
                     </div>
                 </div>
 
                 <div x-data="{ open: false }" class="relative" @click.away="open = false">
                     <button @click="open = !open"
-                        class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full transition-all group border border-white/10 hover:border-mcot-orange shadow-[0_0_10px_rgba(255,255,255,0.05)]">
+                        class="flex items-center gap-2 bg-white/50 hover:bg-white px-3 py-1.5 rounded-full transition-all group border border-gray-200 hover:border-mcot-orange shadow-sm">
                         <div
-                            class="w-6 h-6 bg-gray-900 border border-white/10 rounded-full flex items-center justify-center text-[10px] font-bold text-white group-hover:text-mcot-orange transition-colors">
+                            class="w-6 h-6 bg-gray-100 border border-gray-200 rounded-full flex items-center justify-center text-[10px] font-bold text-gray-700 group-hover:text-mcot-orange transition-colors">
                             {{ user.username|make_list|first|upper }}
                         </div>
-                        <span class="text-xs font-bold text-white group-hover:text-mcot-orange transition-colors hidden lg:block">
+                        <span class="text-xs font-bold text-gray-700 group-hover:text-mcot-orange transition-colors hidden lg:block">
                             {{ user.username }}
                         </span>
                         <i class="fas fa-chevron-down text-[8px] text-gray-400 transition-transform duration-300"
@@ -317,33 +309,33 @@
                          x-transition:leave="transition ease-in duration-150"
                          x-transition:leave-start="opacity-100 translate-y-0"
                          x-transition:leave-end="opacity-0 translate-y-2"
-                         class="absolute top-full right-0 mt-2 w-48 bg-[#1e1e1e] border border-white/10 rounded-xl shadow-xl overflow-hidden backdrop-blur-xl z-50">
+                         class="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden backdrop-blur-xl z-50">
                         <a href="{% url 'store:my_bookings' %}"
-                           class="block px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
+                           class="block px-4 py-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors border-b border-gray-100">
                             <i class="fas fa-clipboard-list mr-2 text-mcot-orange/60"></i> {% trans "My Bookings" %}
                         </a>
                         <a href="{% url 'password_change' %}"
-                           class="block px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
+                           class="block px-4 py-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors border-b border-gray-100">
                             <i class="fas fa-key mr-2 text-mcot-orange/60"></i> {% trans "Change Password" %}
                         </a>
                         {% if user.is_staff %}
                         <a href="{% url 'admin:index' %}"
-                           class="block px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
+                           class="block px-4 py-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors border-b border-gray-100">
                             <i class="fas fa-cog mr-2 text-mcot-orange/60"></i> {% trans "Admin Panel" %}
                         </a>
                         {% endif %}
                         <a href="{% url 'logout' %}"
-                           class="block px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-colors">
+                           class="block px-4 py-3 text-sm text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors">
                             <i class="fas fa-sign-out-alt mr-2"></i> {% trans "Log Out" %}
                         </a>
                     </div>
                 </div>
                 {% else %}
                 <a href="{% url 'login' %}"
-                    class="flex items-center gap-2 bg-mcot-orange/20 hover:bg-mcot-orange/30 border border-mcot-orange/50 px-4 py-2 rounded-full transition-all group shadow-[0_0_15px_rgba(242,101,34,0.3)] hover:shadow-[0_0_20px_rgba(242,101,34,0.5)]">
-                    <i class="fas fa-user text-sm text-mcot-orange group-hover:text-white transition-colors"></i>
+                    class="flex items-center gap-2 bg-mcot-orange hover:bg-orange-600 border border-transparent px-4 py-2 rounded-full transition-all group shadow-md hover:shadow-lg">
+                    <i class="fas fa-user text-sm text-white transition-colors"></i>
                     <span
-                        class="hidden lg:block text-xs font-bold uppercase tracking-wide text-white group-hover:text-white transition-colors">{% trans "Sign In / Register" %}</span>
+                        class="hidden lg:block text-xs font-bold uppercase tracking-wide text-white transition-colors">{% trans "Sign In / Register" %}</span>
                 </a>
                 {% endif %}
 
@@ -351,11 +343,11 @@
                 <a href="{% url 'store:cart' %}"
                     class="btn-cart relative flex items-center gap-2 hover:text-mcot-orange transition-all group">
                     <div
-                        class="relative w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/5 group-hover:border-mcot-orange/50 group-hover:shadow-[0_0_15px_rgba(242,101,34,0.3)] transition-all">
+                        class="relative w-10 h-10 rounded-full bg-white flex items-center justify-center border border-gray-200 group-hover:border-mcot-orange/50 group-hover:shadow-[0_0_15px_rgba(242,101,34,0.1)] shadow-sm transition-all">
                         <i
-                            class="fas fa-shopping-cart text-sm text-gray-400 group-hover:text-white transition-colors"></i>
+                            class="fas fa-shopping-cart text-sm text-gray-400 group-hover:text-mcot-orange transition-colors"></i>
                         <span id="cart-counter"
-                            class="absolute -top-1 -right-1 bg-mcot-orange text-black text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden shadow-lg shadow-orange-500/50 animate-bounce">0</span>
+                            class="absolute -top-1 -right-1 bg-mcot-orange text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden shadow-md animate-bounce border border-white">0</span>
                     </div>
                 </a>
             </div>
@@ -377,38 +369,38 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer (Fat & Functional - Thai) -->
-    <footer class="bg-[#202020] border-t border-white/5 pt-20 pb-10 mt-auto">
+    <!-- Footer (Light Theme) -->
+    <footer class="bg-white border-t border-gray-200 pt-20 pb-10 mt-auto">
 
         <div class="max-w-[1440px] mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                 <!-- Brand Col -->
                 <div class="space-y-6">
                     <div>
-                        <span class="font-display font-black text-xl text-white">MCOT</span>
-                        <span class="text-[10px] tracking-widest text-gray-500 uppercase block">{% trans "Rental Platform" %}</span>
+                        <span class="font-display font-black text-xl text-gray-900">MCOT</span>
+                        <span class="text-[10px] tracking-widest text-mcot-orange uppercase block">{% trans "Rental Platform" %}</span>
                     </div>
-                    <p class="text-gray-500 text-sm leading-relaxed font-light">
+                    <p class="text-gray-500 text-sm leading-relaxed font-medium">
                         {% trans "ผู้ให้บริการเช่าอุปกรณ์ถ่ายทำครบวงจร โดย บมจ. อสมท" %} <br>
                         {% trans "มาตรฐานการผลิตระดับประเทศ ยาวนานกว่า 70 ปี" %}
                     </p>
                     <div class="flex gap-4">
                         <a href="#"
-                            class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-blue-600 transition-all"><i
+                            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-white hover:bg-blue-600 transition-all border border-gray-200 hover:border-blue-600"><i
                                 class="fab fa-facebook-f"></i></a>
                         <a href="#"
-                            class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-sky-400 transition-all"><i
+                            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-white hover:bg-sky-400 transition-all border border-gray-200 hover:border-sky-400"><i
                                 class="fab fa-twitter"></i></a>
                         <a href="#"
-                            class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-red-600 transition-all"><i
+                            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-white hover:bg-red-600 transition-all border border-gray-200 hover:border-red-600"><i
                                 class="fab fa-youtube"></i></a>
                     </div>
                 </div>
 
                 <!-- Product Links -->
                 <div>
-                    <h4 class="text-white font-bold mb-6">{% trans "Our Services" %}</h4>
-                    <ul class="space-y-3 text-sm text-gray-500 font-light">
+                    <h4 class="text-gray-900 font-bold mb-6">{% trans "Our Services" %}</h4>
+                    <ul class="space-y-3 text-sm text-gray-500 font-medium">
                         <li><a href="#" class="hover:text-mcot-orange transition-colors">{% trans "Camera Rental" %}</a></li>
                         <li><a href="#" class="hover:text-mcot-orange transition-colors">{% trans "Anamorphic Lenses" %}</a>
                         </li>
@@ -421,8 +413,8 @@
 
                 <!-- Support Links -->
                 <div>
-                    <h4 class="text-white font-bold mb-6">{% trans "About Us" %}</h4>
-                    <ul class="space-y-3 text-sm text-gray-500 font-light">
+                    <h4 class="text-gray-900 font-bold mb-6">{% trans "About Us" %}</h4>
+                    <ul class="space-y-3 text-sm text-gray-500 font-medium">
                         <li><a href="{% url 'store:about' %}" class="hover:text-mcot-orange transition-colors">{% trans "MCOT Rental Profile" %}</a></li>
                         <li><a href="{% url 'store:contact' %}"
                                 class="hover:text-mcot-orange transition-colors">{% trans "Contact Staff" %}</a></li>
@@ -435,24 +427,24 @@
 
                 <!-- Contact -->
                 <div>
-                    <h4 class="text-white font-bold mb-6">{% trans "Headquarters" %}</h4>
-                    <address class="text-sm text-gray-500 not-italic leading-relaxed mb-4 font-light">
+                    <h4 class="text-gray-900 font-bold mb-6">{% trans "Headquarters" %}</h4>
+                    <address class="text-sm text-gray-500 not-italic leading-relaxed mb-4 font-medium">
                         {% trans "63/1 Rama 9 Road, Huai Khwang" %}<br>
                         {% trans "Huai Khwang, Bangkok 10310" %}
                     </address>
-                    <p class="text-sm text-white font-bold mb-1">02-201-6000</p>
+                    <p class="text-sm text-gray-900 font-bold mb-1">02-201-6000</p>
                     <p class="text-sm text-mcot-orange">rental@mcot.net</p>
                 </div>
             </div>
 
             <!-- Bottom Bar -->
             <div
-                class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600 font-light">
+                class="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 font-medium">
                 <p>&copy; {% now "Y" %} {% trans "MCOT Public Company Limited. All rights reserved." %}</p>
                 <div class="flex gap-6">
-                    <a href="#" class="hover:text-gray-400">{% trans "Sitemap" %}</a>
-                    <a href="#" class="hover:text-gray-400">{% trans "Cookies Usage" %}</a>
-                    <a href="#" class="hover:text-gray-400">{% trans "Security" %}</a>
+                    <a href="#" class="hover:text-gray-900">{% trans "Sitemap" %}</a>
+                    <a href="#" class="hover:text-gray-900">{% trans "Cookies Usage" %}</a>
+                    <a href="#" class="hover:text-gray-900">{% trans "Security" %}</a>
                 </div>
             </div>
         </div>
@@ -524,12 +516,15 @@
             }
 
             list.innerHTML = items.map(item => `
-                <a href="${item.link || '#'}" onclick="markRead(${item.id})" class="block p-4 border-b border-white/5 hover:bg-white/5 transition-colors relative ${item.is_read ? 'opacity-60' : 'bg-white/5'}">
-                    <div class="flex gap-3">
-                        <div class="mt-1 w-2 h-2 rounded-full ${getNotifColor(item.type)} shrink-0"></div>
-                        <div>
-                            <p class="text-xs text-white leading-snug mb-1">${item.message}</p>
-                            <span class="text-[10px] text-gray-500 block">${item.created_at}</span>
+                <a href="${item.link || '#'}" onclick="markRead(${item.id})" class="block p-5 border-b border-gray-100/50 hover:bg-gray-50 transition-all duration-300 relative group ${item.is_read ? 'opacity-70 bg-transparent' : 'bg-orange-50/30'}">
+                    ${!item.is_read ? '<div class="absolute left-0 top-0 bottom-0 w-1 bg-mcot-orange rounded-r"></div>' : ''}
+                    <div class="flex gap-4 items-start">
+                        <div class="mt-1.5 w-2 h-2 rounded-full ${getNotifColor(item.type)} shrink-0 outline outline-2 outline-white"></div>
+                        <div class="flex-1">
+                            <p class="text-[13px] text-gray-900 font-bold leading-relaxed mb-1.5 group-hover:text-mcot-orange transition-colors">${item.message}</p>
+                            <span class="text-[10px] text-gray-400 flex items-center gap-1.5 font-mono uppercase tracking-wider font-semibold">
+                                <i class="far fa-clock text-[9px] text-gray-300"></i> ${item.created_at}
+                            </span>
                         </div>
                     </div>
                 </a>
@@ -547,10 +542,10 @@
 
         function getNotifColor(type) {
             switch(type) {
-                case 'success': return 'bg-green-500';
-                case 'warning': return 'bg-yellow-500';
-                case 'error': return 'bg-red-500';
-                default: return 'bg-mcot-orange';
+                case 'success': return 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]';
+                case 'warning': return 'bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.6)]';
+                case 'error': return 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]';
+                default: return 'bg-mcot-orange shadow-[0_0_8px_rgba(242,101,34,0.6)]';
             }
         }
 

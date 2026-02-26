@@ -6,17 +6,21 @@
 {% block title %}Shopping Cart | MCOT Rental{% endblock %}
 
 {% block content %}
-<div class="min-h-screen pb-20 pt-8" style="background-color: #2A2A2A;">
-    <div class="max-w-[1600px] mx-auto px-6">
+<div class="min-h-screen pb-20 pt-8 relative overflow-hidden bg-gray-200 z-0">
+    <!-- Ambient Light Background -->
+    <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-mcot-orange/5 rounded-full blur-[150px] pointer-events-none z-[-1]"></div>
+    <div class="absolute bottom-1/4 left-0 w-[600px] h-[600px] bg-mcot-purple/5 rounded-full blur-[150px] pointer-events-none z-[-1]"></div>
+
+    <div class="max-w-[1600px] mx-auto px-6 relative z-10">
         
         <!-- Header -->
-        <div class="flex items-center justify-between mb-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-white mb-2 font-display">{% trans "Shopping Cart" %}</h1>
-                <p class="text-gray-400">{% trans "Review your equipment and schedule your rental." %}</p>
+                <h1 class="text-3xl font-extrabold text-gray-900 mb-2 font-display">{% trans "Shopping Cart" %}</h1>
+                <p class="text-gray-600 font-medium">{% trans "Review your equipment and schedule your rental." %}</p>
             </div>
-            <a href="{% url 'store:catalog' %}" class="px-4 py-2 rounded-lg bg-[#353535] border border-white/10 text-gray-300 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-2 text-sm">
-                <i class="fas fa-arrow-left"></i>
+            <a href="{% url 'store:catalog' %}" class="px-5 py-2.5 rounded-xl bg-white border border-gray-200 text-gray-700 hover:text-mcot-orange hover:border-mcot-orange/30 shadow-sm transition-all flex items-center justify-center gap-2 text-sm font-bold">
+                <i class="fas fa-arrow-left text-xs"></i>
                 {% trans "Continue Shopping" %}
             </a>
         </div>
@@ -26,9 +30,9 @@
             <!-- Items List (Left) -->
             <div class="lg:col-span-8 space-y-6">
                 <!-- Toolbar -->
-                <div class="flex justify-between items-center mb-2">
-                    <h2 class="text-lg font-bold text-white">{% trans "Items" %} (<span id="cart-count">0</span>)</h2>
-                    <button onclick="clearCart()" class="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 transition-colors">
+                <div class="flex justify-between items-center mb-2 px-2">
+                    <h2 class="text-lg font-bold text-gray-900">{% trans "Items" %} (<span id="cart-count">0</span>)</h2>
+                    <button onclick="clearCart()" class="text-xs font-bold text-red-500 hover:text-red-700 flex items-center gap-1.5 transition-colors bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-100">
                         <i class="fas fa-trash-alt"></i> {% trans "Clear Cart" %}
                     </button>
                 </div>
@@ -43,25 +47,29 @@
                 <div class="sticky top-24 space-y-6">
                     
                     <!-- Booking Details Card -->
-                    <div class="bg-[#353535] rounded-2xl p-6 border border-white/10 shadow-xl">
-                        <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                            <i class="fas fa-calendar-alt text-mcot-orange"></i>
+                    <div class="bg-white/70 backdrop-blur-2xl rounded-[2rem] p-8 border border-white/60 shadow-xl overflow-hidden relative border-t-4 border-t-mcot-orange">
+                        <div class="absolute -right-20 -top-20 w-64 h-64 bg-gradient-to-br from-mcot-orange/10 to-transparent rounded-full blur-[80px] pointer-events-none"></div>
+
+                        <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3 relative z-10 font-display">
+                            <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-mcot-orange border border-mcot-orange/20">
+                                <i class="fas fa-calendar-alt text-sm"></i>
+                            </div>
                             {% trans "Booking Details" %}
                         </h3>
 
                         <!-- Date Display (Read-Only) -->
-                        <div class="space-y-4 mb-6">
+                        <div class="space-y-4 mb-6 relative z-10">
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Pick-up Date" %}</label>
-                                    <div class="bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white font-mono text-sm opacity-50 cursor-not-allowed">
+                                    <div class="bg-gray-200 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-bold font-mono text-sm opacity-80 cursor-not-allowed shadow-inner">
                                         <input type="hidden" id="start-date">
                                         <span id="start-date-display">...</span>
                                     </div>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Return Date" %}</label>
-                                    <div class="bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white font-mono text-sm opacity-50 cursor-not-allowed">
+                                    <div class="bg-gray-200 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-bold font-mono text-sm opacity-80 cursor-not-allowed shadow-inner">
                                         <input type="hidden" id="end-date">
                                         <span id="end-date-display">...</span>
                                     </div>
@@ -69,104 +77,111 @@
                             </div>
                             
                             <!-- Duration & Status -->
-                            <div class="bg-[#2A2A2A] rounded-xl p-3 border border-white/5 flex justify-between items-center">
-                                <span class="text-xs text-gray-500">{% trans "Duration" %}</span>
-                                <span id="rental-duration" class="text-white font-bold font-mono">1 {% trans "Day" %}</span>
+                            <div class="bg-gray-200 rounded-xl p-4 border border-gray-200 flex justify-between items-center shadow-sm">
+                                <span class="text-xs text-gray-600 font-bold uppercase tracking-widest">{% trans "Duration" %}</span>
+                                <span id="rental-duration" class="text-gray-900 font-extrabold font-mono bg-white px-3 py-1 rounded-lg border border-gray-100 shadow-sm">1 {% trans "Day" %}</span>
                             </div>
                         </div>
 
                         <!-- Availability Alert -->
-                        <div id="availability-alert" class="hidden animate-pulse bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-6 flex items-start gap-3">
-                            <i class="fas fa-exclamation-triangle text-red-500 mt-0.5"></i>
-                            <div class="text-xs text-red-400">
-                                <span class="font-bold block mb-1">{% trans "Not Available!" %}</span>
+                        <div id="availability-alert" class="hidden animate-pulse bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex items-start gap-3 relative z-10 shadow-sm">
+                            <div class="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center text-red-500 shrink-0 mt-0.5">
+                                <i class="fas fa-exclamation-triangle text-xs"></i>
+                            </div>
+                            <div class="text-xs text-red-600">
+                                <span class="font-extrabold block mb-1">{% trans "Not Available!" %}</span>
                                 {% trans "Some items are not available for the selected dates." %}
                             </div>
                         </div>
 
                         <!-- Project Info -->
-                        <div class="space-y-4 border-t border-white/10 pt-6">
+                        <div class="space-y-4 border-t border-gray-100 pt-6 relative z-10">
                             <div>
                                 <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Name / Organization" %}</label>
-                                <input type="text" id="customer-name" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" value="{{ user.get_full_name|default:user.username }}" placeholder="{% trans 'Enter name...' %}">
+                                <input type="text" id="customer-name" class="w-full bg-gray-200 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-medium focus:border-mcot-orange focus:ring-1 focus:ring-mcot-orange outline-none transition-all placeholder-gray-400 text-sm shadow-inner" value="{{ user.get_full_name|default:user.username }}" placeholder="{% trans 'Enter name...' %}">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Email" %}</label>
-                                <input type="email" id="customer-email" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" value="{{ user.email }}" placeholder="example@org.com">
+                                <input type="email" id="customer-email" class="w-full bg-gray-200 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-medium focus:border-mcot-orange focus:ring-1 focus:ring-mcot-orange outline-none transition-all placeholder-gray-400 text-sm shadow-inner" value="{{ user.email }}" placeholder="example@org.com">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Phone Number" %}</label>
-                                <input type="tel" id="contact-phone" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm mb-1" value="{{ user.profile.phone|default:'' }}" placeholder="08x-xxx-xxxx" oninput="this.value = this.value.replace(/[^0-9\-+() ]/g, '')">
-                                <p class="text-[10px] text-gray-500">*{% trans "Required" %}</p>
+                                <input type="tel" id="contact-phone" class="w-full bg-gray-200 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-medium focus:border-mcot-orange focus:ring-1 focus:ring-mcot-orange outline-none transition-all placeholder-gray-400 text-sm mb-1 shadow-inner" value="{{ user.profile.phone|default:'' }}" placeholder="08x-xxx-xxxx" oninput="this.value = this.value.replace(/[^0-9\-+() ]/g, '')">
+                                <p class="text-[10px] text-red-500 font-bold">* {% trans "Required" %}</p>
                             </div>
                             <div>
                                 <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Project Name" %}</label>
-                                <input type="text" id="project-name" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" placeholder="{% trans 'e.g. TV Commercial...' %}">
+                                <input type="text" id="project-name" class="w-full bg-gray-200 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-medium focus:border-mcot-orange focus:ring-1 focus:ring-mcot-orange outline-none transition-all placeholder-gray-400 text-sm shadow-inner" placeholder="{% trans 'e.g. TV Commercial...' %}">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Additional Note" %}</label>
-                                <textarea id="booking-note" rows="2" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm" placeholder="{% trans 'Any special requests...' %}"></textarea>
+                                <textarea id="booking-note" rows="2" class="w-full bg-gray-200 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-medium focus:border-mcot-orange focus:ring-1 focus:ring-mcot-orange outline-none transition-all placeholder-gray-400 text-sm shadow-inner" placeholder="{% trans 'Any special requests...' %}"></textarea>
                             </div>
                             
                             <!-- Promo Code -->
                             <div>
                                 <label class="block text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">{% trans "Promotion Code" %}</label>
                                 <div class="flex gap-2">
-                                    <input type="text" id="promo-code" class="w-full bg-[#2A2A2A] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-mcot-orange outline-none transition-all placeholder-gray-600 text-sm uppercase" placeholder="{% trans 'Enter code...' %}">
-                                    <button type="button" onclick="applyPromoCode()" class="bg-[#353535] hover:bg-mcot-orange hover:text-white border border-white/10 text-gray-300 font-bold py-3 px-4 rounded-xl transition-colors text-sm whitespace-nowrap">
+                                    <div class="relative flex-1">
+                                        <i class="fas fa-tag absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                        <input type="text" id="promo-code" class="w-full bg-gray-200 border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-gray-900 font-bold focus:border-mcot-orange focus:ring-1 focus:ring-mcot-orange outline-none transition-all placeholder-gray-400 text-sm uppercase shadow-inner" placeholder="{% trans 'Enter code...' %}">
+                                    </div>
+                                    <button type="button" onclick="applyPromoCode()" class="bg-gray-200 hover:bg-mcot-orange hover:text-white hover:border-mcot-orange border border-gray-200 text-gray-600 font-bold py-3 px-5 rounded-xl transition-all text-sm whitespace-nowrap shadow-sm">
                                         {% trans "Apply" %}
                                     </button>
                                 </div>
-                                <div id="promo-message" class="text-[10px] mt-1 hidden"></div>
+                                <div id="promo-message" class="text-[10px] mt-2 font-bold hidden"></div>
                             </div>
                         </div>
 
                         <!-- Total -->
-                        <div class="mt-8 pt-6 border-t border-white/10 space-y-2">
-                             <div class="flex justify-between text-gray-400 text-sm">
+                        <div class="mt-8 pt-6 border-t border-gray-200 space-y-3 relative z-10 bg-gray-200 -mx-8 -my-8 px-8 py-8 mt-6">
+                             <div class="flex justify-between text-gray-500 text-sm font-bold">
                                 <span>{% trans "Daily Rate" %}</span>
-                                <span id="daily-subtotal" class="text-white font-mono">฿0</span>
+                                <span id="daily-subtotal" class="text-gray-900 font-mono">฿0</span>
                             </div>
-                            <div class="flex justify-between text-mcot-orange text-sm hidden" id="discount-row">
+                            <div class="flex justify-between text-mcot-orange text-sm font-bold hidden" id="discount-row">
                                 <span>{% trans "Discount" %}</span>
-                                <span id="discount-amount" class="font-mono">-฿0</span>
+                                <span id="discount-amount" class="font-mono bg-mcot-orange/10 px-2 rounded-md">-฿0</span>
                             </div>
-                            <div class="flex justify-between items-end pt-2">
-                                <span class="text-lg font-bold text-white">{% trans "Total" %}</span>
-                                <span id="grand-total" class="text-3xl font-black text-mcot-orange font-display">฿0</span>
+                            <div class="flex justify-between items-end pt-3 border-t border-gray-200/60 mt-2">
+                                <span class="text-lg font-extrabold text-gray-900 uppercase tracking-wider">{% trans "Total" %}</span>
+                                <span id="grand-total" class="text-3xl font-black text-mcot-orange font-display drop-shadow-sm">฿0</span>
                             </div>
-                        </div>
 
-                        <!-- Action -->
-                        {% if user.is_authenticated %}
-                        <button onclick="processCheckout()" id="btn-checkout" class="w-full mt-6 bg-mcot-orange text-white hover:bg-white hover:text-black font-bold py-4 rounded-xl shadow-[0_10px_20px_rgba(242,101,34,0.2)] hover:shadow-2xl transition-all flex items-center justify-center gap-2 uppercase tracking-wider text-sm">
-                            <span>{% trans "Confirm Booking" %}</span>
-                            <i class="fas fa-arrow-right"></i>
-                        </button>
-                        {% else %}
-                        <a href="{% url 'login' %}?next={% url 'store:cart' %}" class="w-full mt-6 bg-[#2A2A2A] border border-white/20 text-gray-300 hover:border-white hover:text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-wider text-sm">
-                            <span>{% trans "Login to Book" %}</span>
-                        </a>
-                        {% endif %}
+                            <!-- Action -->
+                            {% if user.is_authenticated %}
+                            <button onclick="processCheckout()" id="btn-checkout" class="w-full mt-6 relative overflow-hidden group bg-gradient-to-r from-mcot-orange to-orange-500 text-white font-bold py-4 rounded-xl shadow-[0_10px_20px_rgba(242,101,34,0.2)] hover:shadow-2xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-sm">
+                                <div class="absolute inset-0 bg-white/20 transition-transform group-hover:scale-105 pointer-events-none opacity-0 group-hover:opacity-100"></div>
+                                <span class="relative z-10">{% trans "Confirm Booking" %}</span>
+                                <i class="fas fa-arrow-right relative z-10 group-hover:translate-x-1 transition-transform"></i>
+                            </button>
+                            {% else %}
+                            <a href="{% url 'login' %}?next={% url 'store:cart' %}" class="w-full mt-6 bg-white border-2 border-gray-200 text-gray-700 hover:border-mcot-orange hover:text-mcot-orange font-extrabold py-4 rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-sm shadow-sm hover:shadow-lg">
+                                <i class="fas fa-lock text-xs"></i>
+                                <span>{% trans "Login to Book" %}</span>
+                            </a>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <!-- Trust Badges -->
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-[#353535] p-3 rounded-xl border border-white/5 flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-mcot-orange">
-                                <i class="fas fa-shield-alt text-xs"></i>
+                        <div class="bg-white/60 backdrop-blur p-4 rounded-xl border border-white/60 shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center gap-2 text-center">
+                            <div class="w-10 h-10 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center text-mcot-orange mb-1">
+                                <i class="fas fa-shield-alt text-sm"></i>
                             </div>
                             <div class="text-[10px] text-gray-500 leading-tight">
-                                <strong class="block text-white">{% trans "MCOT Standard" %}</strong>
+                                <strong class="block text-gray-900 font-extrabold uppercase tracking-wider mb-1">{% trans "MCOT Standard" %}</strong>
                                 {% trans "Quality Equipment" %}
                             </div>
                         </div>
-                        <div class="bg-[#353535] p-3 rounded-xl border border-white/5 flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-mcot-orange">
-                                <i class="fas fa-headset text-xs"></i>
+                        <div class="bg-white/60 backdrop-blur p-4 rounded-xl border border-white/60 shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center gap-2 text-center">
+                            <div class="w-10 h-10 rounded-full bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 mb-1">
+                                <i class="fas fa-headset text-sm"></i>
                             </div>
                             <div class="text-[10px] text-gray-500 leading-tight">
-                                <strong class="block text-white">{% trans "Support 24/7" %}</strong>
+                                <strong class="block text-gray-900 font-extrabold uppercase tracking-wider mb-1">{% trans "Support 24/7" %}</strong>
                                 {% trans "Expert Advice" %}
                             </div>
                         </div>
@@ -177,19 +192,37 @@
         </div>
 
         <!-- Empty State -->
-        <div id="empty-cart-message" class="hidden flex flex-col items-center justify-center py-32 border border-white/10 bg-[#353535] rounded-3xl mx-auto max-w-2xl text-center">
-            <div class="w-24 h-24 rounded-full bg-[#2A2A2A] flex items-center justify-center mb-6 text-gray-600">
-                <i class="fas fa-shopping-cart text-4xl"></i>
+        <div id="empty-cart-message" class="hidden flex flex-col items-center justify-center py-32 border-2 border-dashed border-gray-300 bg-white/50 backdrop-blur rounded-[3rem] mx-auto max-w-2xl text-center shadow-lg">
+            <div class="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center mb-6 text-gray-400 border border-gray-200 shadow-inner">
+                <i class="fas fa-shopping-cart text-5xl"></i>
             </div>
-            <h2 class="text-2xl font-bold text-white mb-2 font-display">{% trans "Your Cart is Empty" %}</h2>
-            <p class="text-gray-500 mb-8 max-w-sm mx-auto">{% trans "Looks like you haven't added any gear yet. Check out our catalog for premium equipment." %}</p>
-            <a href="{% url 'store:catalog' %}" class="px-8 py-3 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-colors uppercase tracking-wider text-sm shadow-xl">
+            <h2 class="text-3xl font-black text-gray-900 mb-3 font-display">{% trans "Your Cart is Empty" %}</h2>
+            <p class="text-gray-600 mb-8 max-w-sm mx-auto font-medium">{% trans "Looks like you haven't added any gear yet. Check out our catalog for premium equipment." %}</p>
+            <a href="{% url 'store:catalog' %}" class="px-8 py-3.5 bg-gray-900 text-white font-bold rounded-full hover:bg-black transition-all transform hover:-translate-y-0.5 uppercase tracking-widest text-sm shadow-xl">
                 {% trans "Browse Equipment" %}
             </a>
         </div>
 
     </div>
 </div>
+
+<!-- Make toast background generic white for light theme -->
+<style>
+    .swal2-glass-light {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        color: #111827 !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        border-radius: 1.5rem !important;
+    }
+    .swal2-glass-light .swal2-title {
+        color: #111827 !important;
+    }
+    .swal2-glass-light .swal2-html-container {
+        color: #4B5563 !important;
+    }
+</style>
 
 <script>
     const CART_STORAGE_KEY = 'mcot_cart';
@@ -235,12 +268,13 @@
             text: "คุณต้องการลบรายการทั้งหมดในตะกร้าใช่หรือไม่?",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#333',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#e5e7eb',
             confirmButtonText: 'ใช่, ลบทั้งหมด',
-            cancelButtonText: 'ยกเลิก',
-            background: '#1e1e1e',
-            color: '#fff'
+            cancelButtonText: '<span style="color:#374151">ยกเลิก</span>',
+            customClass: {
+                popup: 'swal2-glass-light'
+            }
         }).then((result) => {
             if (result.isConfirmed) {
                 cartItems = [];
@@ -251,8 +285,9 @@
                     icon: 'success',
                     timer: 1500,
                     showConfirmButton: false,
-                    background: '#1e1e1e',
-                    color: '#fff'
+                    customClass: {
+                        popup: 'swal2-glass-light'
+                    }
                 });
             }
         });
@@ -275,47 +310,48 @@
             const conflictMsg = item.conflictMessage || '';
 
             const el = document.createElement('div');
-            el.className = `p-6 rounded-2xl border transition-all relative flex flex-col md:flex-row gap-6 items-start md:items-center ${hasConflict ? 'bg-red-500/10 border-red-500/50' : 'bg-[#353535] border-white/10 hover:border-white/20'}`;
+            // Light Theme Row
+            el.className = `p-6 rounded-2xl border transition-all relative flex flex-col md:flex-row gap-6 items-start md:items-center shadow-sm hover:shadow-lg backdrop-blur-md ${hasConflict ? 'bg-red-50/90 border-red-200' : 'bg-white/70 border-white/60 hover:border-gray-200'}`;
             
-            let imgHTML = `<div class="w-24 h-24 rounded-xl bg-black border border-white/5 flex items-center justify-center overflow-hidden shrink-0"><i class="fas fa-image text-gray-600"></i></div>`;
+            let imgHTML = `<div class="w-24 h-24 rounded-xl bg-gray-200 border border-gray-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner"><i class="fas fa-image text-gray-300 text-2xl"></i></div>`;
             if (item.image) {
-                imgHTML = `<div class="w-24 h-24 rounded-xl bg-black border border-white/5 flex items-center justify-center overflow-hidden shrink-0"><img src="${item.image}" class="w-full h-full object-contain"></div>`;
+                imgHTML = `<div class="w-24 h-24 rounded-xl bg-gray-200 border border-gray-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner p-2"><img src="${item.image}" class="w-full h-full object-contain mix-blend-multiply"></div>`;
             }
 
             let warningHTML = '';
             if (hasConflict) {
                 warningHTML = `
-                <div class="mt-2 text-xs text-red-400 font-bold bg-red-500/10 px-3 py-1.5 rounded-lg inline-flex items-center gap-2">
-                    <i class="fas fa-times-circle"></i>
+                <div class="mt-3 text-xs text-red-600 font-bold bg-white px-3 py-1.5 rounded-lg inline-flex items-center gap-2 border border-red-100 shadow-sm">
+                    <i class="fas fa-times-circle text-red-500"></i>
                     ${conflictMsg || "ไม่ว่าง (Not Available)"}
                 </div>`;
             }
 
             el.innerHTML = `
                 ${imgHTML}
-                <div class="flex-1 w-full">
+                <div class="flex-1 w-full relative z-10">
                     <div class="flex justify-between items-start">
                         <div>
-                            <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">${item.type || 'Equipment'}</div>
-                            <h4 class="text-xl font-bold text-white leading-tight">${item.name}</h4>
-                            <div class="text-mcot-orange font-mono text-sm mt-1">฿${parseFloat(item.price).toLocaleString()} <span class="text-gray-500">/ วัน</span></div>
+                            <div class="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-1.5">${item.type || 'Equipment'}</div>
+                            <h4 class="text-xl font-extrabold text-gray-900 leading-tight mb-1">${item.name}</h4>
+                            <div class="text-mcot-orange font-mono font-bold text-sm bg-orange-50 inline-block px-2 py-0.5 rounded border border-orange-100">฿${parseFloat(item.price).toLocaleString()} <span class="text-gray-500 font-medium">/ วัน</span></div>
                         </div>
-                        <button onclick="removeItem(${index})" class="text-gray-500 hover:text-red-400 transition-colors p-2">
-                            <i class="fas fa-times"></i>
+                        <button onclick="removeItem(${index})" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-red-50 text-gray-400 hover:text-red-500 border border-gray-100 hover:border-red-200 transition-all flex items-center justify-center shadow-sm">
+                            <i class="fas fa-times text-xs"></i>
                         </button>
                     </div>
 
                     ${warningHTML}
 
-                    <div class="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
-                        <div class="flex items-center bg-[#2A2A2A] rounded-lg border border-white/10 p-1">
-                            <button onclick="updateQty(${index}, -1)" class="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors"><i class="fas fa-minus text-xs"></i></button>
-                            <span class="w-10 text-center text-sm font-bold text-white font-mono">${item.quantity}</span>
-                            <button onclick="updateQty(${index}, 1)" class="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors" ${hasConflict ? 'disabled' : ''}><i class="fas fa-plus text-xs"></i></button>
+                    <div class="flex items-center justify-between mt-5 pt-5 border-t border-gray-100">
+                        <div class="flex items-center bg-gray-200 rounded-xl border border-gray-200 p-1 shadow-inner">
+                            <button onclick="updateQty(${index}, -1)" class="w-8 h-8 flex items-center justify-center bg-white hover:bg-gray-200 border border-gray-100 rounded-lg text-gray-500 hover:text-gray-900 transition-colors shadow-sm"><i class="fas fa-minus text-xs"></i></button>
+                            <span class="w-12 text-center text-sm font-extrabold text-gray-900 font-mono">${item.quantity}</span>
+                            <button onclick="updateQty(${index}, 1)" class="w-8 h-8 flex items-center justify-center bg-white hover:bg-gray-200 border border-gray-100 rounded-lg text-gray-500 hover:text-gray-900 transition-colors shadow-sm" ${hasConflict ? 'disabled' : ''}><i class="fas fa-plus text-xs"></i></button>
                         </div>
                         <div class="text-right">
-                             <span class="block text-lg font-bold text-white font-mono">฿${((parseFloat(item.price)||0) * (parseInt(item.quantity)||1) * rentalDays).toLocaleString()}</span>
-                             <span class="text-[10px] text-gray-500">รวม ${rentalDays} วัน</span>
+                             <span class="block text-xl font-black text-gray-900 font-mono tracking-tighter">฿${((parseFloat(item.price)||0) * (parseInt(item.quantity)||1) * rentalDays).toLocaleString()}</span>
+                             <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">รวม ${rentalDays} วัน</span>
                         </div>
                     </div>
                 </div>
@@ -337,8 +373,9 @@
                     icon: 'info',
                     title: 'จำนวนสูงสุด',
                     text: `คุณสามารถจองได้สูงสุด ${max} ชิ้น`,
-                    background: '#1e1e1e',
-                    color: '#fff'
+                    customClass: {
+                        popup: 'swal2-glass-light'
+                    }
                  });
                  return;
             }
@@ -355,12 +392,13 @@
             text: "คุณต้องการลบสินค้านี้ออกจากตะกร้าหรือไม่?",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#333',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#e5e7eb',
             confirmButtonText: 'ลบรายการ',
-            cancelButtonText: 'ยกเลิก',
-            background: '#1e1e1e',
-            color: '#fff'
+            cancelButtonText: '<span style="color:#374151">ยกเลิก</span>',
+            customClass: {
+                popup: 'swal2-glass-light'
+            }
         }).then((result) => {
             if (result.isConfirmed) {
                 cartItems.splice(index, 1);
@@ -375,8 +413,9 @@
                   showConfirmButton: false,
                   timer: 3000,
                   timerProgressBar: true,
-                  background: '#1e1e1e',
-                  color: '#fff',
+                  customClass: {
+                      popup: 'swal2-glass-light'
+                  },
                   didOpen: (toast) => {
                     toast.addEventListener('mouseenter', Swal.stopTimer)
                     toast.addEventListener('mouseleave', Swal.resumeTimer)
@@ -419,8 +458,8 @@
                      document.getElementById('discount-row').classList.remove('hidden');
                      document.getElementById('discount-amount').innerText = `-฿${currentDiscount.toLocaleString()}`;
                      
-                     promoMessageDiv.innerHTML = data.messages.join('<br>');
-                     promoMessageDiv.className = 'text-[10px] mt-1 text-green-400 block';
+                     promoMessageDiv.innerHTML = '<i class="fas fa-check-circle"></i> ' + data.messages.join('<br>');
+                     promoMessageDiv.className = 'text-[10px] mt-2 font-bold text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100 block';
                  } else {
                      document.getElementById('discount-row').classList.add('hidden');
                      promoMessageDiv.className = 'hidden';
@@ -431,8 +470,8 @@
                  document.getElementById('discount-row').classList.add('hidden');
                  
                  if (promoInput) {
-                     promoMessageDiv.innerText = data.message;
-                     promoMessageDiv.className = 'text-[10px] mt-1 text-red-400 block';
+                     promoMessageDiv.innerHTML = '<i class="fas fa-times-circle"></i> ' + data.message;
+                     promoMessageDiv.className = 'text-[10px] mt-2 font-bold text-red-600 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 block';
                  }
             }
         } catch (e) {
@@ -554,7 +593,7 @@
                 title: 'ไม่พบวันที่เช่า',
                 text: 'กรุณาเลือกวันที่จากหน้าสินค้าก่อน',
                 customClass: {
-                    popup: 'swal2-glass'
+                    popup: 'swal2-glass-light'
                 }
             });
             return;
@@ -566,7 +605,7 @@
                 title: 'สินค้าไม่ว่าง',
                 text: 'มีสินค้าบางรายการถูกจองเต็มแล้ว กรุณาลบออกก่อนยืนยัน',
                 customClass: {
-                    popup: 'swal2-glass'
+                    popup: 'swal2-glass-light'
                 }
             });
             return;
@@ -579,7 +618,7 @@
                 title: 'ข้อมูลไม่ครบถ้วน',
                 text: 'กรุณากรอกเบอร์โทรศัพท์ติดต่อ',
                 customClass: {
-                    popup: 'swal2-glass'
+                    popup: 'swal2-glass-light'
                 }
             });
             document.getElementById('contact-phone').focus();
@@ -593,7 +632,7 @@
                 title: 'เบอร์โทรศัพท์ไม่ถูกต้อง',
                 text: 'กรุณากรอกเฉพาะตัวเลขและเครื่องหมาย (-, +) เท่านั้น',
                 customClass: {
-                    popup: 'swal2-glass'
+                    popup: 'swal2-glass-light'
                 }
             });
             document.getElementById('contact-phone').focus();
@@ -639,7 +678,7 @@
                     title: 'จองสำเร็จ!',
                     text: 'รหัสใบจอง #' + data.booking_id,
                     customClass: {
-                        popup: 'swal2-glass'
+                        popup: 'swal2-glass-light'
                     },
                     timer: 2000,
                     showConfirmButton: false
@@ -658,7 +697,7 @@
                     title: 'จองไม่สำเร็จ',
                     text: errorMsg,
                     customClass: {
-                        popup: 'swal2-glass'
+                        popup: 'swal2-glass-light'
                     }
                 });
                 
@@ -673,7 +712,7 @@
                 title: 'ข้อผิดพลาดระบบ',
                 text: 'เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่',
                 customClass: {
-                    popup: 'swal2-glass'
+                    popup: 'swal2-glass-light'
                 }
             });
             checkoutBtn.disabled = false;

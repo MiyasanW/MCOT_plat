@@ -12,72 +12,72 @@
         
         <!-- Header -->
         <div class="text-center mb-12">
-            <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-mcot-orange to-red-600 mb-6 shadow-lg shadow-orange-500/30">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-mcot-orange to-red-600 mb-6 shadow-lg shadow-orange-500/30 border border-white/50">
                 <i class="fas fa-history text-3xl text-white"></i>
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight drop-shadow-sm">
                 ประวัติอุปกรณ์
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-mcot-orange to-yellow-400">Equipment History</span>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-mcot-orange to-red-500">Equipment History</span>
             </h1>
-            <p class="text-gray-400 text-lg font-light max-w-xl mx-auto">
+            <p class="text-gray-600 text-lg font-medium max-w-xl mx-auto">
                 ตรวจสอบไทม์ไลน์การใช้งานย้อนหลัง ใครเบิก? ใช้โปรเจคไหน? สถานะเป็นอย่างไร?
             </p>
         </div>
 
         <!-- Main Card -->
-        <div class="bg-[#1e1e1e]/80 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden relative group">
+        <div class="bg-white/60 backdrop-blur-xl border border-white/60 rounded-3xl shadow-xl overflow-hidden relative group">
             
             <!-- Glow Border -->
-            <div class="absolute inset-0 border border-white/5 rounded-3xl pointer-events-none"></div>
-            <div class="absolute -inset-0.5 bg-gradient-to-r from-mcot-orange/20 to-mcot-purple/20 rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+            <div class="absolute inset-0 border border-white/50 rounded-3xl pointer-events-none"></div>
+            <div class="absolute -inset-0.5 bg-gradient-to-r from-mcot-orange/10 to-purple-500/10 rounded-3xl blur opacity-50 group-hover:opacity-100 transition duration-1000"></div>
 
-            <div class="p-8 md:p-10 relative bg-[#151515]">
+            <div class="p-8 md:p-10 relative bg-white/50">
                 
                 <!-- Search Form -->
                 <form method="get" action="{% url 'store:equipment_history_search' %}" class="space-y-8">
                     
                     <!-- Option 1: Search by Text -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-2 ml-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1">
                             ค้นหาด้วยรหัส (Search by ID)
                         </label>
                         <div class="relative group/input">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <i class="fas fa-search text-gray-500 group-focus-within/input:text-mcot-orange transition-colors"></i>
+                                <i class="fas fa-search text-gray-400 group-focus-within/input:text-mcot-orange transition-colors"></i>
                             </div>
                             <input type="text" name="q" 
                                    value="{{ query|default:'' }}"
-                                   class="w-full bg-[#0a0a0a] text-white border border-white/10 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:border-mcot-orange/50 focus:ring-1 focus:ring-mcot-orange/50 transition-all placeholder-gray-600 shadow-inner"
+                                   class="w-full bg-white/80 text-gray-900 border border-gray-200 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:bg-white focus:border-mcot-orange/50 focus:ring-1 focus:ring-mcot-orange/50 transition-all placeholder-gray-400 shadow-sm"
                                    placeholder="Serial No., Asset Tag, หรือรหัสครุภัณฑ์...">
                         </div>
                     </div>
 
                     <div class="relative flex py-2 items-center">
-                        <div class="flex-grow border-t border-white/5"></div>
-                        <span class="flex-shrink-0 mx-4 text-gray-600 text-xs uppercase tracking-widest font-semibold">OR SELECT PRODUCT</span>
-                        <div class="flex-grow border-t border-white/5"></div>
+                        <div class="flex-grow border-t border-gray-200"></div>
+                        <span class="flex-shrink-0 mx-4 text-gray-500 text-xs uppercase tracking-widest font-bold">OR SELECT PRODUCT</span>
+                        <div class="flex-grow border-t border-gray-200"></div>
                     </div>
 
                     <!-- Option 2: Select Dropdown -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-2 ml-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1">
                             เลือกจากชื่ออุปกรณ์ (Select by Name)
                         </label>
                         <div class="relative group/select">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <i class="fas fa-box text-gray-500 group-focus-within/select:text-mcot-orange transition-colors"></i>
+                                <i class="fas fa-box text-gray-400 group-focus-within/select:text-mcot-orange transition-colors"></i>
                             </div>
                             <select name="product" onchange="this.form.submit()"
-                                    class="w-full bg-[#0a0a0a] text-white border border-white/10 rounded-xl py-4 pl-12 pr-10 focus:outline-none focus:border-mcot-orange/50 focus:ring-1 focus:ring-mcot-orange/50 transition-all appearance-none cursor-pointer hover:border-white/20 shadow-inner">
+                                    class="w-full bg-white/80 text-gray-900 border border-gray-200 rounded-xl py-4 pl-12 pr-10 focus:outline-none focus:bg-white focus:border-mcot-orange/50 focus:ring-1 focus:ring-mcot-orange/50 transition-all appearance-none cursor-pointer hover:border-gray-300 shadow-sm font-medium">
                                 <option value="" selected disabled>-- คลิกเพื่อเลือกอุปกรณ์ --</option>
                                 {% for p in products %}
-                                    <option value="{{ p.id }}" class="bg-[#1e1e1e]" {% if selected_product == p.id %}selected{% endif %}>
+                                    <option value="{{ p.id }}" class="bg-white text-gray-900" {% if selected_product == p.id %}selected{% endif %}>
                                         {{ p.name }}
                                     </option>
                                 {% endfor %}
                             </select>
                             <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                <i class="fas fa-chevron-down text-xs text-gray-600"></i>
+                                <i class="fas fa-chevron-down text-xs text-gray-400"></i>
                             </div>
                         </div>
                     </div>
@@ -94,48 +94,48 @@
         <!-- Results Area -->
         {% if query or selected_product %}
         <div class="mt-12 animate-fade-in-up">
-            <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                 <i class="fas fa-list-ul text-mcot-orange"></i>
-                ผลการค้นหา <span class="text-gray-500 text-base font-normal">({{ equipments.count }} items found)</span>
+                ผลการค้นหา <span class="text-gray-500 text-base font-medium">({{ equipments.count }} items found)</span>
             </h3>
 
             {% if equipments %}
                 <div class="grid gap-4">
                     {% for item in equipments %}
                     <a href="{% url 'store:equipment_history_detail' item.id %}" 
-                       class="group block bg-[#1e1e1e] border border-white/5 hover:border-mcot-orange/50 rounded-2xl p-5 transition-all hover:bg-[#252525] hover:shadow-lg hover:shadow-orange-900/10 relative overflow-hidden">
+                       class="group block bg-white/80 border border-gray-200 hover:border-mcot-orange/50 rounded-2xl p-5 transition-all hover:bg-white hover:shadow-lg shadow-sm relative overflow-hidden backdrop-blur-md">
                         
                         <div class="flex items-center justify-between relative z-10">
                             <div class="flex items-center gap-5">
                                 <!-- Icon/Image Placeholder -->
-                                <div class="w-12 h-12 rounded-lg bg-[#0a0a0a] border border-white/5 flex items-center justify-center text-gray-600 group-hover:text-white group-hover:bg-mcot-orange/10 transition-colors">
+                                <div class="w-12 h-12 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400 group-hover:text-mcot-orange group-hover:bg-mcot-orange/10 transition-colors shadow-inner">
                                     <i class="fas fa-video text-lg"></i>
                                 </div>
 
                                 <div>
-                                    <h4 class="text-lg font-bold text-gray-200 group-hover:text-mcot-orange transition-colors">
+                                    <h4 class="text-lg font-bold text-gray-900 group-hover:text-mcot-orange transition-colors">
                                         {{ item.product.name }}
                                     </h4>
-                                    <div class="flex flex-wrap gap-3 mt-1 text-xs text-gray-500 font-mono">
-                                        <span class="bg-black/30 px-2 py-1 rounded">SN: {{ item.serial_number }}</span>
+                                    <div class="flex flex-wrap gap-3 mt-1 text-xs text-gray-500 font-mono font-medium">
+                                        <span class="bg-gray-100 px-2 py-1 rounded shadow-inner">SN: {{ item.serial_number }}</span>
                                         {% if item.inventory_number %}
-                                        <span class="bg-black/30 px-2 py-1 rounded">INV: {{ item.inventory_number }}</span>
+                                        <span class="bg-gray-100 px-2 py-1 rounded shadow-inner">INV: {{ item.inventory_number }}</span>
                                         {% endif %}
                                         {% if item.asset_tag %}
-                                        <span class="bg-black/30 px-2 py-1 rounded">TAG: {{ item.asset_tag }}</span>
+                                        <span class="bg-gray-100 px-2 py-1 rounded shadow-inner">TAG: {{ item.asset_tag }}</span>
                                         {% endif %}
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="flex items-center gap-4">
-                                <span class="hidden sm:inline-block px-3 py-1 rounded-full text-xs font-bold 
-                                    {% if item.status == 'available' %}bg-green-500/10 text-green-500 border border-green-500/20
-                                    {% elif item.status == 'maintenance' %}bg-yellow-500/10 text-yellow-500 border border-yellow-500/20
-                                    {% else %}bg-red-500/10 text-red-500 border border-red-500/20{% endif %}">
+                                <span class="hidden sm:inline-block px-3 py-1 rounded-full text-xs font-bold shadow-sm
+                                    {% if item.status == 'available' %}bg-green-50 text-green-600 border border-green-200
+                                    {% elif item.status == 'maintenance' %}bg-yellow-50 text-yellow-600 border border-yellow-200
+                                    {% else %}bg-red-50 text-red-600 border border-red-200{% endif %}">
                                     {{ item.get_status_display }}
                                 </span>
-                                <i class="fas fa-chevron-right text-gray-600 group-hover:text-white transition-colors transform group-hover:translate-x-1"></i>
+                                <i class="fas fa-chevron-right text-gray-400 group-hover:text-mcot-orange transition-colors transform group-hover:translate-x-1"></i>
                             </div>
                         </div>
 
@@ -143,12 +143,12 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <div class="bg-[#1e1e1e] border border-white/5 rounded-2xl p-10 text-center">
-                    <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-search text-gray-600 text-2xl"></i>
+                <div class="bg-white/80 backdrop-blur-md border border-gray-200 rounded-2xl p-10 text-center shadow-sm">
+                    <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200 shadow-inner">
+                        <i class="fas fa-search text-gray-400 text-2xl"></i>
                     </div>
-                    <h3 class="text-white font-bold text-lg mb-2">ไม่พบข้อมูล</h3>
-                    <p class="text-gray-500">ไม่พบอุปกรณ์ที่ตรงกับเงื่อนไขการค้นหา</p>
+                    <h3 class="text-gray-900 font-bold text-lg mb-2">ไม่พบข้อมูล</h3>
+                    <p class="text-gray-500 font-medium">ไม่พบอุปกรณ์ที่ตรงกับเงื่อนไขการค้นหา</p>
                 </div>
             {% endif %}
         </div>

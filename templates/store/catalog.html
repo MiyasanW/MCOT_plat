@@ -6,139 +6,153 @@
 {% block title %}Catalog | MCOT Rental{% endblock %}
 
 {% block content %}
-<!-- Industrial Catalog Header -->
-<div class="bg-[#353535] border-b border-white/10 py-8 mb-8">
-    <div class="max-w-[1600px] mx-auto px-4 flex flex-col md:flex-row justify-between items-end gap-6">
+<!-- Light Glassmorphism Background Pattern -->
+<div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+    <div class="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-mcot-orange/5 rounded-full blur-[100px]"></div>
+    <div class="absolute bottom-[-10%] left-[-5%] w-[800px] h-[800px] bg-mcot-purple/5 rounded-full blur-[120px]"></div>
+</div>
+
+<!-- Header (Dark Framing Continued from Navbar) -->
+<div class="bg-white/80 backdrop-blur-md border-b border-gray-200 py-10 relative overflow-hidden shadow-sm">
+    <div class="absolute top-0 right-1/4 w-96 h-96 bg-mcot-orange/10 rounded-full blur-[80px] pointer-events-none"></div>
+    <div class="max-w-[1600px] mx-auto px-6 flex flex-col md:flex-row justify-between items-end gap-6 relative z-10">
         <div>
-            <div class="flex items-center gap-2 text-xs text-gray-500 uppercase mb-2">
-                <a href="/" class="hover:text-white">{% trans "Home" %}</a> <i class="fas fa-chevron-right text-[8px]"></i>
-                <span class="text-mcot-orange">{% trans "Catalog" %}</span>
+            <div class="flex items-center gap-2 text-xs text-gray-500 uppercase tracking-widest mb-3">
+                <a href="/" class="hover:text-gray-900 transition-colors">{% trans "Home" %}</a> <i class="fas fa-chevron-right text-[8px] text-mcot-orange"></i>
+                <span class="text-gray-900 font-bold">{% trans "Catalog" %}</span>
             </div>
-            <h1 class="text-3xl font-bold text-white font-display">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 font-display mb-2 drop-shadow-sm">
                 {% if active_category %}
                 {{ active_category.name }}
                 {% else %}
                 {% trans "All Equipment" %}
                 {% endif %}
             </h1>
-            <p class="text-gray-400 text-sm mt-1">{% trans "Showing" %} {{ products|length }} {% trans "professional items in stock." %}</p>
+            <p class="text-gray-500 text-sm">{% trans "Showing" %} <span class="text-gray-900 font-bold">{{ products|length }}</span> {% trans "professional items in stock." %}</p>
         </div>
 
-        <!-- Date Filter (Prominent & Functional) -->
+        <!-- Date Filter (Light Glass in Header) -->
         <form id="date-filter-form" method="get" action="{% url 'store:catalog' %}"
-            class="flex items-center gap-4 bg-[#252525] p-4 rounded-xl border border-mcot-orange/50 shadow-[0_0_15px_rgba(242,101,34,0.15)] relative overflow-hidden group">
-
-            <!-- Glow Effect -->
-            <div
-                class="absolute top-0 right-0 w-20 h-full bg-gradient-to-l from-mcot-orange/10 to-transparent pointer-events-none">
-            </div>
+            class="flex items-center gap-4 bg-white/90 backdrop-blur-md p-4 rounded-2xl border border-gray-200 shadow-md relative overflow-hidden group">
+            
+            <div class="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white to-transparent pointer-events-none"></div>
 
             {% if active_category %}<input type="hidden" name="category" value="{{ active_category.slug }}">{% endif %}
             {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}">{% endif %}
 
-            <div class="flex items-center gap-3 text-mcot-orange px-2 border-r border-white/10 pr-4">
-                <i class="fas fa-calendar-check text-xl"></i>
+            <div class="flex items-center gap-3 text-gray-900 px-2 border-r border-gray-200 pr-5">
+                <div class="w-10 h-10 rounded-full bg-mcot-orange/10 flex items-center justify-center border border-mcot-orange/20">
+                    <i class="fas fa-calendar-check text-mcot-orange"></i>
+                </div>
                 <div class="flex flex-col">
-                    <span class="text-[10px] text-gray-400 uppercase tracking-widest leading-none">{% trans "Check" %}</span>
+                    <span class="text-[10px] text-gray-500 uppercase tracking-widest leading-none mb-1">{% trans "Check" %}</span>
                     <span class="text-sm font-bold uppercase tracking-wide leading-none">{% trans "Availability" %}</span>
                 </div>
             </div>
 
-            <div class="flex items-center gap-2">
-                <input type="date" id="start-date-filter" name="start_date" value="{{ selected_start_date|default:'' }}"
-                    class="bg-[#1A1A1A] border border-white/20 text-white text-sm px-3 py-2 rounded focus:border-mcot-orange outline-none font-mono placeholder-gray-600 transition-colors">
-                <span class="text-gray-500 font-light px-1">{% trans "to" %}</span>
-                <input type="date" id="end-date-filter" name="end_date" value="{{ selected_end_date|default:'' }}"
-                    class="bg-[#1A1A1A] border border-white/20 text-white text-sm px-3 py-2 rounded focus:border-mcot-orange outline-none font-mono placeholder-gray-600 transition-colors">
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <i class="fas fa-play absolute left-3 top-1/2 -translate-y-1/2 text-[8px] text-mcot-orange"></i>
+                    <input type="date" id="start-date-filter" name="start_date" value="{{ selected_start_date|default:'' }}"
+                        class="bg-gray-50 border border-gray-200 text-gray-900 text-sm pl-8 pr-3 py-2.5 rounded-xl focus:border-mcot-orange focus:ring-1 focus:ring-mcot-orange outline-none font-mono placeholder-gray-400 transition-all shadow-inner">
+                </div>
+                <span class="text-gray-500 font-medium px-1">{% trans "to" %}</span>
+                <div class="relative">
+                    <i class="fas fa-stop absolute left-3 top-1/2 -translate-y-1/2 text-[8px] text-gray-500"></i>
+                    <input type="date" id="end-date-filter" name="end_date" value="{{ selected_end_date|default:'' }}"
+                        class="bg-gray-50 border border-gray-200 text-gray-900 text-sm pl-8 pr-3 py-2.5 rounded-xl focus:border-mcot-orange focus:ring-1 focus:ring-mcot-orange outline-none font-mono placeholder-gray-400 transition-all shadow-inner">
+                </div>
             </div>
 
             <button type="submit"
-                class="ml-2 bg-mcot-orange hover:bg-orange-600 text-white border border-transparent px-6 py-2 rounded font-bold uppercase text-xs tracking-wider shadow-lg hover:shadow-orange-500/50 transition-all transform hover:-translate-y-0.5">
+                class="ml-2 bg-mcot-orange hover:bg-orange-600 text-white px-6 py-2.5 rounded-xl font-bold uppercase text-xs tracking-wider shadow-lg shadow-orange-500/30 transition-all transform hover:-translate-y-0.5">
                 {% trans "Update" %}
             </button>
         </form>
     </div>
 </div>
 
-<div class="max-w-[1600px] mx-auto px-4 min-h-screen pb-20">
+<div class="max-w-[1600px] mx-auto px-6 min-h-[60vh] py-10">
+    <div class="flex flex-col lg:flex-row gap-8">
 
-    <div class="flex flex-col md:flex-row gap-8">
-
-        <!-- Sidebar Filters (Industrial Style) -->
-        <aside class="w-full md:w-64 shrink-0 space-y-8">
-            <!-- Categories -->
-            <div class="border border-white/10 bg-[#353535]">
-
+        <!-- Sidebar Filters (Light Frosted Glass) -->
+        <aside class="w-full lg:w-72 shrink-0 space-y-6">
+            
+            <div class="bg-white/60 backdrop-blur-md shadow-xl border border-white/60 rounded-3xl overflow-hidden relative">
                 <!-- 1. Studios Section -->
-                <h3
-                    class="bg-[#404040] px-4 py-3 text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 flex items-center gap-2">
-                    <i class="fas fa-door-open text-mcot-orange"></i> {% trans "Studios" %}
+                <h3 class="bg-gray-200/50 px-5 py-4 text-xs font-bold text-gray-900 uppercase tracking-widest border-b border-gray-100 flex items-center gap-3">
+                    <div class="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center text-purple-600"><i class="fas fa-door-open text-[10px]"></i></div>
+                    {% trans "Studios" %}
                 </h3>
-                <ul class="divide-y divide-white/5 border-b border-white/10">
+                <ul class="border-b border-gray-100 px-2 py-2">
                     <li>
                         <a href="{% url 'store:studio_list' %}"
-                            class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors [color-scheme:dark]">
+                            class="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:text-purple-600 hover:bg-purple-50 transition-colors">
                             <span>{% trans "All Studios" %}</span>
-                            <i class="fas fa-chevron-right text-[10px]"></i>
+                            <i class="fas fa-chevron-right text-[10px] opacity-50"></i>
                         </a>
                     </li>
                 </ul>
 
                 <!-- 2. Equipment Section -->
-                <h3
-                    class="bg-[#404040] px-4 py-3 text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 flex items-center gap-2">
-                    <i class="fas fa-video text-mcot-orange"></i> {% trans "Equipment" %}
+                <h3 class="bg-gray-200/50 px-5 py-4 text-xs font-bold text-gray-900 uppercase tracking-widest border-b border-gray-100 flex items-center gap-3 transition-colors pt-6 border-t font-display">
+                    <div class="w-6 h-6 rounded-full bg-mcot-orange/20 flex items-center justify-center text-mcot-orange"><i class="fas fa-video text-[10px]"></i></div>
+                    {% trans "Equipment" %}
                 </h3>
-                <ul class="divide-y divide-white/5 border-b border-white/10">
+                <ul class="border-b border-gray-100 px-2 py-2">
                     <li>
                         <a href="{% url 'store:catalog' %}"
-                            class="flex items-center justify-between px-4 py-2.5 text-sm {% if not active_category and not search_query %}text-white bg-white/5 border-l-2 border-mcot-orange{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %} transition-colors [color-scheme:dark]">
+                            class="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium {% if not active_category and not search_query %}text-mcot-orange bg-mcot-orange/10 font-bold{% else %}text-gray-600 hover:text-mcot-orange hover:bg-orange-50{% endif %} transition-colors">
                             <span>{% trans "All Equipment" %}</span>
+                            {% if not active_category and not search_query %}<i class="fas fa-check text-[10px]"></i>{% endif %}
                         </a>
                     </li>
                     {% for cat in equipment_categories %}
                     <li>
                         <a href="{% url 'store:catalog' %}?category={{ cat.slug }}"
-                            class="flex items-center justify-between px-4 py-2.5 text-sm {% if active_category.id == cat.id %}text-white bg-white/5 border-l-2 border-mcot-orange{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %} transition-colors [color-scheme:dark]">
+                            class="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium {% if active_category.id == cat.id %}text-mcot-orange bg-mcot-orange/10 font-bold{% else %}text-gray-600 hover:text-mcot-orange hover:bg-orange-50{% endif %} transition-colors">
                             <span>{{ cat.name }}</span>
+                            {% if active_category.id == cat.id %}<i class="fas fa-check text-[10px]"></i>{% endif %}
                         </a>
                     </li>
                     {% endfor %}
                 </ul>
 
                 <!-- 3. Services Section -->
-                <h3
-                    class="bg-[#404040] px-4 py-3 text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 flex items-center gap-2">
-                    <i class="fas fa-tools text-mcot-orange"></i> {% trans "Services" %}
+                <h3 class="bg-gray-200/50 px-5 py-4 text-xs font-bold text-gray-900 uppercase tracking-widest border-b border-gray-100 flex items-center gap-3 transition-colors pt-6 border-t font-display">
+                    <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><i class="fas fa-tools text-[10px]"></i></div>
+                    {% trans "Services" %}
                 </h3>
-                <ul class="divide-y divide-white/5">
+                <ul class="px-2 py-2">
                     <li>
                         <a href="{% url 'store:service_list' %}"
-                            class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors [color-scheme:dark]">
+                            class="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                             <span>{% trans "Service Overview" %}</span>
-                            <i class="fas fa-chevron-right text-[10px]"></i>
+                            <i class="fas fa-chevron-right text-[10px] opacity-50"></i>
                         </a>
                     </li>
                     {% for cat in service_categories %}
                     <li>
                         <a href="{% url 'store:catalog' %}?category={{ cat.slug }}"
-                            class="flex items-center justify-between px-4 py-2.5 text-sm {% if active_category.id == cat.id %}text-white bg-white/5 border-l-2 border-mcot-orange{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %} transition-colors [color-scheme:dark]">
+                            class="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium {% if active_category.id == cat.id %}text-blue-600 bg-blue-50 font-bold{% else %}text-gray-600 hover:text-blue-600 hover:bg-blue-50{% endif %} transition-colors">
                             <span>{{ cat.name }}</span>
+                            {% if active_category.id == cat.id %}<i class="fas fa-check text-[10px]"></i>{% endif %}
                         </a>
                     </li>
                     {% endfor %}
                 </ul>
             </div>
 
-            <!-- Price Range (Simple) -->
-            <div class="border border-white/10 bg-[#353535] p-4">
-                <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4">{% trans "Price Range" %}</h3>
-                <div class="h-1 bg-gray-800 rounded-full mb-4 relative">
-                    <div class="absolute left-0 top-0 h-full bg-mcot-orange w-2/3 rounded-full"></div>
+            <!-- Price Range (Match Card Style) -->
+            <div class="bg-white/60 backdrop-blur-md shadow-lg border border-white/60 rounded-3xl p-6">
+                <h3 class="text-xs font-bold text-gray-900 uppercase tracking-widest mb-4">{% trans "Price Range" %}</h3>
+                <div class="h-1.5 bg-gray-200 rounded-full mb-4 relative shadow-inner">
+                    <div class="absolute left-0 top-0 h-full bg-mcot-orange w-2/3 rounded-full shadow-[0_0_5px_rgba(242,101,34,0.5)]"></div>
+                    <div class="absolute left-2/3 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-mcot-orange rounded-full shadow-md cursor-pointer pointer-events-none"></div>
                 </div>
-                <div class="flex justify-between text-[10px] text-gray-500 font-mono">
-                    <span>{% trans "Min" %}: 0 THB</span>
-                    <span>{% trans "Max" %}: 50,000+</span>
+                <div class="flex justify-between text-[10px] text-gray-500 font-mono font-bold">
+                    <span>{% trans "Min" %}: 0 ฿</span>
+                    <span>{% trans "Max" %}: 50,000+ ฿</span>
                 </div>
             </div>
         </aside>
@@ -146,104 +160,117 @@
         <!-- Product Grid -->
         <main class="flex-1">
             {% if products %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {% for product in products %}
-                <div
-                    class="group bg-[#353535] border border-white/10 hover:border-mcot-orange/50 transition-all duration-200 flex flex-col relative overflow-hidden">
+                <div class="group bg-white/60 backdrop-blur-md border border-white shadow-md hover:shadow-2xl hover:border-gray-200 hover:-translate-y-1 transition-all duration-300 flex flex-col relative rounded-3xl overflow-hidden p-3">
+                    
                     <!-- Image Area -->
-                    <div
-                        class="aspect-[4/3] bg-black relative overflow-hidden flex items-center justify-center p-4 border-b border-white/5 px-6">
+                    <div class="aspect-[4/3] bg-gray-200 border border-gray-100 rounded-2xl relative overflow-hidden flex items-center justify-center p-4">
                         {% if product.image %}
                         <img src="{{ product.image.url }}" alt="{{ product.name }}"
-                            class="max-h-full max-w-full object-contain opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300">
+                            class="max-h-full max-w-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500">
                         {% else %}
-                        <div class="text-gray-700 group-hover:text-gray-500 transition-colors [color-scheme:dark]">
-                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                </path>
-                            </svg>
+                        <div class="text-gray-300">
+                            <i class="fas fa-camera text-4xl"></i>
                         </div>
                         {% endif %}
 
                         <!-- ID Badge -->
-                        <span
-                            class="absolute top-2 right-2 text-[9px] text-gray-600 font-mono bg-black/50 px-1 border border-white/5">
+                        <span class="absolute top-2 right-2 text-[9px] text-gray-500 font-mono bg-white/70 backdrop-blur px-2 py-0.5 rounded shadow-sm border border-gray-200 font-bold z-10">
                             #{{ product.id|stringformat:"04d" }}
                         </span>
+
+                        <!-- Availability Badge -->
+                        <div class="absolute top-2 left-2 z-10">
+                            {% if is_date_filtered %}
+                                {% if product.is_available_for_selected_dates %}
+                                    <span class="flex items-center gap-1 bg-green-500/10 backdrop-blur-md text-green-600 border border-green-500/20 px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider rounded-full shadow-sm">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> {% trans "Available" %}
+                                    </span>
+                                {% else %}
+                                    <span class="flex items-center gap-1 bg-red-500/10 backdrop-blur-md text-red-600 border border-red-500/20 px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider rounded-full shadow-sm">
+                                        <i class="fas fa-times-circle"></i> {% trans "Booked" %}
+                                    </span>
+                                {% endif %}
+                            {% else %}
+                                {% if product.quantity > 0 %}
+                                    <span class="flex items-center gap-1 bg-green-500/10 backdrop-blur-md text-green-600 border border-green-500/20 px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider rounded-full shadow-sm">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> {% trans "Ready to Book" %}
+                                    </span>
+                                {% else %}
+                                    <span class="flex items-center gap-1 bg-gray-500/10 backdrop-blur-md text-gray-500 border border-gray-500/20 px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider rounded-full shadow-sm">
+                                        <i class="fas fa-ban"></i> {% trans "Out of Stock" %}
+                                    </span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Booked Overlay (If Applicable) -->
+                        {% if is_date_filtered and not product.is_available_for_selected_dates %}
+                        <div class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center">
+                            <span class="bg-red-500 text-white font-bold text-xs px-4 py-1.5 rounded-full shadow-lg uppercase tracking-wider transform -rotate-12 border border-white">{% trans "Booked" %}</span>
+                        </div>
+                        {% endif %}
                     </div>
 
                     <!-- Content -->
-                    <div class="p-4 flex-1 flex flex-col">
+                    <div class="px-2 pt-4 pb-2 flex-1 flex flex-col">
                         <div class="mb-3">
-                            <h4
-                                class="text-sm font-bold text-gray-200 leading-tight group-hover:text-mcot-orange truncate transition-colors [color-scheme:dark]">
-                                {{ product.name }}</h4>
-                            <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">
+                            <p class="text-[10px] text-mcot-orange font-bold uppercase tracking-wider mb-1 line-clamp-1">
                                 {{ product.category.name }}
                             </p>
+                            <h4 class="text-sm font-extrabold text-gray-900 leading-snug group-hover:text-mcot-orange line-clamp-2 transition-colors">
+                                {{ product.name }}</h4>
                         </div>
 
-
-
-
-                        <!-- Key Specs (Dynamic) -->
-                        <div class="space-y-1 mb-4 border-t border-b border-white/5 py-2 min-h-[60px]">
-                            {% for spec in product.key_specs %}
-                            <div class="flex items-center gap-2 text-[10px] text-gray-500 font-mono truncate">
-                                <span class="w-1.5 h-1.5 rounded-full bg-mcot-orange/40 shrink-0"></span>
-                                {{ spec|safe }}
-                            </div>
+                        <!-- Key Specs (Clean Tags) -->
+                        <div class="flex flex-wrap gap-1 mb-4 mt-auto border-t border-gray-100 pt-3">
+                            {% for spec in product.key_specs|slice:":3" %}
+                            <span class="text-[9px] bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded truncate max-w-full font-medium">{{ spec|safe }}</span>
                             {% empty %}
-                            <div class="text-[10px] text-gray-600 italic py-1">{% trans "No specs available" %}</div>
+                            <span class="text-[9px] bg-gray-200 text-gray-400 px-1.5 py-0.5 rounded italic">{% trans "No specs available" %}</span>
                             {% endfor %}
                         </div>
 
                         <!-- Price & Action -->
-                        <div class="mt-auto flex items-end justify-between">
+                        <div class="mt-auto flex items-end justify-between items-center relative z-20">
                             <div>
-                                <span class="block text-lg font-bold text-white font-mono">
-                                    ฿{{ product.price|intcomma }}
+                                <span class="block text-lg font-extrabold text-gray-900 flex items-baseline gap-1">
+                                    <span class="text-sm text-gray-500 font-normal">฿</span>{{ product.price|intcomma }}
                                 </span>
-                                <span class="text-[10px] text-gray-500">{% trans "per day" %}</span>
+                                <span class="text-[10px] text-gray-500 font-medium">{% trans "per day" %}</span>
                             </div>
 
-                            <!-- Stock Status -->
-                            {% if is_date_filtered %}
-                            {% if product.is_available_for_selected_dates %}
-                            <span
-                                class="text-[10px] text-green-400 border border-green-400/30 bg-green-400/5 px-2 py-0.5 uppercase tracking-wide">{% trans "Available" %}</span>
-                            {% else %}
-                            <span
-                                class="text-[10px] text-red-500 border border-red-500/30 bg-red-500/5 px-2 py-0.5 uppercase tracking-wide">{% trans "Booked" %}</span>
-                            {% endif %}
-                            {% else %}
-                            {% if product.quantity > 0 %}
-                            <a href="{% url 'store:product_detail' product.id %}{% if selected_start_date and selected_end_date %}?start_date={{ selected_start_date }}&end_date={{ selected_end_date }}{% endif %}"
-                                class="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-mcot-orange text-white hover:text-black transition-colors border border-white/10">
-                                <i class="fas fa-arrow-right text-xs"></i>
-                            </a>
-                            {% else %}
-                            <span class="text-[10px] text-red-500 uppercase">{% trans "Out of Stock" %}</span>
-                            {% endif %}
+                            <!-- Action Button -->
+                            {% if not is_date_filtered or product.is_available_for_selected_dates %}
+                                {% if product.quantity > 0 %}
+                                <a href="{% url 'store:product_detail' product.id %}{% if selected_start_date and selected_end_date %}?start_date={{ selected_start_date }}&end_date={{ selected_end_date }}{% endif %}"
+                                    class="w-10 h-10 flex items-center justify-center bg-gray-200 hover:bg-mcot-orange text-gray-400 hover:text-white rounded-full transition-colors border border-gray-200 hover:border-mcot-orange shadow-sm hover:shadow-lg focus:outline-none">
+                                    <i class="fas fa-arrow-right text-sm"></i>
+                                </a>
+                                {% else %}
+                                <span class="text-[10px] text-red-500 font-bold uppercase bg-red-50 px-2 py-1 rounded border border-red-100">{% trans "Out of Stock" %}</span>
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>
 
-                    <!-- Full Link -->
+                    <!-- Full Clickable Link (Except for Buttons) -->
                     <a href="{% url 'store:product_detail' product.id %}{% if selected_start_date and selected_end_date %}?start_date={{ selected_start_date }}&end_date={{ selected_end_date }}{% endif %}"
-                        class="absolute inset-0 z-10"></a>
+                        class="absolute inset-0 z-0"></a>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
-            <div
-                class="flex flex-col items-center justify-center py-24 border border-white/10 bg-[#151515] text-center">
-                <i class="fas fa-search text-4xl text-gray-600 mb-4"></i>
-                <h3 class="text-white font-bold mb-2">{% trans "No Equipment Found" %}</h3>
-                <p class="text-xs text-gray-500 mb-6">{% trans "Modify your search criteria or clear filters." %}</p>
+            <!-- Empty State -->
+            <div class="flex flex-col items-center justify-center py-32 border-2 border-dashed border-gray-300 bg-white/50 backdrop-blur rounded-3xl text-center shadow-sm">
+                <div class="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-6 border border-gray-200">
+                    <i class="fas fa-search text-3xl text-gray-400"></i>
+                </div>
+                <h3 class="text-xl text-gray-900 font-extrabold mb-2 font-display">{% trans "No Equipment Found" %}</h3>
+                <p class="text-sm text-gray-500 mb-8 max-w-sm">{% trans "We couldn't find any items matching your current filters. Try changing categories or date ranges." %}</p>
                 <a href="{% url 'store:catalog' %}"
-                    class="px-6 py-2 border border-white/20 text-white text-xs uppercase hover:bg-white/5 transition-colors [color-scheme:dark]">{% trans "Clear all filters" %}</a>
+                    class="px-8 py-3 bg-gray-900 hover:bg-black text-white text-xs font-bold uppercase rounded-full shadow-lg transition-transform hover:-translate-y-0.5">{% trans "Clear all filters" %}</a>
             </div>
             {% endif %}
         </main>
@@ -252,25 +279,22 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Initialize Flatpickr with default Today if value is empty
+        // Initialize Flatpickr with dark theme disabled for this input? We import dark.css in base.html globally.
+        // In a light theme, we might want to override flatpickr's style or use the default light CSS, 
+        // but for now, the dark picker works fine (often looks good as high contrast popover).
+        
         const startDateInput = document.getElementById('start-date-filter');
         const endDateInput = document.getElementById('end-date-filter');
-
         const today = new Date().toISOString().split('T')[0];
 
-        if (!startDateInput.value) {
-            startDateInput.value = today;
-        }
-        if (!endDateInput.value) {
-            endDateInput.value = today;
-        }
+        if (!startDateInput.value) startDateInput.value = today;
+        if (!endDateInput.value) endDateInput.value = today;
 
         flatpickr("#start-date-filter", {
             defaultDate: startDateInput.value,
             minDate: "today",
             dateFormat: "Y-m-d",
             onChange: function (selectedDates, dateStr, instance) {
-                // Auto-update end date min
                 const endPicker = document.getElementById('end-date-filter')._flatpickr;
                 if (endPicker) endPicker.set('minDate', dateStr);
             }
