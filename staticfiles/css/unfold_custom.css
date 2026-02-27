@@ -1,0 +1,84 @@
+/* ==========================================================================
+   Unfold Dark Mode Fixes
+   ========================================================================== */
+
+/* Force Dark Backgrounds on problematic elements */
+.note-editor,
+.note-frame,
+.note-editing-area {
+  background-color: #1a1a1a !important;
+  color: #e5e7eb !important;
+  border-color: #374151 !important;
+}
+
+/* Summernote Toolbar Fix */
+.note-toolbar {
+  background-color: #262626 !important;
+  border-bottom: 1px solid #374151 !important;
+}
+
+/* Summernote Editable Area */
+.note-editable {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+/* Fix any remaining white inputs */
+input,
+textarea,
+select,
+.form-control {
+  background-color: #1f2937 !important; /* gray-800 */
+  color: #f3f4f6 !important; /* gray-100 */
+  border: 1px solid #374151 !important; /* gray-700 */
+}
+
+/* Ensure flatpickr (Datepicker) is dark */
+.flatpickr-calendar {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.flatpickr-day {
+  color: #e5e7eb !important;
+}
+
+.flatpickr-day:hover {
+  background: #374151 !important;
+}
+
+.flatpickr-day.selected {
+  background: #2563eb !important; /* blue-600 */
+  border-color: #2563eb !important;
+}
+
+/* Override potential white backgrounds container */
+#changelist-form,
+.results,
+.module,
+.aligned {
+  background-color: transparent !important;
+}
+
+/* Fix Select2 or Similar Dropdowns */
+.select2-container--default .select2-selection--single {
+  background-color: #1f2937 !important;
+  border: 1px solid #374151 !important;
+  color: #f3f4f6 !important;
+}
+
+.select2-dropdown {
+  background-color: #1f2937 !important;
+  border: 1px solid #374151 !important;
+}
+
+.select2-results__option {
+  color: #e5e7eb !important;
+}
+
+.select2-results__option--highlighted {
+  background-color: #374151 !important;
+}
