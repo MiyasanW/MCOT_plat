@@ -155,51 +155,39 @@
                                 <p class="text-[10px] text-mcot-orange mt-3 font-semibold tracking-wide bg-mcot-orange/10 inline-block px-2 py-1 rounded-md"><i class="fas fa-bolt mr-1"></i> รวมค่าไฟและแอร์มาตรฐานแล้ว</p>
                             </div>
 
-                            <!-- Interactive Date Selection -->
-                            <div class="space-y-6 mb-8">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">
-                                        <i class="far fa-calendar-alt text-gray-400 mr-1"></i> วันที่เริ่มต้น (Check-in)
-                                    </label>
-                                    <div class="relative">
-                                        <input type="text" id="studio-start-date" placeholder="เลือกวันที่เริ่มเช่า"
-                                               class="w-full bg-gray-200 border border-gray-200 rounded-xl px-12 py-4 text-gray-900 text-sm font-bold shadow-sm focus:border-mcot-orange focus:ring-1 focus:ring-mcot-orange outline-none transition-all placeholder-gray-400 cursor-pointer">
-                                        <i class="fas fa-calendar-day absolute left-5 top-1/2 -translate-y-1/2 text-mcot-orange pointer-events-none"></i>
+                            <!-- Contact Info Block -->
+                            <div class="space-y-4 mb-8">
+                                <h3 class="text-sm font-bold text-gray-900 mb-4">{% trans "สนใจเช่าสตูดิโอ ติดต่อสอบถามคิวและรายละเอียดได้ที่:" %}</h3>
+                                
+                                <a href="tel:022016000" class="flex items-center gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100 hover:border-mcot-orange transition-colors group">
+                                    <div class="w-10 h-10 rounded-full bg-mcot-orange/10 flex items-center justify-center text-mcot-orange group-hover:bg-mcot-orange group-hover:text-white transition-colors">
+                                        <i class="fas fa-phone-alt"></i>
                                     </div>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">
-                                        <i class="far fa-calendar-alt text-gray-400 mr-1"></i> วันที่สิ้นสุด (Check-out)
-                                    </label>
-                                    <div class="relative">
-                                        <input type="text" id="studio-end-date" placeholder="เลือกวันสิ้นสุด"
-                                               class="w-full bg-gray-200 border border-gray-200 rounded-xl px-12 py-4 text-gray-900 text-sm font-bold shadow-sm focus:border-mcot-orange focus:ring-1 focus:ring-mcot-orange outline-none transition-all placeholder-gray-400 cursor-pointer">
-                                        <i class="fas fa-calendar-check absolute left-5 top-1/2 -translate-y-1/2 text-purple-500 pointer-events-none"></i>
+                                    <div>
+                                        <span class="block text-[10px] font-bold text-gray-500 uppercase">{% trans "ฝ่ายขายองค์กร" %}</span>
+                                        <span class="text-lg font-black text-gray-900 font-mono">02-201-6000</span>
                                     </div>
-                                </div>
+                                </a>
+
+                                <a href="mailto:sales@mcot.net" class="flex items-center gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100 hover:border-blue-500 transition-colors group">
+                                    <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block text-[10px] font-bold text-gray-500 uppercase">{% trans "อีเมล" %}</span>
+                                        <span class="text-sm font-bold text-gray-900">sales@mcot.net</span>
+                                    </div>
+                                </a>
                             </div>
                             
                             <!-- Notice Box -->
-                            <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-8 flex gap-3 text-blue-800 shadow-sm">
+                            <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3 text-blue-800 shadow-sm">
                                 <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
                                 <div class="text-xs leading-relaxed font-medium">
-                                    ระบบจะเพิ่มเวลาจัดเตรียมและทำความสะอาด (Buffer Time) ให้อัตโนมัติ 2 ชั่วโมง ระหว่างคิวจอง เพื่อให้พื้นที่พร้อมใช้งานสำหรับลูกค้าทุกท่าน
+                                    {% trans "เนื่องจากการเช่าสตูดิโอมีรายละเอียดทางเทคนิคที่ต้องพูดคุยเพิ่มเติม (เช่น ระบบไฟฟ้า, คิวงาน) รบกวนติดต่อเจ้าหน้าที่โดยตรง เพื่อการบริการที่สมบูรณ์แบบที่สุดครับ" %}
                                 </div>
                             </div>
 
-                            <!-- CTA Button -->
-                            <button onclick="addStudioToCart('{{ studio.id }}', '{{ studio.name|escapejs }}', {{ studio.daily_rate|default:0 }})"
-                                class="w-full relative group overflow-hidden rounded-xl font-bold text-base uppercase tracking-widest transition-all shadow-xl hover:shadow-2xl">
-                                <div class="absolute inset-0 bg-gradient-to-r from-mcot-orange to-orange-500 transition-transform group-hover:scale-105"></div>
-                                <div class="relative flex items-center justify-center gap-3 py-5 text-white">
-                                    <span>จองพื้นที่นี้</span>
-                                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                                </div>
-                            </button>
-                            
-                            <p class="text-center text-xs text-gray-400 mt-5 font-medium flex items-center justify-center gap-2">
-                                <i class="fas fa-lock text-gray-300"></i> ทำรายการอย่างปลอดภัย (Secure Booking)
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -207,88 +195,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const today = new Date();
-
-        flatpickr("#studio-start-date", {
-            altInput: true,
-            altFormat: "F j, Y",
-            dateFormat: "Y-m-d",
-            minDate: "today",
-            theme: "light", // Changed to light for better consistency, assuming light flatpickr CSS is available globally
-            disableMobile: true,
-            onChange: function (selectedDates, dateStr, instance) {
-                if (selectedDates.length > 0) {
-                    const endDatePicker = document.querySelector("#studio-end-date")._flatpickr;
-                    endDatePicker.set('minDate', dateStr);
-                    // Optionally set default end date if none selected
-                    if (!endDatePicker.selectedDates.length) {
-                        endDatePicker.setDate(dateStr);
-                    }
-                }
-            }
-        });
-
-        flatpickr("#studio-end-date", {
-            altInput: true,
-            altFormat: "F j, Y",
-            dateFormat: "Y-m-d",
-            minDate: "today",
-            theme: "light",
-            disableMobile: true
-        });
-    });
-
-    function addStudioToCart(id, name, price) {
-        try {
-            const startDate = document.getElementById('studio-start-date').value;
-            const endDate = document.getElementById('studio-end-date').value;
-
-            if (!startDate || !endDate) {
-                // Shake the inputs to guide the user visually
-                document.getElementById('studio-start-date').parentElement.classList.add('animate-pulse', 'border', 'border-red-500');
-                document.getElementById('studio-end-date').parentElement.classList.add('animate-pulse', 'border', 'border-red-500');
-                
-                setTimeout(() => {
-                    document.getElementById('studio-start-date').parentElement.classList.remove('animate-pulse', 'border-red-500');
-                    document.getElementById('studio-end-date').parentElement.classList.remove('animate-pulse', 'border-red-500');
-                }, 2000);
-                
-                alert('กรุณาเลือกวันที่ Check-in และ Check-out ก่อนดำเนินการต่อ');
-                return;
-            }
-
-            let cart = JSON.parse(localStorage.getItem('mcot_cart') || '[]');
-            const itemId = 'studio_' + id;
-            const existingIndex = cart.findIndex(item => item.id == itemId);
-
-            if (existingIndex > -1) {
-                cart[existingIndex].quantity = (parseInt(cart[existingIndex].quantity) || 0) + 1;
-            } else {
-                cart.push({
-                    id: itemId,
-                    name: name,
-                    price: price,
-                    type: 'studio',
-                    image: '',
-                    quantity: 1,
-                    dates: { start: startDate, end: endDate }
-                });
-            }
-
-            localStorage.setItem('mcot_cart', JSON.stringify(cart));
-            window.dispatchEvent(new Event('cartUpdated'));
-
-            if (confirm('จองพื้นที่สตูดิโอสำเร็จ! คุณต้องการไปที่หน้าตะกร้าสินค้าเพื่อตรวจสอบหรือไม่?')) {
-                window.location.href = "{% url 'store:cart' %}";
-            }
-
-        } catch (e) {
-            console.error(e);
-            alert("เกิดข้อผิดพลาดในการเพิ่มลงตะกร้าสินค้า");
-        }
-    }
-</script>
 {% endblock %}
