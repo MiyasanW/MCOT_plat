@@ -6,28 +6,9 @@ from apps.store.utils.ratelimit import ratelimit
 @ratelimit(key_prefix='home', rate=30, period=60, block=True)
 def home(request):
     """
-    หน้าแรก (Home Page)
+    หน้าแรก (Home Page) - Version 2 Unified Catalog
     """
-    # 1. Hero Product (Featured)
-    featured_product = Product.objects.filter(is_active=True, is_featured=True).first()
-    if not featured_product:
-        # Fallback if no featured product
-        featured_product = Product.objects.filter(is_active=True).order_by('-price').first()
-
-    # 2. New Arrivals (Latest 4)
-    new_arrivals = Product.objects.filter(is_active=True).order_by('-created_at', '-id')[:4]
-
-    # 3. Facility Status (Live Data) via Service Layer
-    from apps.store.services.dashboard_service import DashboardService
-    queue_status, studio_statuses = DashboardService.get_home_page_stats()
-
-    context = {
-        'featured_product': featured_product,
-        'new_arrivals': new_arrivals,
-        'queue_status': queue_status,
-        'studio_statuses': studio_statuses,
-    }
-    return render(request, 'pages/home.html', context)
+    return render(request, 'pages/landing.html')
 
 @ratelimit(key_prefix='about', rate=30, period=60, block=True)
 def about(request):

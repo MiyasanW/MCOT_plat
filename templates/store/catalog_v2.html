@@ -1,0 +1,393 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}แคตตาล็อกสินค้า — MCOT Rental Platform{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen font-sans text-gray-800" x-data="catalogApp()">
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- HEADER BREADCRUMB STRIP                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="bg-white border-b border-gray-100 sticky top-[88px] z-30">
+        <div class="max-w-[1440px] mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3 text-xs font-medium text-gray-400">
+                <a href="{% url 'store:home' %}" class="hover:text-gray-900 transition-colors">Home</a>
+                <span class="text-gray-300">/</span>
+                <span class="text-gray-900 text-sm font-bold">Catalog</span>
+            </div>
+            
+            <!-- Mobile Filter Toggle -->
+            <button @click="mobileFilterOpen = !mobileFilterOpen" class="lg:hidden flex items-center gap-2 text-xs font-semibold text-gray-900 bg-gray-50 px-4 py-2 rounded-full hover:bg-gray-100 transition-colors border border-gray-200">
+                <i class="fas fa-sliders-h"></i> Filters
+            </button>
+        </div>
+    </div>
+
+    <div class="max-w-[1440px] mx-auto px-6 pt-10 pb-32">
+        <div class="flex flex-col lg:flex-row gap-12 items-start">
+            
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- LEFT SIDEBAR                                -->
+            <!-- ═══════════════════════════════════════════ -->
+            <aside class="w-full lg:w-[260px] shrink-0 lg:sticky lg:top-[160px] z-20 space-y-8" 
+                   :class="{'block': mobileFilterOpen, 'hidden lg:block': !mobileFilterOpen}"
+                   x-data="{ equipOpen: true }">
+
+                <!-- Search -->
+                <div class="relative group">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs transition-colors group-hover:text-gray-600"></i>
+                    <input type="text" x-model="searchQuery" placeholder="Search catalog..." 
+                           class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:bg-white focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all placeholder-gray-400">
+                </div>
+
+                <!-- Navigation List -->
+                <nav class="space-y-1">
+                    <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 px-3">Categories</h3>
+                    
+                    <a href="#studios" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-building text-gray-400 group-hover:text-gray-900 w-4 transition-colors"></i>
+                            <span class="font-medium">Studios</span>
+                        </div>
+                        <span class="text-[10px] text-gray-400">{{ studios|length }}</span>
+                    </a>
+
+                    <a href="#packages" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-box-open text-gray-400 group-hover:text-gray-900 w-4 transition-colors"></i>
+                            <span class="font-medium">Packages</span>
+                        </div>
+                        <span class="text-[10px] text-gray-400">{{ packages|length }}</span>
+                    </a>
+
+                    <!-- Expandable Equipment -->
+                    <div>
+                        <button @click="equipOpen = !equipOpen" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors group">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-camera text-gray-400 group-hover:text-gray-900 w-4 transition-colors"></i>
+                                <span class="font-medium">Equipment</span>
+                            </div>
+                            <i class="fas fa-chevron-down text-[10px] text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': equipOpen }"></i>
+                        </button>
+                        <div x-show="equipOpen" x-collapse>
+                            <div class="pl-10 pr-3 py-1 space-y-0.5">
+                                {% for cat in categories %}
+                                <a href="#cat-{{ cat.slug }}" class="flex items-center justify-between py-1.5 text-xs text-gray-500 hover:text-gray-900 transition-colors">
+                                    <span>{{ cat.name }}</span>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="#services" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-concierge-bell text-gray-400 group-hover:text-gray-900 w-4 transition-colors"></i>
+                            <span class="font-medium">Services</span>
+                        </div>
+                    </a>
+                </nav>
+
+                <!-- CTA Banner (Minimal) -->
+                <div class="mt-8 bg-gray-900 rounded-2xl p-6 text-white text-center">
+                    <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-headset text-gray-300 text-sm"></i>
+                    </div>
+                    <h4 class="text-sm font-semibold mb-2">Need advice?</h4>
+                    <p class="text-xs text-gray-400 mb-5 leading-relaxed">Our experts are ready to help you build the perfect setup.</p>
+                    <a href="{% url 'store:contact' %}" class="block w-full py-2.5 bg-white text-gray-900 text-xs font-bold rounded-lg hover:bg-gray-100 transition-colors">
+                        Contact Us
+                    </a>
+                </div>
+            </aside>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- RIGHT CONTENT: PRODUCT GRIDS                -->
+            <!-- ═══════════════════════════════════════════ -->
+            <main class="w-full flex-grow">
+                
+                <!-- ═══════════════ STUDIOS ═══════════════ -->
+                <section id="studios" class="scroll-mt-32">
+                    <!-- Minimal Header -->
+                    <div class="flex flex-col gap-1 mb-10">
+                        <h2 class="text-3xl font-light tracking-tight text-gray-900">Studios</h2>
+                        <p class="text-sm text-gray-400">Professional recording and broadcasting spaces.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {% for studio in studios %}
+                        <div class="catalog-item group flex flex-col gap-4" data-name="{{ studio.name|lower }}">
+                            <!-- Image -->
+                            <div class="relative aspect-[4/3] bg-gray-100 rounded-xl overflow-hidden">
+                                {% if studio.image %}
+                                <img src="{{ studio.image.url }}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" alt="{{ studio.name }}">
+                                {% else %}
+                                <div class="w-full h-full flex items-center justify-center"><i class="fas fa-building text-gray-300 text-3xl"></i></div>
+                                {% endif %}
+                                <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-gray-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <button @click.prevent.stop="addToCart('{{ studio.id }}', '{{ studio.name }}', {{ studio.daily_rate }}, '{% if studio.image %}{{ studio.image.url }}{% endif %}', 'studio', 99)" class="w-full bg-white/90 backdrop-blur text-gray-900 py-2 rounded-lg text-xs font-bold hover:bg-white transition-colors">
+                                        Book Studio
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Details -->
+                            <div>
+                                <div class="flex items-start justify-between gap-4 mb-1">
+                                    <h3 class="text-base font-semibold text-gray-900">{{ studio.name }}</h3>
+                                    <span class="text-sm font-medium text-gray-900">฿{{ studio.daily_rate|floatformat:0|intcomma }}</span>
+                                </div>
+                                <p class="text-xs text-gray-500 line-clamp-2 leading-relaxed">{{ studio.description|default:"Standard studio space suitable for various productions." }}</p>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-span-full py-16 text-center border border-dashed border-gray-200 rounded-2xl">
+                            <i class="fas fa-building text-gray-300 text-2xl mb-3"></i>
+                            <p class="text-gray-500 text-sm">No studios available.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- Divider -->
+                <div class="my-20 h-px bg-gray-100"></div>
+
+                <!-- ═══════════════ PACKAGES ═══════════════ -->
+                <section id="packages" class="scroll-mt-32">
+                    <div class="flex flex-col gap-1 mb-10">
+                        <h2 class="text-3xl font-light tracking-tight text-gray-900">Packages</h2>
+                        <p class="text-sm text-gray-400">Curated equipment sets for specific needs.</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        {% for pkg in packages %}
+                        <div class="catalog-item group flex flex-col sm:flex-row gap-6 p-6 rounded-2xl border border-gray-100 hover:border-gray-300 hover:shadow-sm transition-all duration-300" data-name="{{ pkg.name|lower }}">
+                            <div class="sm:w-32 sm:h-32 shrink-0 bg-gray-50 rounded-xl flex items-center justify-center text-gray-300 group-hover:text-gray-900 group-hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-box-open text-4xl"></i>
+                            </div>
+                            <div class="flex flex-col justify-center flex-grow">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ pkg.name }}</h3>
+                                <p class="text-sm text-gray-500 line-clamp-2 leading-relaxed mb-4">{{ pkg.description|default:"Comprehensive package bundle." }}</p>
+                                <div class="flex items-center justify-between mt-auto">
+                                    <span class="text-base font-medium text-gray-900">฿{{ pkg.price|floatformat:0|intcomma }}<span class="text-xs text-gray-500 font-normal ml-1">/ set</span></span>
+                                    <button @click.prevent.stop="addToCart('{{ pkg.id }}', '{{ pkg.name }}', {{ pkg.price }}, '', 'package', 99)" class="text-xs font-semibold text-gray-900 hover:text-gray-500 transition-colors flex items-center gap-1">
+                                        Add to Cart <i class="fas fa-arrow-right text-[10px]"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="py-16 text-center border border-dashed border-gray-200 rounded-2xl">
+                            <i class="fas fa-box-open text-gray-300 text-2xl mb-3"></i>
+                            <p class="text-gray-500 text-sm">No packages available.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- Divider -->
+                <div class="my-20 h-px bg-gray-100"></div>
+
+                <!-- ═══════════════ EQUIPMENT ═══════════════ -->
+                <section id="equipment" class="scroll-mt-32">
+                    <div class="flex flex-col gap-1 mb-10">
+                        <h2 class="text-3xl font-light tracking-tight text-gray-900">Equipment</h2>
+                        <p class="text-sm text-gray-400">Cameras, lenses, lighting, and accessories.</p>
+                    </div>
+
+                    {% regroup equipment by category as category_list %}
+                    {% for cat_group in category_list %}
+                    <div id="cat-{{ cat_group.grouper.slug|default:'uncategorized' }}" class="mb-14 scroll-mt-32">
+                        <!-- Minimal Subcategory Header -->
+                        <div class="flex items-baseline gap-3 mb-6">
+                            <h3 class="text-lg font-medium text-gray-900">{{ cat_group.grouper.name|default:"Others" }}</h3>
+                            <span class="text-xs text-gray-400">{{ cat_group.list|length }} items</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
+                            {% for item in cat_group.list %}
+                            <div class="catalog-item group flex flex-col gap-3" data-name="{{ item.name|lower }}" data-category="{{ item.category.slug|default:'uncategorized' }}">
+                                <!-- Image -->
+                                <div class="relative aspect-square bg-gray-50 rounded-xl overflow-hidden p-4 flex items-center justify-center">
+                                    <div class="absolute top-2 left-2 flex gap-1">
+                                        {% if item.quantity > 0 %}
+                                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                        {% else %}
+                                        <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                                        {% endif %}
+                                    </div>
+                                    {% if item.image %}
+                                    <img src="{{ item.image.url }}" class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 mix-blend-multiply transition-all duration-500 group-hover:scale-105" alt="{{ item.name }}">
+                                    {% else %}
+                                    <i class="fas fa-camera text-gray-200 text-3xl"></i>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Details -->
+                                <div class="flex flex-col flex-grow">
+                                    <h4 class="text-sm font-medium text-gray-900 line-clamp-2 leading-snug mb-1">{{ item.name }}</h4>
+                                    <p class="text-xs text-gray-500 mb-3 line-clamp-1">{{ item.description|striptags|truncatewords:8|default:"Professional equipment" }}</p>
+                                    
+                                    <div class="mt-auto flex items-center justify-between">
+                                        <span class="text-sm font-semibold text-gray-900">฿{{ item.price|floatformat:0|intcomma }}<span class="text-[10px] text-gray-400 font-normal ml-0.5">/d</span></span>
+                                        <button @click.prevent.stop="addToCart('{{ item.id }}', '{{ item.name }}', {{ item.price }}, '{% if item.image %}{{ item.image.url }}{% endif %}', 'product', {{ item.quantity }})" class="w-7 h-7 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-colors">
+                                            <i class="fas fa-plus text-[10px]"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="py-16 text-center border border-dashed border-gray-200 rounded-2xl">
+                        <i class="fas fa-camera text-gray-300 text-2xl mb-3"></i>
+                        <p class="text-gray-500 text-sm">No equipment available.</p>
+                    </div>
+                    {% endfor %}
+                </section>
+
+                <!-- Divider -->
+                <div class="my-20 h-px bg-gray-100"></div>
+
+                <!-- ═══════════════ SERVICES CTA ═══════════════ -->
+                <section id="services" class="scroll-mt-32 mb-8">
+                    <div class="bg-gray-50 rounded-3xl p-10 md:p-16 border border-gray-100 text-center flex flex-col items-center">
+                        <div class="w-16 h-16 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center mb-6">
+                            <i class="fas fa-satellite-dish text-gray-900 text-2xl"></i>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-light tracking-tight text-gray-900 mb-4">Production Services</h2>
+                        <p class="text-sm text-gray-500 max-w-md mx-auto mb-8 leading-relaxed">End-to-end production solutions including OB Vans and professional broadcasting teams. We handle everything from setup to wrap-up.</p>
+                        <a href="{% url 'store:contact' %}" class="bg-gray-900 hover:bg-black text-white px-8 py-3 rounded-xl text-sm font-semibold transition-colors">
+                            Contact Sales
+                        </a>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Floating Sticky Cart Button (Mobile Only) -->
+    <div class="lg:hidden fixed bottom-6 right-6 z-50" x-show="cartCount > 0" x-transition>
+        <button @click="goToCart()" class="bg-gray-900 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center relative">
+            <i class="fas fa-shopping-bag text-xl"></i>
+            <span class="absolute -top-1 -right-1 bg-white text-gray-900 border border-gray-200 text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center" x-text="cartCount"></span>
+        </button>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('catalogApp', () => ({
+            searchQuery: '',
+            cartCount: 0,
+            mobileFilterOpen: false,
+
+            init() {
+                this.updateCartCount();
+
+                // Simple client-side search across DOM elements with data-name
+                this.$watch('searchQuery', (value) => {
+                    const term = value.toLowerCase();
+                    const items = document.querySelectorAll('.catalog-item');
+                    items.forEach(el => {
+                        const name = el.getAttribute('data-name');
+                        if (name.includes(term) || term === '') {
+                            el.style.display = '';
+                        } else {
+                            el.style.display = 'none';
+                        }
+                    });
+                });
+
+                window.addEventListener('cartUpdated', () => {
+                    this.updateCartCount();
+                });
+            },
+
+            addToCart(id, name, price, image, type, maxStock) {
+                let cart = JSON.parse(localStorage.getItem('mcot_cart') || '[]');
+
+                type = type.replace('pkg_', 'package');
+                type = type.replace('studio_', 'studio');
+
+                let existingItem = null;
+                if (type === 'studio') {
+                    existingItem = cart.find(i => i.id == `studio_${id}`);
+                } else if (type === 'package') {
+                    existingItem = cart.find(i => i.id == `pkg_${id}`);
+                } else {
+                    existingItem = cart.find(i => i.id == id);
+                }
+
+                if (existingItem) {
+                    if (parseInt(existingItem.quantity) < maxStock) {
+                        existingItem.quantity = parseInt(existingItem.quantity) + 1;
+                        this.showToast('อัปเดตตะกร้า', `เพิ่ม ${name} สำเร็จ`, 'success');
+                    } else {
+                        this.showToast('สินค้าหมด', `มีสินค้าสูงสุดเพียง ${maxStock} ชิ้น`, 'warning');
+                        return;
+                    }
+                } else {
+                    let internalId = id;
+                    if (type === 'studio') internalId = `studio_${id}`;
+                    if (type === 'package') internalId = `pkg_${id}`;
+
+                    const newItem = {
+                        id: internalId,
+                        name: name,
+                        price: price,
+                        image: image,
+                        type: type,
+                        quantity: 1,
+                        max_stock: maxStock
+                    };
+                    cart.push(newItem);
+                    this.showToast('ใส่ตะกร้า', `เพิ่ม ${name} สำเร็จ`, 'success');
+                }
+
+                localStorage.setItem('mcot_cart', JSON.stringify(cart));
+                window.dispatchEvent(new Event('cartUpdated'));
+            },
+
+            updateCartCount() {
+                const cart = JSON.parse(localStorage.getItem('mcot_cart') || '[]');
+                this.cartCount = cart.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0);
+                
+                // Update specific desktop nav cart counter if it exists
+                const desktopCartBadge = document.getElementById('cart-count-badge');
+                if(desktopCartBadge) {
+                    desktopCartBadge.innerText = this.cartCount;
+                    desktopCartBadge.style.display = this.cartCount > 0 ? 'inline-flex' : 'none';
+                }
+            },
+
+            goToCart() {
+                window.location.href = "{% url 'store:cart' %}";
+            },
+
+            showToast(title, text, icon) {
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: icon,
+                    title: `<span class="text-sm font-bold text-gray-900">${title}</span>`,
+                    html: `<span class="text-xs text-gray-500">${text}</span>`,
+                    showConfirmButton: false,
+                    timer: 2000,
+                    customClass: {
+                        popup: 'bg-white border border-gray-100 shadow-xl rounded-xl p-4',
+                    },
+                    iconColor: '#F26522'
+                });
+            }
+        }));
+    });
+</script>
+{% endblock %}

@@ -144,45 +144,27 @@
                     {% endif %}
                 </a>
 
-                <a href="{% url 'store:catalog' %}"
+                <a href="{% url 'store:catalog' %}#equipment"
                     class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'catalog' in url_name %}text-blue-600 bg-blue-50/50 shadow-sm border border-blue-100{% else %}text-gray-500 hover:text-gray-900 hover:bg-white/50{% endif %}">
                     <span class="relative z-10">{% trans "EQUIPMENT" %}</span>
-                    {% if 'catalog' in url_name %}
-                    <div
-                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)] rounded-full">
-                    </div>
-                    {% endif %}
                 </a>
 
-                <a href="{% url 'store:package_list' %}"
+                <a href="{% url 'store:catalog' %}#packages"
                     class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'package' in url_name %}text-mcot-orange bg-orange-50/50 shadow-sm border border-orange-100{% else %}text-gray-500 hover:text-gray-900 hover:bg-white/50{% endif %}">
                     <span class="relative z-10">{% trans "PACKAGES" %}</span>
-                    {% if 'package' in url_name %}
-                    <div
-                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-mcot-orange shadow-[0_0_10px_rgba(242,101,34,0.5)] rounded-full">
-                    </div>
-                    {% endif %}
                 </a>
 
-                <a href="{% url 'store:studio_list' %}"
+                <a href="{% url 'store:catalog' %}#studios"
                     class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'studio' in url_name %}text-purple-600 bg-purple-50/50 shadow-sm border border-purple-100{% else %}text-gray-500 hover:text-gray-900 hover:bg-white/50{% endif %}">
                     <span class="relative z-10">{% trans "STUDIOS" %}</span>
-                    {% if 'studio' in url_name %}
-                    <div
-                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)] rounded-full">
-                    </div>
-                    {% endif %}
                 </a>
 
-                <a href="{% url 'store:service_list' %}"
-                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'service' in url_name %}text-green-600 bg-green-50/50 shadow-sm border border-green-100{% else %}text-gray-500 hover:text-gray-900 hover:bg-white/50{% endif %}">
+                <a href="{% url 'store:catalog' %}#services"
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden text-gray-500 hover:text-gray-900 hover:bg-white/50">
                     <span class="relative z-10">{% trans "SERVICES" %}</span>
-                    {% if 'service' in url_name %}
-                    <div
-                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)] rounded-full">
-                    </div>
-                    {% endif %}
                 </a>
+
+
 
                 <!-- Company Dropdown (Alpine.js) -->
                 <div x-data="{ open: false }" class="relative group/dropdown" @mouseenter="open = true"

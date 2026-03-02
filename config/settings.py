@@ -31,6 +31,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.ngrok.app',
     'https://*.ngrok-free.app',
     'https://unscored-subfrontal-melodee.ngrok-free.dev',
+    'https://*.pinggy.link',
 ]
 
 # Application definition
@@ -103,10 +104,12 @@ DATABASES = {
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    { 'NAME': 'apps.store.validators.ThaiUserAttributeSimilarityValidator', },
-    { 'NAME': 'apps.store.validators.ThaiMinimumLengthValidator', },
-    { 'NAME': 'apps.store.validators.ThaiCommonPasswordValidator', },
-    { 'NAME': 'apps.store.validators.ThaiNumericPasswordValidator', },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 6,
+        }
+    },
 ]
 
 # Internationalization
@@ -190,8 +193,8 @@ LOGIN_URL = '/accounts/login/'
 # ==============================================================================
 # EMAIL SETTINGS (Smart Selection)
 # ==============================================================================
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '165426241036-st@rmutsb.ac.th')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'lpqdekvtdxpdalvf')
 
 if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD and 'your_email' not in EMAIL_HOST_USER:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

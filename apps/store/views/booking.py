@@ -12,10 +12,31 @@ from apps.store.services.availability import AvailabilityService
 
 def cart(request):
     """
-    หน้าตะกร้าสินค้า (Cart Page)
+    หน้าตะกร้าสินค้า (Cart Page) - Step 1/4: รายการสินค้า
     Render template เปล่า โดยข้อมูลสินค้าจะถูกดึงจาก LocalStorage ทางฝั่ง Client
     """
     return render(request, 'booking/cart.html')
+
+def cart_dates(request):
+    """
+    หน้าตะกร้าสินค้า - Step 2/4: เลือกวันเวลา
+    """
+    return render(request, 'booking/cart_dates.html')
+
+@login_required
+def cart_review(request):
+    """
+    หน้าตะกร้าสินค้า - Step 3/4: ตรวจสอบและยืนยัน
+    """
+    return render(request, 'booking/cart_review.html')
+
+@login_required
+def cart_checkout(request, booking_id):
+    """
+    หน้าตะกร้าสินค้า - Step 4/4: ชำระเงิน (Success)
+    """
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    return render(request, 'booking/cart_checkout.html', {'booking': booking})
 @require_GET
 def check_promo_api(request):
     """

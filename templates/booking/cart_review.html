@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}ตรวจสอบรายการ — MCOT Rental Platform{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen pb-12" x-data="checkoutWizard()">
+    
+    <!-- Wizard Header -->
+    <div class="bg-white border-b border-gray-200 sticky top-20 z-40">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between max-w-4xl mx-auto">
+                <a href="{% url 'store:home' %}" class="flex flex-col items-center gap-2 text-green-500 w-1/4">
+                    <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center font-bold">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:block">1. รายการ</span>
+                </a>
+                
+                <div class="h-1 flex-grow bg-green-100 rounded-full mx-2"><div class="h-full w-full bg-green-500 rounded-full"></div></div>
+                
+                <a href="{% url 'store:cart_dates' %}" class="flex flex-col items-center gap-2 text-green-500 w-1/4">
+                    <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center font-bold">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:block">2. วันเวลา</span>
+                </a>
+
+                <div class="h-1 flex-grow bg-green-100 rounded-full mx-2"><div class="h-full w-1/2 bg-green-500 rounded-full"></div></div>
+
+                <div class="flex flex-col items-center gap-2 text-mcot-orange w-1/4">
+                    <div class="w-8 h-8 rounded-full bg-mcot-orange text-white flex items-center justify-center font-bold ring-4 ring-orange-50">3</div>
+                    <span class="text-xs font-bold text-gray-900 uppercase tracking-wider hidden md:block">3. ตรวจสอบ</span>
+                </div>
+
+                <div class="h-1 flex-grow bg-gray-200 rounded-full mx-2"></div>
+
+                <div class="flex flex-col items-center gap-2 text-gray-400 w-1/4">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold">4</div>
+                    <span class="text-xs font-bold uppercase tracking-wider hidden md:block">4. ยืนยัน</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <div class="flex flex-col lg:flex-row gap-8">
+            
+            <!-- Left Column: Details & Items -->
+            <div class="lg:w-2/3 space-y-6">
+                
+                <!-- Section 1: Project & Contact Info -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
+                    <h2 class="text-xl font-extrabold text-gray-900 mb-6 flex items-center gap-3">
+                        <i class="fas fa-user-circle text-mcot-orange"></i> ข้อมูลผู้ติดต่อและโครงการ
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">ชื่อผู้ติดต่อ / บริษัท <span class="text-red-500">*</span></label>
+                            <input type="text" x-model="customerName" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-mcot-orange/20 focus:border-mcot-orange outline-none transition-all" placeholder="ชื่อ นามสกุล หรือ บริษัท" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">เบอร์โทรศัพท์ <span class="text-red-500">*</span></label>
+                            <input type="tel" x-model="customerPhone" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-mcot-orange/20 focus:border-mcot-orange outline-none transition-all" placeholder="08X-XXX-XXXX" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">ชื่อโครงการ / งาน</label>
+                        <input type="text" x-model="projectName" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-mcot-orange/20 focus:border-mcot-orange outline-none transition-all" placeholder="ระบุชื่อ Production หรือโครงการ">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">หมายเหตุเพิ่มเติม (ถ้ามี)</label>
+                        <textarea x-model="note" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-mcot-orange/20 focus:border-mcot-orange outline-none transition-all" rows="3" placeholder="ระบุข้อกำหนดเพิ่มเติม หรือความต้องการพิเศษ..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Section 2: Selected Items (Read Only) -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                            <i class="fas fa-list text-mcot-orange"></i> รายการที่เลือก
+                        </h2>
+                        <a href="{% url 'store:home' %}" class="text-sm font-bold text-blue-600 hover:text-blue-700 hover:underline">แก้ไขรายการ</a>
+                    </div>
+                    
+                    <div class="divide-y divide-gray-100">
+                        <template x-for="item in cartItems" :key="item.id">
+                            <div class="p-6 flex gap-4 hover:bg-gray-50 transition-colors">
+                                <div class="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center shrink-0 border border-gray-200">
+                                    <i class="fas fa-box text-gray-400 text-2xl"></i>
+                                </div>
+                                <div class="flex-grow">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h3 class="font-bold text-gray-900 text-lg" x-text="item.name"></h3>
+                                        <p class="font-bold text-gray-900 text-lg" x-text="'฿' + (item.price * item.quantity).toLocaleString()"></p>
+                                    </div>
+                                    <div class="flex items-center gap-4 text-sm text-gray-500">
+                                        <p>จำนวน: <span class="font-medium text-gray-900" x-text="item.quantity"></span></p>
+                                        <p>ราคาต่อหน่วย: <span x-text="'฿' + parseInt(item.price).toLocaleString()"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <div x-show="cartItems.length === 0" class="p-12 text-center text-gray-500">
+                            <i class="fas fa-shopping-cart text-4xl mb-3 text-gray-300"></i>
+                            <p>ไม่มีรายการในตะกร้า</p>
+                            <a href="{% url 'store:home' %}" class="mt-4 inline-block px-6 py-2 bg-mcot-orange text-white rounded-lg font-bold">กลับไปเลือกสินค้า</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Summary & Checkout -->
+            <div class="lg:w-1/3">
+                <div class="bg-gray-900 rounded-2xl shadow-xl border border-gray-800 p-6 lg:p-8 sticky top-36 text-white">
+                    <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+                        <i class="fas fa-receipt text-mcot-orange"></i> สรุปการทำรายการ
+                    </h3>
+
+                    <!-- Dates Summary -->
+                    <div class="bg-gray-800 rounded-xl p-4 mb-6 border border-gray-700">
+                        <div class="flex justify-between items-center mb-1">
+                            <p class="text-xs text-gray-400 uppercase tracking-widest font-bold">วัน-เวลาเริ่ม</p>
+                            <a href="{% url 'store:cart_dates' %}" class="text-xs text-mcot-orange font-bold hover:underline">แก้ไข</a>
+                        </div>
+                        <p class="font-bold text-gray-100 mb-3" x-text="formatDate(dates.start)"></p>
+                        
+                        <p class="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">วัน-เวลาสิ้นสุด</p>
+                        <p class="font-bold text-gray-100" x-text="formatDate(dates.end)"></p>
+                    </div>
+
+                    <!-- Price Breakdown -->
+                    <div class="space-y-4 mb-6 text-sm">
+                        <div class="flex justify-between items-center text-gray-300">
+                            <span>ราคารวม (<span x-text="totalQuantity"></span> รายการ)</span>
+                            <span class="font-medium" x-text="'฿' + subtotal.toLocaleString()"></span>
+                        </div>
+                        
+                        <template x-if="discount > 0">
+                            <div class="flex justify-between items-center text-green-400 bg-green-900/20 p-2 -mx-2 rounded-lg">
+                                <span>ส่วนลด</span>
+                                <span class="font-medium" x-text="'- ฿' + discount.toLocaleString()"></span>
+                            </div>
+                        </template>
+
+                        <div class="flex justify-between items-center text-gray-300">
+                            <span>ภาษีมูลค่าเพิ่ม 7%</span>
+                            <span class="font-medium" x-text="'฿' + vatAmount.toLocaleString()"></span>
+                        </div>
+                    </div>
+
+                    <div class="h-px bg-gray-700 my-6"></div>
+
+                    <!-- Total -->
+                    <div class="flex justify-between items-end mb-8">
+                        <div>
+                            <span class="block text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">ยอดชำระสุทธิ</span>
+                            <span class="text-xs text-gray-500 font-medium">รวมภาษีมูลค่าเพิ่มแล้ว</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-3xl font-extrabold text-mcot-orange" x-text="'฿' + finalTotal.toLocaleString()"></span>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button @click="submitBooking()" 
+                            :disabled="isSubmitting || cartItems.length === 0"
+                            class="w-full bg-gradient-to-r from-mcot-orange to-orange-600 hover:from-orange-500 hover:to-orange-700 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-[0_0_20px_rgba(242,101,34,0.3)] hover:shadow-[0_0_30px_rgba(242,101,34,0.5)] flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed text-lg">
+                        <i class="fas fa-check-circle transition-transform group-hover:scale-110" x-show="!isSubmitting"></i>
+                        <i class="fas fa-spinner fa-spin" x-show="isSubmitting" style="display: none;"></i>
+                        <span x-text="isSubmitting ? 'กำลังดำเนินการ...' : 'ยืนยันการทำรายการ'"></span>
+                    </button>
+                    
+                    <p class="text-center text-xs text-gray-500 mt-4 leading-relaxed">
+                        การคลิกยืนยันหมายความว่าคุณยอมรับ<br><a href="#" class="text-gray-300 underline hover:text-white">ข้อกำหนดและเงื่อนไขการใช้บริการ</a> ของเรา
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('checkoutWizard', () => ({
+            cartItems: [],
+            dates: { start: '', end: '' },
+            
+            // Form Data
+            customerName: '{{ request.user.get_full_name|default:request.user.username }}',
+            customerPhone: '{{ request.user.profile.phone_number|default:"" }}',
+            projectName: '',
+            note: '',
+            
+            // Pricing
+            subtotal: 0,
+            discount: 0,
+            promoCode: null,
+            
+            isSubmitting: false,
+
+            init() {
+                // Load Cart
+                const storedCart = localStorage.getItem('mcot_cart');
+                if (storedCart) {
+                    this.cartItems = JSON.parse(storedCart);
+                    this.calculateTotals();
+                }
+
+                // Load Dates (from Step 2)
+                const storedDates = localStorage.getItem('mcot_booking_dates');
+                if (storedDates) {
+                    this.dates = JSON.parse(storedDates);
+                } else {
+                    // Redirect back if no dates selected
+                    window.location.href = "{% url 'store:cart_dates' %}";
+                }
+            },
+
+            calculateTotals() {
+                this.subtotal = this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                // Note: Promo discount logic goes here if carried over from a previous step
+            },
+
+            get totalQuantity() {
+                return this.cartItems.reduce((sum, item) => sum + parseInt(item.quantity), 0);
+            },
+
+            get vatAmount() {
+                return Math.round((this.subtotal - this.discount) * 0.07);
+            },
+
+            get finalTotal() {
+                return (this.subtotal - this.discount) + this.vatAmount;
+            },
+
+            formatDate(dateStr) {
+                if (!dateStr) return 'ไม่ได้ระบุ';
+                const d = new Date(dateStr);
+                return d.toLocaleDateString('th-TH', { 
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+            },
+
+            async submitBooking() {
+                if (!this.customerName || !this.customerPhone) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'ข้อมูลไม่ครบถ้วน',
+                        text: 'กรุณากรอกชื่อผู้ติดต่อและเบอร์โทรศัพท์',
+                        confirmButtonColor: '#F26522'
+                    });
+                    return;
+                }
+
+                this.isSubmitting = true;
+
+                const payload = {
+                    items: this.cartItems.map(item => ({
+                        product_id: item.id,
+                        quantity: parseInt(item.quantity)
+                    })),
+                    start: this.dates.start,
+                    end: this.dates.end,
+                    customer_name: this.customerName,
+                    customer_phone: this.customerPhone,
+                    project_name: this.projectName,
+                    note: this.note,
+                    promotion_code: this.promoCode
+                };
+
+                try {
+                    const response = await fetch("{% url 'store:api_create_booking' %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Clear Cart and Dates
+                        localStorage.removeItem('mcot_cart');
+                        localStorage.removeItem('mcot_booking_dates');
+                        window.dispatchEvent(new Event('cartUpdated'));
+
+                        // Proceed to Step 4 (Checkout Success)
+                        window.location.href = `/cart/checkout/${data.booking_id}/`;
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: data.message || 'ไม่สามารถทำรายการได้ กรุณาลองใหม่อีกครั้ง',
+                            confirmButtonColor: '#1f2937'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error creating booking:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ข้อผิดพลาดระบบ',
+                        text: 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้งภายหลัง',
+                        confirmButtonColor: '#1f2937'
+                    });
+                } finally {
+                    this.isSubmitting = false;
+                }
+            }
+        }));
+    });
+</script>
+{% endblock %}

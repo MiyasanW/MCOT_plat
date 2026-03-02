@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}เลือกวันเวลา — MCOT Rental Platform{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen pb-12" x-data="dateSelectionWizard()">
+    
+    <!-- Wizard Header -->
+    <div class="bg-white border-b border-gray-200 sticky top-20 z-40">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between max-w-4xl mx-auto">
+                <a href="{% url 'store:cart' %}" class="flex flex-col items-center gap-2 text-green-500 w-1/4">
+                    <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center font-bold">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:block">1. รายการ</span>
+                </a>
+                
+                <div class="h-1 flex-grow bg-green-100 rounded-full mx-2"><div class="h-full w-1/2 bg-green-500 rounded-full"></div></div>
+                
+                <div class="flex flex-col items-center gap-2 text-mcot-orange w-1/4">
+                    <div class="w-8 h-8 rounded-full bg-mcot-orange text-white flex items-center justify-center font-bold ring-4 ring-orange-50">2</div>
+                    <span class="text-xs font-bold text-gray-900 uppercase tracking-wider hidden md:block">2. วันเวลา</span>
+                </div>
+
+                <div class="h-1 flex-grow bg-gray-200 rounded-full mx-2"></div>
+
+                <div class="flex flex-col items-center gap-2 text-gray-400 w-1/4">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold">3</div>
+                    <span class="text-xs font-bold uppercase tracking-wider hidden md:block">3. ตรวจสอบ</span>
+                </div>
+
+                <div class="h-1 flex-grow bg-gray-200 rounded-full mx-2"></div>
+
+                <div class="flex flex-col items-center gap-2 text-gray-400 w-1/4">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold">4</div>
+                    <span class="text-xs font-bold uppercase tracking-wider hidden md:block">4. ยืนยัน</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 max-w-3xl">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-orange-100 text-mcot-orange rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="far fa-calendar-alt text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-gray-900 font-display">เลือกวันและเวลาที่ต้องการเช่า</h2>
+                <p class="text-gray-500 mt-2">ระบุวันเริ่มต้นและสิ้นสุด เพื่อตรวจสอบคิวว่างของสินค้าในตะกร้า</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">วันเริ่มเช่า <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <input type="text" id="start-date" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-mcot-orange/20 focus:border-mcot-orange outline-none transition-all cursor-pointer bg-white" placeholder="เลือกวันที่..." readonly>
+                        <i class="fas fa-calendar absolute right-4 top-4 text-gray-400"></i>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">วันสิ้นสุดเช่า <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <input type="text" id="end-date" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-mcot-orange/20 focus:border-mcot-orange outline-none transition-all cursor-pointer bg-white disabled:bg-gray-100 disabled:cursor-not-allowed" placeholder="เลือกวันที่..." readonly disabled>
+                        <i class="fas fa-calendar absolute right-4 top-4 text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Validation Status -->
+            <div x-show="validationStatus.show" 
+                 class="p-4 rounded-xl border mb-8 flex items-start gap-3"
+                 :class="{'bg-red-50 border-red-200 text-red-700': !validationStatus.isValid, 'bg-green-50 border-green-200 text-green-700': validationStatus.isValid}"
+                 style="display: none;">
+                <i class="text-xl mt-0.5" :class="{'fas fa-exclamation-circle text-red-500': !validationStatus.isValid, 'fas fa-check-circle text-green-500': validationStatus.isValid}"></i>
+                <div>
+                    <p class="font-bold mb-1" x-text="validationStatus.title"></p>
+                    <p class="text-sm opacity-90" x-text="validationStatus.message"></p>
+                    
+                    <!-- Detail Conflicts -->
+                    <template x-if="!validationStatus.isValid && validationStatus.conflicts && validationStatus.conflicts.length > 0">
+                        <ul class="mt-2 space-y-1 text-sm list-disc pl-5">
+                            <template x-for="item in validationStatus.conflicts">
+                                <li x-text="item.product_name + ' (มีคิวซ้อนทับ)'"></li>
+                            </template>
+                        </ul>
+                    </template>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-100">
+                <a href="{% url 'store:cart' %}" class="px-6 py-3 text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors">ย้อนกลับ</a>
+                
+                <button @click="proceedToReview()" 
+                        :disabled="!isReadyToProceed"
+                        class="bg-mcot-orange hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md group disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                    ดำเนินการต่อ <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1" x-show="!isChecking"></i>
+                    <i class="fas fa-spinner fa-spin" x-show="isChecking"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('dateSelectionWizard', () => ({
+            startDate: '',
+            endDate: '',
+            isChecking: false,
+            isReadyToProceed: false,
+            
+            validationStatus: {
+                show: false,
+                isValid: false,
+                title: '',
+                message: '',
+                conflicts: []
+            },
+
+            init() {
+                // Initialize Flatpickr
+                const self = this;
+                
+                // Existing dates from previous session
+                const storedDates = JSON.parse(localStorage.getItem('mcot_booking_dates') || '{}');
+                if (storedDates.start) this.startDate = storedDates.start;
+                if (storedDates.end) this.endDate = storedDates.end;
+
+                const fpEnd = flatpickr("#end-date", {
+                    minDate: "today",
+                    dateFormat: "Y-m-d",
+                    defaultDate: this.endDate,
+                    onChange: function(selectedDates, dateStr, instance) {
+                        self.endDate = dateStr;
+                        self.checkAvailability();
+                    }
+                });
+
+                flatpickr("#start-date", {
+                    minDate: "today",
+                    dateFormat: "Y-m-d",
+                    defaultDate: this.startDate,
+                    onChange: function(selectedDates, dateStr, instance) {
+                        self.startDate = dateStr;
+                        // Enable and update min date for end picker
+                        const endInput = document.getElementById("end-date");
+                        endInput.disabled = false;
+                        
+                        // Automatically set end date to start date if it's empty or earlier
+                        if (!self.endDate || new Date(self.endDate) < selectedDates[0]) {
+                            fpEnd.setDate(selectedDates[0]);
+                            self.endDate = dateStr;
+                        }
+                        
+                        fpEnd.set("minDate", dateStr);
+                        
+                        if (self.startDate && self.endDate) {
+                            self.checkAvailability();
+                        }
+                    }
+                });
+                
+                // If dates already exist, enable the end picker on load
+                if (this.startDate) {
+                     document.getElementById("end-date").disabled = false;
+                     fpEnd.set("minDate", this.startDate);
+                }
+            },
+
+            async checkAvailability() {
+                if (!this.startDate || !this.endDate) return;
+
+                const cart = JSON.parse(localStorage.getItem('mcot_cart') || '[]');
+                if (cart.length === 0) {
+                    Swal.fire('ตะกร้าว่างเปล่า', 'กรุณาเลือกสินค้าก่อน', 'warning').then(() => {
+                        window.location.href = "{% url 'store:home' %}";
+                    });
+                    return;
+                }
+
+                this.isChecking = true;
+                this.isReadyToProceed = false;
+                this.validationStatus.show = false;
+
+                try {
+                    const payload = {
+                        start: this.startDate,
+                        end: this.endDate,
+                        items: cart.map(item => ({
+                            product_id: item.id,
+                            quantity: parseInt(item.quantity)
+                        }))
+                    };
+
+                    const response = await fetch("{% url 'store:api_check_cart_availability' %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+
+                    this.validationStatus.show = true;
+                    if (data.valid) {
+                        this.validationStatus.isValid = true;
+                        this.validationStatus.title = "วันและเวลาพร้อมใช้งาน";
+                        this.validationStatus.message = "สินค้าทั้งหมดในตะกร้าว่างในช่วงเวลาที่คุณเลือก";
+                        this.isReadyToProceed = true;
+                    } else {
+                        this.validationStatus.isValid = false;
+                        this.validationStatus.title = "มีสินค้าไม่พร้อมให้บริการ";
+                        this.validationStatus.message = "ไม่สามารถจองได้ เนื่องจากมีคิวซ้อนทับหรือจำนวนไม่เพียงพอ";
+                        this.validationStatus.conflicts = data.conflicts || [];
+                        this.isReadyToProceed = false;
+                    }
+
+                } catch (error) {
+                    console.error("Availability check failed", error);
+                } finally {
+                    this.isChecking = false;
+                }
+            },
+
+            proceedToReview() {
+                if (!this.isReadyToProceed) return;
+                
+                // Save valid dates to localStorage
+                localStorage.setItem('mcot_booking_dates', JSON.stringify({
+                    start: this.startDate,
+                    end: this.endDate
+                }));
+                
+                // Check Authen
+                {% if user.is_authenticated %}
+                    window.location.href = "{% url 'store:cart_review' %}";
+                {% else %}
+                    // Redirect to login but save the return intent
+                    window.location.href = "{% url 'login' %}?next={% url 'store:cart_review' %}";
+                {% endif %}
+            }
+        }));
+    });
+</script>
+{% endblock %}

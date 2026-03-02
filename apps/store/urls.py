@@ -15,7 +15,11 @@ urlpatterns = [
 
     path('faq/', pages.faq, name='faq'),
     path('catalog/', products.catalog, name='catalog'),
-    path('cart/', booking.cart, name='cart'),
+    # Booking Wizard V2
+    path('cart/', booking.cart, name='cart'), # Step 1: Items
+    path('cart/dates/', booking.cart_dates, name='cart_dates'), # Step 2: Dates
+    path('cart/review/', booking.cart_review, name='cart_review'), # Step 3: Review
+    path('cart/checkout/<int:booking_id>/', booking.cart_checkout, name='cart_checkout'), # Step 4: Checkout
     path('studios/', products.studio_list, name='studio_list'),
     path('studios/<int:studio_id>/', products.studio_detail, name='studio_detail'),
     path('packages/', products.package_list, name='package_list'),

@@ -8,84 +8,26 @@ from apps.store.utils.ratelimit import ratelimit
 @ratelimit(key_prefix='catalog', rate=20, period=60, block=True)
 def catalog(request):
     """
-    หน้าแสดงรายการสินค้า (Catalog Page)
-    รองรับการ Filter ตาม Category ผ่าน Query Param
+    หน้าแสดงรายการสินค้าทั้งหมด (Unified Catalog V3)
+    รวมทุกหมวดหมู่ไว้ในหน้าเดียว
     """
-    category_slug = request.GET.get('category')
-    search_query = request.GET.get('q')
+    from apps.store.models import Product, Studio, Package, Staff
     
-    # Needs to be imported inside or relative? 
-    # Since filters.py is in apps.store, we can import it directly
-    from apps.store.filters import ProductFilter
-
-    # Initial Queryset
-    queryset = Product.objects.filter(is_active=True).select_related('category')
-    
-    # Apply Filter (Category & Search)
-    product_filter = ProductFilter(request.GET, queryset=queryset)
-    products = product_filter.qs
-    
-    # Get Active Category object for display context
-    active_category = None
-    if category_slug:
-        active_category = get_object_or_404(ProductCategory, slug=category_slug)
-
-    # --- Date Availability Filtering ---
-    # รับค่าวันที่จาก Query Parameter (เช่น ?start_date=2024-02-01&end_date=2024-02-02)
-    filter_start_date_str = request.GET.get('start_date')
-    filter_end_date_str = request.GET.get('end_date')
-    filtering_by_date = False
-
-    # Default to Today if no dates provided (Requirement: Auto-check Today)
-    if not filter_start_date_str or not filter_end_date_str:
-        today_str = timezone.now().strftime("%Y-%m-%d")
-        filter_start_date_str = today_str
-        filter_end_date_str = today_str
-
-    if filter_start_date_str and filter_end_date_str:
-        try:
-            # Parse Date (YYYY-MM-DD)
-            filter_start_date = datetime.strptime(filter_start_date_str, "%Y-%m-%d").date()
-            filter_end_date = datetime.strptime(filter_end_date_str, "%Y-%m-%d").date()
-            
-            # Convert to DateTime (Full Day Range)
-            filter_start_datetime = datetime.combine(filter_start_date, datetime.min.time())
-            filter_end_datetime = datetime.combine(filter_end_date, datetime.max.time())
-            
-            filtering_by_date = True
-            
-            # Iterate
-            for product in products:
-                # Check real-time availability
-                is_available, _ = AvailabilityService.check_availability(
-                    product, 
-                    filter_start_datetime, 
-                    filter_end_datetime
-                )
-                product.is_available_for_selected_dates = is_available
-                
-        except ValueError:
-            pass 
-
-    # Separate Categories for Sidebar
-    service_slugs = ['vehicle', 'crew']
-    studio_slugs = ['studio'] # If any exist as products
-    
-    all_categories = ProductCategory.objects.all().order_by('name')
-    service_categories = all_categories.filter(slug__in=service_slugs)
-    equipment_categories = all_categories.exclude(slug__in=service_slugs + studio_slugs)
+    # Fetch all active items - Sorted by newest (id descending)
+    studios = Studio.objects.all().order_by('-id')
+    packages = Package.objects.filter(is_active=True).order_by('-id')
+    equipment = Product.objects.filter(is_active=True).select_related('category').order_by('category__name', '-id')
+    staff_members = Staff.objects.filter(is_active=True).select_related('position').order_by('-id')
+    categories = ProductCategory.objects.all().order_by('name')
 
     context = {
-        'products': products,
-        'equipment_categories': equipment_categories,
-        'service_categories': service_categories,
-        'active_category': active_category,
-        'search_query': search_query,
-        'selected_start_date': filter_start_date_str,
-        'selected_end_date': filter_end_date_str,
-        'is_date_filtered': filtering_by_date
+        'studios': studios,
+        'packages': packages,
+        'equipment': equipment,
+        'staff_members': staff_members,
+        'categories': categories,
     }
-    return render(request, 'store/catalog.html', context)
+    return render(request, 'store/catalog_v3.html', context)
 
 @ratelimit(key_prefix='studio_list', rate=30, period=60, block=True)
 def studio_list(request):
