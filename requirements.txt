@@ -5,7 +5,6 @@ typing_extensions==4.15.0
 pillow==11.3.0
 
 # Admin Interface
-# Admin Interface
 # django-simpleui==2024.1.25  (Removed: Using Custom CSS Theme)
 
 # Utilities
@@ -16,3 +15,5 @@ django-crispy-forms==2.1  # Better Forms
 crispy-bootstrap5==2024.2
 python-dotenv==1.0.1  # Environment Variables
 xhtml2pdf==0.2.16
+django-simple-history==3.7.0  # Track model changes
+django-allauth==65.14.3  # Social Login (Google)

@@ -12,6 +12,7 @@ urlpatterns = [
     path('contact/', pages.contact, name='contact'),
     path('terms/', pages.terms, name='terms'),
     path('register/', user.register, name='register'),
+    path('complete-profile/', user.complete_profile, name='complete_profile'),
 
     path('faq/', pages.faq, name='faq'),
     path('catalog/', products.catalog, name='catalog'),

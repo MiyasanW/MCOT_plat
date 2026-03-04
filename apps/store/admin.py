@@ -7,10 +7,11 @@ from import_export.admin import ImportExportModelAdmin
 from django.utils.html import format_html
 from django.urls import reverse
 from .models import (
-    Staff, Product, ProductionVehicle, Equipment, Studio, Booking, Package,
-    IssueReport, Notification, ProductCategory, StaffPosition,
+    Product, ProductionVehicle, Equipment, Studio, Booking, Package,
+    IssueReport, Notification, ProductCategory,
     BookingItem, BookingStudio, BookingStaff, BookingPackage,
-    Profile, PromotionCode
+    BookingServiceOffer, ServiceCategory, ServiceOffer,
+    Profile, PromotionCode, SplashConfig
 )
 from apps.store.services.notification_service import NotificationService
 
@@ -89,9 +90,8 @@ class BookingStudioInline(admin.TabularInline):
 class BookingStaffInline(admin.TabularInline):
     model = BookingStaff
     extra = 0
-    autocomplete_fields = ['staff']
-    fields = ['staff', 'daily_rate_at_booking']
-    readonly_fields = ['daily_rate_at_booking']
+    autocomplete_fields = ['staff']  # points to User now, make sure UserAdmin has search_fields.
+    fields = ['staff']
 
 
 class BookingPackageInline(admin.TabularInline):
@@ -99,6 +99,13 @@ class BookingPackageInline(admin.TabularInline):
     extra = 0
     autocomplete_fields = ['package']
     fields = ['package', 'quantity', 'price_at_booking']
+    readonly_fields = ['price_at_booking']
+
+class BookingServiceOfferInline(admin.TabularInline):
+    model = BookingServiceOffer
+    extra = 0
+    autocomplete_fields = ['service']
+    fields = ['service', 'quantity', 'price_at_booking']
     readonly_fields = ['price_at_booking']
 
 
@@ -109,13 +116,30 @@ class BookingPackageInline(admin.TabularInline):
 class ProductCategoryAdmin(ModelAdmin):
     list_display = ['name', 'slug']
     prepopulated_fields = {'slug': ('name',)}
+
+@admin.register(SplashConfig)
+class SplashConfigAdmin(ModelAdmin):
+    list_display = ['__str__', 'is_active', 'title']
+    
+    def has_add_permission(self, request):
+        has_add = super().has_add_permission(request)
+        if has_add and SplashConfig.objects.exists():
+            return False
+        return has_add
     search_fields = ['name']
 
 
-@admin.register(StaffPosition)
-class StaffPositionAdmin(ModelAdmin):
-    list_display = ['name', 'base_daily_rate']
+@admin.register(ServiceCategory)
+class ServiceCategoryAdmin(ModelAdmin):
+    list_display = ['name', 'slug']
+    prepopulated_fields = {'slug': ('name',)}
     search_fields = ['name']
+
+@admin.register(ServiceOffer)
+class ServiceOfferAdmin(ImportExportModelAdmin):
+    list_display = ['name', 'category', 'daily_rate', 'is_active']
+    search_fields = ['name']
+    list_filter = ['category', 'is_active']
 
 
 # =============================================================================
@@ -128,6 +152,7 @@ admin.site.unregister(Group)
 class UserAdmin(BaseUserAdmin):
     inlines = (ProfileInline,)
     list_display = ('username', 'email', 'first_name', 'last_name', 'get_phone', 'is_staff')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
     
     def get_phone(self, obj):
         return obj.profile.phone if hasattr(obj, 'profile') else '-'
@@ -170,26 +195,8 @@ class GroupAdmin(ModelAdmin):
 
 
 # =============================================================================
-# RESOURCE MODELS — Product, Studio, Staff, Equipment, Vehicle
+# RESOURCE MODELS — Product, Studio, Equipment, Vehicle
 # =============================================================================
-@admin.register(Staff)
-class StaffAdmin(SimpleHistoryAdmin):
-    list_display = ['name', 'position', 'phone', 'is_active']
-    search_fields = ['name', 'phone']
-    list_filter = ['position', 'is_active']
-
-    def has_view_permission(self, request, obj=None):
-        return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
-
-    def has_change_permission(self, request, obj=None):
-        return request.user.is_superuser or is_web_admin(request.user)
-    
-    def has_add_permission(self, request):
-        return request.user.is_superuser or is_web_admin(request.user)
-    
-    def has_delete_permission(self, request, obj=None):
-        return request.user.is_superuser or is_web_admin(request.user)
-
 
 from django_summernote.admin import SummernoteModelAdmin
 
@@ -314,13 +321,20 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
     list_display_links = ['id', 'customer_name']
     search_fields = ['customer_name', 'project_name', 'phone', 'id']
     search_help_text = 'ค้นหาด้วย ชื่อลูกค้า, ชื่อโปรเจค, เบอร์โทร, หรือ เลขที่จอง'
-    list_filter = ['status', 'payment_status', 'coordinator', 'created_at']
+    list_filter = ['status', 'payment_status', 'created_at']
     date_hierarchy = 'start_time'
     autocomplete_fields = ['coordinator']
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "coordinator":
+            from django.contrib.auth.models import User
+            # Limit the dropdown to only show users in the "staff" group
+            kwargs["queryset"] = User.objects.filter(groups__name='staff')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
     # --- Inlines ---
     # BookingItemInline now has equipment fields
-    inlines = [BookingItemInline, BookingStudioInline, BookingStaffInline, BookingPackageInline]
+    inlines = [BookingItemInline, BookingStudioInline, BookingStaffInline, BookingPackageInline, BookingServiceOfferInline]
 
     # --- Batch Actions ---
     actions = ['action_request_payment', 'action_approve', 'action_confirm_payment', 'action_cancel', 'action_mark_active', 'action_mark_overdue', 'action_mark_completed', 'action_calculate_penalty']
@@ -436,7 +450,12 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
         from django.contrib import messages
         self.message_user(request, f'⚠️ ปรับเป็นเกินกำหนดแล้ว {updated} รายการ', level=messages.WARNING)
 
-    # --- Group-based Permissions ---
+    # --- Permissions and Querysets ---
+    def get_queryset(self, request):
+        # Allow all roles (superuser, web_admin, staff) to see all bookings
+        qs = super().get_queryset(request)
+        return qs
+        
     def has_view_permission(self, request, obj=None):
         return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
 
@@ -624,7 +643,7 @@ class NotificationAdmin(ModelAdmin):
     list_filter = ['is_read', 'notification_type']
 
     def has_module_permission(self, request):
-        return request.user.is_superuser or is_web_admin(request.user)
+        return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
 
 
 # =============================================================================

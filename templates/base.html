@@ -95,10 +95,10 @@
                         class="fas fa-building text-gray-400"></i> {% trans "Government Enterprise Standard" %}</span>
             </div>
             <div class="flex gap-4">
-                <a href="#" class="hover:text-gray-900 transition-colors">{% trans "Corporate Sales" %}</a>
-                <a href="#" class="hover:text-gray-900 transition-colors">{% trans "Vendor Registration" %}</a>
+                <span class="hover:text-gray-900 transition-colors cursor-pointer">{% trans "Corporate Sales" %}</span>
+                <span class="hover:text-gray-900 transition-colors cursor-pointer">{% trans "Vendor Registration" %}</span>
                 <span class="text-gray-300">|</span>
-                <a href="#" class="text-gray-900 hover:text-mcot-orange font-bold">TH</a>
+                <span class="text-gray-900 hover:text-mcot-orange font-bold cursor-pointer">TH</span>
             </div>
         </div>
     </div>
@@ -144,23 +144,23 @@
                     {% endif %}
                 </a>
 
-                <a href="{% url 'store:catalog' %}#equipment"
+                <a href="{% url 'store:catalog' %}#section-equipment"
                     class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'catalog' in url_name %}text-blue-600 bg-blue-50/50 shadow-sm border border-blue-100{% else %}text-gray-500 hover:text-gray-900 hover:bg-white/50{% endif %}">
                     <span class="relative z-10">{% trans "EQUIPMENT" %}</span>
                 </a>
 
-                <a href="{% url 'store:catalog' %}#packages"
+                <a href="{% url 'store:catalog' %}#section-packages"
                     class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'package' in url_name %}text-mcot-orange bg-orange-50/50 shadow-sm border border-orange-100{% else %}text-gray-500 hover:text-gray-900 hover:bg-white/50{% endif %}">
                     <span class="relative z-10">{% trans "PACKAGES" %}</span>
                 </a>
 
-                <a href="{% url 'store:catalog' %}#studios"
+                <a href="{% url 'store:catalog' %}#section-studios"
                     class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'studio' in url_name %}text-purple-600 bg-purple-50/50 shadow-sm border border-purple-100{% else %}text-gray-500 hover:text-gray-900 hover:bg-white/50{% endif %}">
                     <span class="relative z-10">{% trans "STUDIOS" %}</span>
                 </a>
 
-                <a href="{% url 'store:catalog' %}#services"
-                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden text-gray-500 hover:text-gray-900 hover:bg-white/50">
+                <a href="{% url 'store:catalog' %}#section-services"
+                    class="nav-item relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 group overflow-hidden {% if 'service' in url_name %}text-teal-600 bg-teal-50/50 shadow-sm border border-teal-100{% else %}text-gray-500 hover:text-gray-900 hover:bg-white/50{% endif %}">
                     <span class="relative z-10">{% trans "SERVICES" %}</span>
                 </a>
 
@@ -402,8 +402,8 @@
                                 class="hover:text-mcot-orange transition-colors">{% trans "Contact Staff" %}</a></li>
                         <li><a href="{% url 'store:faq' %}"
                                 class="hover:text-mcot-orange transition-colors">{% trans "FAQ" %}</a></li>
-                        <li><a href="#" class="hover:text-mcot-orange transition-colors">{% trans "Terms of Service" %}</a></li>
-                        <li><a href="#" class="hover:text-mcot-orange transition-colors">{% trans "Privacy Policy" %}</a></li>
+                        <li><span class="hover:text-gray-900 transition-colors cursor-pointer">{% trans "Terms of Service" %}</span></li>
+                        <li><span class="hover:text-gray-900 transition-colors cursor-pointer">{% trans "Privacy Policy" %}</span></li>
                     </ul>
                 </div>
 
@@ -424,9 +424,9 @@
                 class="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 font-medium">
                 <p>&copy; {% now "Y" %} {% trans "MCOT Public Company Limited. All rights reserved." %}</p>
                 <div class="flex gap-6">
-                    <a href="#" class="hover:text-gray-900">{% trans "Sitemap" %}</a>
-                    <a href="#" class="hover:text-gray-900">{% trans "Cookies Usage" %}</a>
-                    <a href="#" class="hover:text-gray-900">{% trans "Security" %}</a>
+                    <span class="hover:text-gray-900 cursor-pointer">{% trans "Sitemap" %}</span>
+                    <span class="hover:text-gray-900 cursor-pointer">{% trans "Cookies Usage" %}</span>
+                    <span class="hover:text-gray-900 cursor-pointer">{% trans "Security" %}</span>
                 </div>
             </div>
         </div>

@@ -74,12 +74,7 @@ class UserRegisterForm(UserCreationForm):
         user.email = self.cleaned_data['email']
         if commit:
             user.save()
-            # Assign phone to profile
-            if hasattr(user, 'profile'):
-                user.profile.phone = self.cleaned_data['phone']
-                user.profile.save()
-            else:
-                # Should be created by signal, but just in case
-                from .models import Profile
-                Profile.objects.create(user=user, phone=self.cleaned_data['phone'])
+            # Explicitly create profile since post_save signal is removed
+            from .models import Profile
+            Profile.objects.create(user=user, phone=self.cleaned_data['phone'])
         return user

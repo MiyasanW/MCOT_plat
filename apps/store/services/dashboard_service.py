@@ -2,7 +2,8 @@ from django.utils import timezone
 from datetime import timedelta, datetime
 from django.db.models import Count, Q, Sum
 from django.contrib.auth.models import User
-from apps.store.models import Booking, Equipment, Studio, Staff, Product, Notification
+from apps.store.models import Booking, Equipment, Studio, Product, Notification
+from django.contrib.auth.models import User
 from django.contrib.admin.models import LogEntry
 import json
 import logging
@@ -216,8 +217,8 @@ class DashboardService:
             'equipment_total': Equipment.objects.count(),
             'equipment_available': Equipment.objects.filter(status='available').count(),
             'equipment_maintenance': Equipment.objects.filter(status='maintenance').count(),
-            'studio_total': Studio.objects.count(),
-            'staff_active': Staff.objects.filter(is_active=True).count(),
+            'total_studios': Studio.objects.count(),
+            'staff_active': User.objects.filter(groups__name='staff', is_active=True).count(),
         }
         
         # Revenue

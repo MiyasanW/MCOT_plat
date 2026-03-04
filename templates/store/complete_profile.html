@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}กรอกข้อมูลให้สมบูรณ์ — MCOT Rental Platform{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 mb-4 shadow-lg shadow-green-500/20 border border-white/50">
+                <i class="fas fa-user-check text-white text-2xl"></i>
+            </div>
+            <h1 class="text-3xl font-extrabold text-gray-900 font-display">กรอกข้อมูลให้สมบูรณ์</h1>
+            <p class="text-gray-600 text-sm mt-2 font-medium">กรุณากรอกเบอร์โทรศัพท์เพื่อเริ่มใช้งานระบบ</p>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="bg-white/60 backdrop-blur-xl shadow-2xl border border-white/60 rounded-3xl p-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-100/50 to-transparent rounded-bl-full pointer-events-none"></div>
+
+            <!-- User Info from Google -->
+            <div class="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-2xl border border-gray-100 relative z-10">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-mcot-orange to-mcot-purple flex items-center justify-center text-white font-bold text-lg shadow-md">
+                    {{ user.first_name|first|default:"?" }}
+                </div>
+                <div>
+                    <p class="font-bold text-gray-900">{{ user.get_full_name|default:user.email }}</p>
+                    <p class="text-sm text-gray-500">{{ user.email }}</p>
+                </div>
+            </div>
+
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm mb-4 shadow-sm">
+                    <p class="font-bold text-red-700"><i class="fas fa-exclamation-circle mr-1"></i> กรุณาตรวจสอบข้อมูล</p>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Phone Number -->
+                <div class="relative z-10">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        <i class="fas fa-phone mr-1 text-green-500"></i> เบอร์โทรศัพท์ <span class="text-red-500">*</span>
+                    </label>
+                    <input type="tel" name="phone" value="{{ form.phone.value|default:'' }}"
+                        class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 outline-none transition-all shadow-sm"
+                        placeholder="0812345678" required autofocus
+                        pattern="[0-9]{9,10}" maxlength="10">
+                    <p class="text-xs text-gray-400 mt-1">กรอกเบอร์โทรศัพท์ 9-10 หลัก (ตัวเลขเท่านั้น)</p>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit"
+                    class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3.5 rounded-xl hover:from-green-600 hover:to-emerald-700 transform hover:-translate-y-0.5 transition-all duration-200 shadow-lg shadow-green-500/30 relative z-10 mt-4">
+                    <i class="fas fa-check-circle mr-2"></i> บันทึกและเริ่มใช้งาน
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

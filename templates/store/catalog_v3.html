@@ -24,15 +24,15 @@
                     จากสตูดิโอระดับโลกจนถึงอุปกรณ์ถ่ายทำที่ทันสมัยที่สุด ทุกสิ่งที่คุณต้องการสำหรับงานโปรดักชั่นอยู่ที่นี่
                 </p>
                 
-                <!-- Vibrant Search -->
+            <!-- Vibrant Search -->
                 <div class="relative max-w-lg group">
                     <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
                     <div class="relative bg-white border-2 border-transparent focus-within:border-purple-300 rounded-2xl shadow-xl flex items-center p-2 transition-all">
                         <div class="w-12 h-12 flex items-center justify-center text-purple-500 shrink-0">
                             <i class="fas fa-search text-xl"></i>
                         </div>
-                        <input type="text" x-model="searchQuery" placeholder="ค้นหาสตูดิโอ, อุปกรณ์, หรือแพ็คเกจ..." class="w-full bg-transparent border-none focus:ring-0 text-gray-700 placeholder-gray-400 text-lg font-medium px-2 outline-none">
-                        <button class="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap">
+                        <input type="text" x-model="searchQuery" @keydown.enter="performSearch()" placeholder="ค้นหาสตูดิโอ, อุปกรณ์, หรือ OB Service..." class="w-full bg-transparent border-none focus:ring-0 text-gray-700 placeholder-gray-400 text-lg font-medium px-2 outline-none">
+                        <button @click="performSearch()" class="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap">
                             ค้นหา
                         </button>
                     </div>
@@ -50,7 +50,7 @@
                             <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 shadow-lg shadow-purple-200 flex items-center justify-center text-white text-2xl -translate-y-4"><i class="fas fa-camera"></i></div>
                         </div>
                         <div class="flex gap-4">
-                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 shadow-lg shadow-orange-200 flex items-center justify-center text-white text-2xl"><i class="fas fa-cube"></i></div>
+                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 shadow-lg shadow-orange-200 flex items-center justify-center text-white text-2xl"><i class="fas fa-truck-moving"></i></div>
                             <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-400 to-pink-600 shadow-lg shadow-pink-200 flex items-center justify-center text-white text-2xl -translate-y-4"><i class="fas fa-microphone"></i></div>
                         </div>
                     </div>
@@ -62,17 +62,20 @@
     <!-- Main Navigation Pills -->
     <div class="sticky top-[72px] z-40 bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-sm">
         <div class="max-w-7xl mx-auto px-6 py-4 flex gap-3 overflow-x-auto no-scrollbar items-center">
-            <button @click="activeSection = 'all'" :class="activeSection === 'all' ? 'bg-gray-900 text-white shadow-md' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'" class="px-5 py-2.5 rounded-full font-bold text-sm transition-all whitespace-nowrap flex items-center gap-2">
+            <button @click="changeSection('all')" :class="activeSection === 'all' ? 'bg-gray-900 text-white shadow-md' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'" class="px-5 py-2.5 rounded-full font-bold text-sm transition-all whitespace-nowrap flex items-center gap-2">
                 <i class="fas fa-compass" :class="activeSection === 'all' ? 'text-blue-400' : 'text-gray-400'"></i> ทั้งหมด
             </button>
-            <button @click="activeSection = 'studios'" :class="activeSection === 'studios' ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md shadow-purple-200' : 'bg-purple-50 hover:bg-purple-100 text-purple-700'" class="px-5 py-2.5 rounded-full font-bold text-sm transition-all whitespace-nowrap flex items-center gap-2">
+            <button @click="changeSection('studios')" :class="activeSection === 'studios' ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md shadow-purple-200' : 'bg-purple-50 hover:bg-purple-100 text-purple-700'" class="px-5 py-2.5 rounded-full font-bold text-sm transition-all whitespace-nowrap flex items-center gap-2">
                 <i class="fas fa-door-open"></i> สตูดิโอ
             </button>
-            <button @click="activeSection = 'packages'" :class="activeSection === 'packages' ? 'bg-gradient-to-r from-orange-400 to-red-500 text-white shadow-md shadow-orange-200' : 'bg-orange-50 hover:bg-orange-100 text-orange-700'" class="px-5 py-2.5 rounded-full font-bold text-sm transition-all whitespace-nowrap flex items-center gap-2">
-                <i class="fas fa-box-open"></i> แพ็คเกจ
+            <button @click="changeSection('packages')" :class="activeSection === 'packages' ? 'bg-gradient-to-r from-orange-400 to-red-500 text-white shadow-md shadow-orange-200' : 'bg-orange-50 hover:bg-orange-100 text-orange-700'" class="px-5 py-2.5 rounded-full font-bold text-sm transition-all whitespace-nowrap flex items-center gap-2">
+                <i class="fas fa-truck-moving"></i> OB Service
             </button>
-            <button @click="activeSection = 'equipment'" :class="activeSection === 'equipment' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md shadow-blue-200' : 'bg-blue-50 hover:bg-blue-100 text-blue-700'" class="px-5 py-2.5 rounded-full font-bold text-sm transition-all whitespace-nowrap flex items-center gap-2">
+            <button @click="changeSection('equipment')" :class="activeSection === 'equipment' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md shadow-blue-200' : 'bg-blue-50 hover:bg-blue-100 text-blue-700'" class="px-5 py-2.5 rounded-full font-bold text-sm transition-all whitespace-nowrap flex items-center gap-2">
                 <i class="fas fa-camera-retro"></i> อุปกรณ์
+            </button>
+            <button @click="changeSection('services')" :class="activeSection === 'services' ? 'bg-gradient-to-r from-teal-400 to-emerald-500 text-white shadow-md shadow-teal-200' : 'bg-teal-50 hover:bg-teal-100 text-teal-700'" class="px-5 py-2.5 rounded-full font-bold text-sm transition-all whitespace-nowrap flex items-center gap-2">
+                <i class="fas fa-user-tie"></i> บริการ
             </button>
         </div>
     </div>
@@ -80,7 +83,22 @@
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-6 py-12">
         
+        <!-- Empty State -->
+        {% if total_results == 0 %}
+        <div class="flex flex-col items-center justify-center py-20 px-4 text-center">
+            <div class="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                <i class="fas fa-search text-5xl text-gray-400"></i>
+            </div>
+            <h3 class="text-2xl font-black text-gray-900 mb-2">ไม่พบผลลัพธ์ที่คุณค้นหา</h3>
+            <p class="text-gray-500 max-w-md mx-auto mb-8">ลองค้นหาด้วยคำชี้แจงอื่น หรือเลือกดูหมวดหมู่สินค้าทั้งหมดเพื่อดูรายการที่เรามีให้บริการ</p>
+            <button @click="changeSection('all', true)" class="bg-gray-900 hover:bg-gray-800 text-white px-8 py-3 rounded-xl font-bold shadow-md transition-all">
+                ดูสินค้าทั้งหมด
+            </button>
+        </div>
+        {% endif %}
+
         <!-- 🌈 STUDIOS SECTION 🌈 -->
+        {% if studios %}
         <section id="section-studios" class="mb-24 scroll-mt-40 transition-opacity duration-500" x-show="activeSection === 'all' || activeSection === 'studios'" x-transition>
             <div class="flex items-center justify-between mb-10">
                 <div>
@@ -149,16 +167,18 @@
                 {% endfor %}
             </div>
         </section>
+        {% endif %}
 
-        <!-- 🍊 PACKAGES SECTION 🍊 -->
+        <!-- 🍊 OB SERVICE SECTION 🍊 -->
+        {% if packages %}
         <section id="section-packages" class="mb-24 scroll-mt-40 transition-opacity duration-500" x-show="activeSection === 'all' || activeSection === 'packages'" x-transition>
             <div class="flex items-center justify-between mb-10">
                 <div>
                     <h2 class="text-3xl font-black text-gray-900 flex items-center gap-3">
-                        <span class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shadow-inner"><i class="fas fa-box-open"></i></span>
-                        Packages
+                        <span class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shadow-inner"><i class="fas fa-truck-moving"></i></span>
+                        OB Service
                     </h2>
-                    <p class="text-gray-500 mt-2 text-lg">แพ็คเกจสุดคุ้ม จัดเต็มทุกงานโปรดักชั่น</p>
+                    <p class="text-gray-500 mt-2 text-lg">รถถ่ายทอดสด และบริการนอกสถานที่</p>
                 </div>
             </div>
 
@@ -211,6 +231,7 @@
                 {% endfor %}
             </div>
         </section>
+        {% endif %}
 
         <!-- 🔵 EQUIPMENT SECTION 🔵 -->
         <section id="section-equipment" class="mb-24 scroll-mt-40 transition-opacity duration-500" x-show="activeSection === 'all' || activeSection === 'equipment'" x-transition>
@@ -287,6 +308,45 @@
             {% endfor %}
         </section>
 
+        <!-- 🟢 SERVICES SECTION 🟢 -->
+        {% if services %}
+        <section id="section-services" class="mb-24 scroll-mt-40 transition-opacity duration-500" x-show="activeSection === 'all' || activeSection === 'services'" x-transition>
+            <div class="flex items-center justify-between mb-10">
+                <div>
+                    <h2 class="text-3xl font-black text-gray-900 flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shadow-inner"><i class="fas fa-concierge-bell"></i></span>
+                        บริการ (Services)
+                    </h2>
+                    <p class="text-gray-500 mt-2 text-lg">บริการตัดต่อ กราฟิก และอื่นๆ</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {% for service in services %}
+                <div class="catalog-item group bg-white border border-gray-100 hover:border-teal-200 rounded-[1.5rem] p-5 flex items-center hover:shadow-xl hover:shadow-teal-500/10 transition-all duration-300 relative gap-4" data-name="{{ service.name|lower }}" data-type="service">
+                    
+                    <div class="w-16 h-16 shrink-0 rounded-2xl bg-gradient-to-br from-teal-50 to-emerald-50 flex items-center justify-center border border-teal-100/50 group-hover:scale-105 transition-transform duration-300">
+                        <i class="fas fa-cogs text-teal-500 text-2xl"></i>
+                    </div>
+                    
+                    <div class="flex-grow min-w-0 pr-4">
+                        <h3 class="text-base font-black text-gray-900 mb-0.5 truncate group-hover:text-teal-600 transition-colors">{{ service.name }}</h3>
+                        <p class="text-xs text-gray-400 truncate mb-1">{{ service.category.name|default:"ทั่วไป" }}</p>
+                        <div class="flex items-center gap-2">
+                             <span class="text-sm font-black text-teal-600">฿{{ service.daily_rate|floatformat:0|intcomma }}<span class="text-[10px] font-medium ml-1 text-gray-400 uppercase tracking-wide">/ วัน</span></span>
+                        </div>
+                    </div>
+                    
+                    <button @click.prevent.stop="addToCart('{{ service.id }}', '{{ service.name }}', {{ service.daily_rate }}, '', 'service', 1)" class="w-11 h-11 shrink-0 rounded-xl bg-gray-50 hover:bg-teal-500 text-gray-400 hover:text-white border border-transparent shadow-sm hover:shadow-md flex items-center justify-center transition-all transform active:scale-95 group/btn">
+                        <i class="fas fa-plus group-hover/btn:rotate-90 transition-transform"></i>
+                    </button>
+                    
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
     </div>
 
     <!-- Floating Vibrant Cart Button -->
@@ -305,44 +365,37 @@
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('catalogAppV3', () => ({
-            searchQuery: '',
+            searchQuery: '{{ search_query|escapejs }}',
             cartCount: 0,
-            activeSection: 'all', // 'all', 'studios', 'packages', 'equipment'
+            activeSection: '{{ active_section|escapejs }}', // 'all', 'studios', 'packages', 'equipment'
 
             init() {
                 this.updateCartCount();
 
-                // Advanced Client-Side Search filtering
-                this.$watch('searchQuery', (value) => {
-                    const term = value.toLowerCase();
-                    const items = document.querySelectorAll('.catalog-item');
-                    items.forEach(el => {
-                        const name = el.getAttribute('data-name');
-                        const type = el.getAttribute('data-type'); // studio, package, equipment
-                        
-                        // Check section visibility and search term
-                        const matchesSection = this.activeSection === 'all' || this.activeSection === type;
-                        const matchesSearch = name.includes(term) || term === '';
-                        
-                        if (matchesSection && matchesSearch) {
-                            el.style.display = 'flex'; // our items use flex
-                        } else {
-                            el.style.display = 'none';
-                        }
-                    });
-                });
-
-                // Watch active section changes to re-run filter
-                this.$watch('activeSection', (section) => {
-                    // Trigger search update to apply both filters
-                    const currentSearch = this.searchQuery;
-                    this.searchQuery = currentSearch + ' '; // hack to trigger watch
-                    this.searchQuery = currentSearch;
-                });
-
                 window.addEventListener('cartUpdated', () => {
                     this.updateCartCount();
                 });
+            },
+
+            performSearch() {
+                const url = new URL(window.location.href);
+                if (this.searchQuery.trim() !== '') {
+                    url.searchParams.set('q', this.searchQuery.trim());
+                } else {
+                    url.searchParams.delete('q');
+                }
+                // Keep the current section filter when searching
+                url.searchParams.set('section', this.activeSection);
+                window.location.href = url.toString();
+            },
+
+            changeSection(section, clearSearch = false) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('section', section);
+                if (clearSearch) {
+                    url.searchParams.delete('q');
+                }
+                window.location.href = url.toString();
             },
 
             updateCartCount() {
@@ -361,6 +414,8 @@
                     existingItem = cart.find(i => i.id == `studio_${id}`);
                 } else if (type === 'package') {
                     existingItem = cart.find(i => i.id == `pkg_${id}`);
+                } else if (type === 'service') {
+                    existingItem = cart.find(i => i.id == `svc_${id}`);
                 } else {
                     existingItem = cart.find(i => i.id == id);
                 }
@@ -377,6 +432,7 @@
                     let internalId = id;
                     if (type === 'studio') internalId = `studio_${id}`;
                     if (type === 'package') internalId = `pkg_${id}`;
+                    if (type === 'service') internalId = `svc_${id}`;
                     
                     cart.push({
                         id: internalId,

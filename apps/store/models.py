@@ -4,9 +4,27 @@ from django.db.models import Q
 from django.utils import timezone
 from simple_history.models import HistoricalRecords
 from datetime import timedelta
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 # --- 1. Dynamic Configuration Models ---
+class SplashConfig(models.Model):
+    """ตั้งค่าหน้า Splash Screen (เช่น น้อมสำนึกในพระมหากรุณาธิคุณ) ก่อนเข้าเว็บ"""
+    is_active = models.BooleanField(default=False, verbose_name="เปิดใช้งาน Splash Screen")
+    title = models.CharField(max_length=200, default="น้อมสำนึกในพระมหากรุณาธิคุณอันหาที่สุดมิได้", verbose_name="หัวข้อข้อความ")
+    message = models.TextField(default="ข้าพระพุทธเจ้า คณะกรรมการ ผู้บริหาร พนักงานและลูกจ้าง\nบริษัท อสมท จำกัด (มหาชน)", verbose_name="เนื้อหาข้อความ")
+    image = models.ImageField(upload_to='splash/', blank=True, null=True, verbose_name="รูปภาพพระบรมฉายาลักษณ์ / รูปภาพพื้นหลัง")
+
+    class Meta:
+        verbose_name_plural = "ตั้งค่า - Splash Screen"
+
+    def __str__(self):
+        return "ตั้งค่าหน้าจอ Splash Screen"
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if not self.pk and SplashConfig.objects.exists():
+            raise ValidationError('มีแท็บตั้งค่า Splash Screen อยู่แล้ว ไม่สามารถสร้างเพิ่มได้ โปรดแก้ไขอันเดิม')
+
 class ProductCategory(models.Model):
     """หมวดหมู่สินค้า (เช่น กล้อง, เลนส์, ไฟ, รถ OB)"""
     name = models.CharField(max_length=100, unique=True, verbose_name="ชื่อหมวดหมู่")
@@ -15,13 +33,7 @@ class ProductCategory(models.Model):
     def __str__(self): return self.name
     class Meta: verbose_name_plural = "ตั้งค่า - หมวดหมู่สินค้า"
 
-class StaffPosition(models.Model):
-    """ตำแหน่งพนักงาน (เช่น ช่างภาพ, ครีเอทีฟ, คนขับรถ)"""
-    name = models.CharField(max_length=100, unique=True, verbose_name="ชื่อตำแหน่ง")
-    base_daily_rate = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="ค่าแรงเริ่มต้น (Standard Rate)")
-    
-    def __str__(self): return self.name
-    class Meta: verbose_name_plural = "ตั้งค่า - ตำแหน่งพนักงาน"
+# Staff roles are now handled entirely by django.contrib.auth.models.User and Group
 
 class PromotionCode(models.Model):
     """โค้ดโปรโมชั่น / ส่วนลด"""
@@ -48,40 +60,25 @@ class Profile(models.Model):
     
     def __str__(self): return f"Profile of {self.user.username}"
 
-# Signal to auto-create profile
-from django.db.models.signals import post_save
+# Profile auto-creation via signals is removed to prevent IntegrityError with Admin inlines.
+# Profile creation is now explicitly handled in UserAdmin (via ProfileInline) and UserRegisterForm.
+
+from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
+@receiver(m2m_changed, sender=User.groups.through)
+def auto_assign_is_staff(sender, instance, action, pk_set, **kwargs):
+    """
+    Automatically set `is_staff=True` when a user is added to the 'staff' group
+    so they can actually log into the Django Admin panel.
+    """
+    if action == "post_add":
+        if Group.objects.filter(pk__in=pk_set, name='staff').exists():
+            if not instance.is_staff:
+                instance.is_staff = True
+                instance.save(update_fields=['is_staff'])
 
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    try:
-        instance.profile.save()
-    except Profile.DoesNotExist:
-        Profile.objects.create(user=instance)
-
-class Staff(models.Model):
-    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='staff_profile', verbose_name="บัญชีผู้ใช้ (System User)")
-    name = models.CharField(max_length=200, verbose_name="ชื่อพนักงาน")
-    position = models.ForeignKey(StaffPosition, on_delete=models.SET_NULL, null=True, verbose_name="ตำแหน่ง")
-    daily_rate = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="ค่าแรงต่อวัน (Specific Rate)")
-    phone = models.CharField(max_length=20, verbose_name="เบอร์โทรศัพท์")
-    is_active = models.BooleanField(default=True, verbose_name="สถานะใช้งาน")
-    created_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="เพิ่มโดย")
-    history = HistoricalRecords()
-    
-    def save(self, *args, **kwargs):
-        # ถ้าไม่ได้ระบุค่าแรงเฉพาะ ให้ใช้ค่าแรงมาตรฐานของตำแหน่ง
-        if self.daily_rate == 0 and self.position:
-            self.daily_rate = self.position.base_daily_rate
-        super().save(*args, **kwargs)
-
-    def __str__(self): return f"{self.name} ({self.position.name if self.position else 'N/A'})"
-    class Meta: verbose_name_plural = "ทรัพยากร - พนักงาน"
+# Staff model removed - we now use User and Groups directly.
 
 class Product(models.Model):
     name = models.CharField(max_length=200, verbose_name="ชื่อสินค้า")
@@ -185,6 +182,28 @@ class PackageItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
+class ServiceCategory(models.Model):
+    """หมวดหมู่บริการ (เช่น รับตัดต่อ, ถ่ายทำ)"""
+    name = models.CharField(max_length=100, unique=True, verbose_name="ชื่อหมวดหมู่บริการ")
+    slug = models.SlugField(max_length=100, unique=True)
+    
+    def __str__(self): return self.name
+    class Meta: verbose_name_plural = "ตั้งค่า - หมวดหมู่บริการ"
+
+class ServiceOffer(models.Model):
+    """บริการ (เช่น ตัดต่อวิดีโอรายวัน)"""
+    name = models.CharField(max_length=200, verbose_name="ชื่อบริการ")
+    description = models.TextField(verbose_name="รายละเอียด", blank=True, null=True)
+    category = models.ForeignKey(ServiceCategory, on_delete=models.SET_NULL, null=True, verbose_name="หมวดหมู่")
+    daily_rate = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="ราคาเริ่มต้น (ต่อวัน/โปรเจกต์)")
+    is_active = models.BooleanField(default=True, verbose_name="เปิดให้บริการ")
+    
+    history = HistoricalRecords()
+    class Meta:
+        verbose_name = "บริการ (Service)"
+        verbose_name_plural = "ทรัพยากร - บริการ"
+    def __str__(self): return self.name
+
 # --- 3. Booking & Transaction Models ---
 class Booking(models.Model):
     STATUS_CHOICES = [
@@ -210,11 +229,11 @@ class Booking(models.Model):
 
     # Coordinator
     coordinator = models.ForeignKey(
-        Staff,
+        User,
         on_delete=models.SET_NULL,
         null=True, blank=True,
         related_name='coordinated_bookings',
-        verbose_name="ผู้ประสานงาน"
+        verbose_name="ผู้ประสานงาน (Staff)"
     )
 
     # Timeline
@@ -253,7 +272,7 @@ class Booking(models.Model):
     # Relationships (Using Through Models for Price Snapshot)
     products = models.ManyToManyField(Product, through='BookingItem', blank=True)
     studios = models.ManyToManyField(Studio, through='BookingStudio', blank=True)
-    staff = models.ManyToManyField(Staff, through='BookingStaff', blank=True)
+    staff = models.ManyToManyField(User, through='BookingStaff', blank=True, related_name='assigned_as_staff')
     packages = models.ManyToManyField(Package, through='BookingPackage', blank=True)
 
     history = HistoricalRecords()
@@ -281,6 +300,10 @@ class Booking(models.Model):
         return sum((bp.price_at_booking * bp.quantity) for bp in self.booked_packages.all())
         
     @property
+    def service_total(self):
+        return sum((bs.price_at_booking * bs.quantity) for bs in self.booked_services.all())
+        
+    @property
     def rental_days(self):
         if not self.start_time or not self.end_time:
             return 1
@@ -288,7 +311,7 @@ class Booking(models.Model):
         
     @property
     def calculated_total_price(self):
-        return (self.item_total + self.studio_total + self.package_total) * self.rental_days
+        return (self.item_total + self.studio_total + self.package_total + self.service_total) * self.rental_days
 
 # --- 4. Intermediary (Through) Models with Snapshots ---
 class BookingItem(models.Model):
@@ -326,14 +349,21 @@ class BookingStudio(models.Model):
         super().save(*args, **kwargs)
 
 class BookingStaff(models.Model):
-    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='booked_staff')
-    staff = models.ForeignKey(Staff, on_delete=models.PROTECT)
-    daily_rate_at_booking = models.DecimalField(max_digits=10, decimal_places=2)
+    """คนทำงานที่ถูก Assign เข้าไปในโปรเจกต์ (HR Use)"""
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='assigned_staff')
+    staff = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="พนักงาน")
+    assigned_date = models.DateField(auto_now_add=True)
+
+class BookingServiceOffer(models.Model):
+    """บริการที่ลูกค้าสั่งซื้อเข้าตะกร้า"""
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='booked_services')
+    service = models.ForeignKey(ServiceOffer, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    price_at_booking = models.DecimalField(max_digits=10, decimal_places=2)
 
     def save(self, *args, **kwargs):
-        if not self.daily_rate_at_booking and self.staff:
-            # หาเรทจาก position หรือ default
-            self.daily_rate_at_booking = self.staff.position.base_daily_rate if self.staff.position else 0
+        if not self.price_at_booking and self.service:
+            self.price_at_booking = self.service.daily_rate
         super().save(*args, **kwargs)
 
 class BookingPackage(models.Model):

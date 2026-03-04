@@ -1,8 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
-from datetime import datetime
-from apps.store.models import Product, ProductCategory, Studio, Package, Staff
-from apps.store.services.availability import AvailabilityService
+from apps.store.models import Product, ProductCategory, Studio, Package, ServiceOffer
 from apps.store.utils.ratelimit import ratelimit
 
 @ratelimit(key_prefix='catalog', rate=20, period=60, block=True)
@@ -11,21 +9,68 @@ def catalog(request):
     หน้าแสดงรายการสินค้าทั้งหมด (Unified Catalog V3)
     รวมทุกหมวดหมู่ไว้ในหน้าเดียว
     """
-    from apps.store.models import Product, Studio, Package, Staff
+    from apps.store.models import Product, Studio, Package, ServiceOffer
+    from django.db.models import Q
     
-    # Fetch all active items - Sorted by newest (id descending)
-    studios = Studio.objects.all().order_by('-id')
-    packages = Package.objects.filter(is_active=True).order_by('-id')
-    equipment = Product.objects.filter(is_active=True).select_related('category').order_by('category__name', '-id')
-    staff_members = Staff.objects.filter(is_active=True).select_related('position').order_by('-id')
+    # Get parameters
+    search_query = request.GET.get('q', '').strip()
+    active_section = request.GET.get('section', 'all')
+    
+    # Initialize querysets
+    studios = Studio.objects.none()
+    packages = Package.objects.none()
+    equipment = Product.objects.none()
+    services = ServiceOffer.objects.none()
+    
+    # 1. Base Querysets based on section
+    if active_section in ['all', 'studios']:
+        studios = Studio.objects.all().order_by('-id')
+    if active_section in ['all', 'packages']:
+        packages = Package.objects.filter(is_active=True).order_by('-id')
+    if active_section in ['all', 'equipment']:
+        equipment = Product.objects.filter(is_active=True).select_related('category').order_by('category__name', '-id')
+    if active_section in ['all', 'services']:
+        services = ServiceOffer.objects.filter(is_active=True).select_related('category').order_by('-id')
+
+    # 2. Apply Search Filter
+    if search_query:
+        if active_section in ['all', 'studios']:
+            studios = studios.filter(
+                Q(name__icontains=search_query) | 
+                Q(description__icontains=search_query)
+            )
+        if active_section in ['all', 'packages']:
+            packages = packages.filter(
+                Q(name__icontains=search_query) | 
+                Q(description__icontains=search_query)
+            )
+        if active_section in ['all', 'equipment']:
+            equipment = equipment.filter(
+                Q(name__icontains=search_query) | 
+                Q(description__icontains=search_query) |
+                Q(brand__icontains=search_query) if hasattr(Product, 'brand') else Q()
+            )
+        if active_section in ['all', 'services']:
+            services = services.filter(
+                Q(name__icontains=search_query) |
+                Q(category__name__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+
     categories = ProductCategory.objects.all().order_by('name')
+
+    # Count total results for empty state rendering
+    total_results = studios.count() + packages.count() + equipment.count() + services.count()
 
     context = {
         'studios': studios,
         'packages': packages,
         'equipment': equipment,
-        'staff_members': staff_members,
+        'services': services,
         'categories': categories,
+        'search_query': search_query,
+        'active_section': active_section,
+        'total_results': total_results,
     }
     return render(request, 'store/catalog_v3.html', context)
 
@@ -138,16 +183,16 @@ def service_list(request):
     หน้าแสดงบริการ (Services: Crew Only for now)
     Redesigned: Vehicles moved to Packages
     """
-    # 2. Crew (Staff)
-    staffs = Staff.objects.filter(is_active=True).select_related('position')
+    # 2. Services (Replaces Staff/Crew)
+    services = ServiceOffer.objects.filter(is_active=True).select_related('category')
 
     # 3. Post Production
     post_prod = Product.objects.filter(category__name='Post Production', is_active=True)
     
     context = {
-        'staffs': staffs,
+        'services': services,
         'post_prod': post_prod,
-        'st_count': staffs.count(),
+        'st_count': services.count(),
         'pp_count': post_prod.count(),
     }
     return render(request, 'store/service_list.html', context)

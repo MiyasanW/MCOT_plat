@@ -281,4 +281,22 @@ class AvailabilityService:
                 except Package.DoesNotExist:
                     pass
 
+            # 4. ServiceOffer
+            elif item_type == 'service' or str(item_id).startswith('srv_') or str(item_id).startswith('svc_'):
+                from apps.store.models import ServiceOffer
+                svc_id = str(item_id).replace('srv_', '').replace('svc_', '')
+                try:
+                    service = ServiceOffer.objects.get(pk=svc_id)
+                    # Services generally don't have strict physical overlap, but we verify they exist and are active
+                    if not service.is_active:
+                         conflicts.append({
+                            "id": item_id,
+                            "name": service.name,
+                            "message": "บริการนี้ถูกระงับชั่วคราว",
+                            "remaining": 0,
+                            "type": "service"
+                        })
+                except ServiceOffer.DoesNotExist:
+                    pass
+
         return conflicts

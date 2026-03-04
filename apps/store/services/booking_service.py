@@ -146,7 +146,25 @@ class BookingService:
                                 notes=f"(รวมอยู่ในแพ็คเกจ {package_obj.name})"
                             )
 
-                    # --- Case 3: Product (Default) ---
+                    # --- Case 3: ServiceOffer ---
+                    elif item_type == 'service' or str(raw_id).startswith('srv_'):
+                        svc_id = str(raw_id).replace('srv_', '').replace('svc_', '')
+                        
+                        # Lock Service Row
+                        from apps.store.models import ServiceOffer, BookingServiceOffer
+                        service_obj = get_object_or_404(ServiceOffer.objects.select_for_update(), pk=svc_id)
+                        
+                        # Services usually don't have strict physical overlap since it's a category of work.
+                        # If a capacity check is needed later, it can be added here.
+                        
+                        BookingServiceOffer.objects.create(
+                            booking=new_booking,
+                            service=service_obj,
+                            quantity=qty_requested,
+                            price_at_booking=service_obj.daily_rate
+                        )
+
+                    # --- Case 4: Product (Default) ---
                     else:
                         product_id = raw_id
                         

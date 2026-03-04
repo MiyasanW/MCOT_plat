@@ -28,5 +28,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path('summernote/', include('django_summernote.urls')),
+    path('accounts/', include('allauth.urls')),  # Social Login
     path('', include('apps.store.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

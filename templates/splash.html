@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>น้อมรำลึกในพระมหากรุณาธิคุณ - MCOT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Sarabun', sans-serif;
+            /* Use a dark ornate pattern as requested in the reference image */
+            background-color: #1a1a1a;
+            background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%232d2d2d" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+            color: #d4af37; /* Gold color for text */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .portrait-container {
+            width: 320px;
+            height: 420px;
+            border-radius: 50%;
+            border: 4px solid #d4af37;
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.2), inset 0 0 20px rgba(0,0,0,0.5);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            position: relative;
+            background-color: #000;
+        }
+
+        .portrait-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 10%; /* Adjust depending on image */
+        }
+
+        .enter-site-btn {
+            background-color: transparent;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-size: 1rem;
+            margin-top: 3rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .enter-site-btn:hover {
+            background-color: #d4af37;
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Placeholder image, user can replace this file at media/splash/portrait.jpg -->
+    <div class="portrait-container">
+        <!-- Change the src to the actual image path when available via Settings -->
+        <img src="{% if splash_image_url %}{{ splash_image_url }}{% else %}https://placehold.co/400x500/1a1a1a/d4af37?text=Portrait%20Image{% endif %}" alt="Portrait">
+    </div>
+
+    <div class="text-center px-4 max-w-3xl">
+        <h1 class="text-2xl md:text-3xl lg:text-4xl font-semibold mb-6 tracking-wide drop-shadow-md">
+            {% if message_title %}{{ message_title }}{% else %}น้อมสำนึกในพระมหากรุณาธิคุณอันหาที่สุดมิได้{% endif %}
+        </h1>
+        
+        <p class="text-lg md:text-xl text-gray-300 font-light leading-relaxed">
+            {% if message_body %}
+                {{ message_body|linebreaksbr }}
+            {% else %}
+                ข้าพระพุทธเจ้า คณะกรรมการ ผู้บริหาร พนักงานและลูกจ้าง<br>
+                บริษัท อสมท จำกัด (มหาชน)
+            {% endif %}
+        </p>
+    </div>
+
+    <a href="?enter=1" class="enter-site-btn">เข้าสู่เว็บไซต์</a>
+
+</body>
+</html>

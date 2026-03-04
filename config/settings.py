@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django.contrib.sites',  # Required by allauth
 
     # --- Third Party ---
     'import_export',
@@ -54,6 +55,12 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'django_summernote',
+    
+    # --- Allauth for Social Login ---
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     
     # --- Local Apps ---
     'apps.store',  # Main Rental App
@@ -70,6 +77,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware', # Assign history_user automatically
+    'apps.store.middleware.SplashScreenMiddleware', # Show splash screen once per session
+    'allauth.account.middleware.AccountMiddleware',  # Required by allauth
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -206,3 +215,33 @@ else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     # Optional: print warning to console so dev knows
     # print("Using Console Email Backend (Setup .env to send real emails)")
+
+# ==============================================================================
+# AUTHENTICATION & ALLAUTH SETTINGS
+# ==============================================================================
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 1
+
+# Allauth Configuration
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+# Custom Allauth Adapter
+SOCIALACCOUNT_ADAPTER = 'apps.store.adapters.MySocialAccountAdapter'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'VERIFIED_EMAIL': True,
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
