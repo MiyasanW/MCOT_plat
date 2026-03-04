@@ -31,3 +31,18 @@ Thumbs.db
 
 # Backup
 *.zip
+
+# Virtual Environments
+venv/
+venv2/
+venv_mcot/
+mcot_env/
+helper_venv/
+_deps_broken/
+deps/
+python/
+
+# Temp files
+get-pip.py
+deploy_to_vps.sh
+*.tar.gz
