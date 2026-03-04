@@ -81,7 +81,122 @@
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-6 py-12">
+    <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col lg:flex-row gap-10 items-start">
+        
+        <!-- Sidebar Navigation (Glassmorphism V3) -->
+        <aside class="w-full lg:w-72 shrink-0 lg:sticky lg:top-[160px] space-y-8 lg:block hidden">
+            <!-- Search & Filters Container -->
+            <div class="bg-white/80 backdrop-blur-xl shadow-xl border border-white/60 rounded-[2rem] overflow-hidden relative">
+                <!-- Abstract BG -->
+                <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-400/10 to-transparent rounded-bl-full pointer-events-none"></div>
+                
+                <h3 class="bg-gray-50/80 px-6 py-5 text-sm font-black text-gray-900 border-b border-gray-100 flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center shadow-inner"><i class="fas fa-filter text-xs"></i></span>
+                    หมวดหมู่บริการ
+                </h3>
+
+                <div class="p-4 space-y-6">
+                    <!-- 1. Equipment Section -->
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 px-2 flex items-center gap-2">
+                            <i class="fas fa-camera text-blue-400"></i> อุปกรณ์ (Equipment)
+                        </h4>
+                        <ul class="space-y-1">
+                            <li>
+                                <a href="{% url 'store:catalog' %}?section=equipment" class="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold {% if not active_category and not search_query %}bg-blue-50 text-blue-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %} transition-all">
+                                    <span>อุปกรณ์ทั้งหมด</span>
+                                    {% if not active_category and not search_query %}<i class="fas fa-chevron-right text-[10px]"></i>{% endif %}
+                                </a>
+                            </li>
+                            {% for cat in equipment_categories %}
+                            <li>
+                                <a href="{% url 'store:catalog' %}?category={{ cat.slug }}&section=equipment" class="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold {% if active_category.id == cat.id %}bg-blue-50 text-blue-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %} transition-all">
+                                    <span>{{ cat.name }}</span>
+                                    {% if active_category.id == cat.id %}<i class="fas fa-chevron-right text-[10px]"></i>{% endif %}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    
+                    <div class="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+
+                    <!-- 2. Studios Section -->
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 px-2 flex items-center gap-2">
+                            <i class="fas fa-video text-purple-400"></i> สตูดิโอ (Studios)
+                        </h4>
+                        <ul class="space-y-1">
+                            <li>
+                                <a href="#" @click.prevent="changeSection('studios')" class="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-purple-50 hover:text-purple-600 transition-all" :class="activeSection === 'studios' ? 'bg-purple-50 text-purple-600' : ''">
+                                    <span>สตูดิโอทั้งหมด</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+
+                    <!-- 3. OB Service Section -->
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 px-2 flex items-center gap-2">
+                            <i class="fas fa-truck-moving text-orange-400"></i> OB Service
+                        </h4>
+                        <ul class="space-y-1">
+                            <li>
+                                <a href="#" @click.prevent="changeSection('packages')" class="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition-all" :class="activeSection === 'packages' ? 'bg-orange-50 text-orange-600' : ''">
+                                    <span>แพ็กเกจ OB ทั้งหมด</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+
+                    <!-- 4. Services Section -->
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 px-2 flex items-center gap-2">
+                            <i class="fas fa-concierge-bell text-teal-400"></i> บริการ (Services)
+                        </h4>
+                        <ul class="space-y-1">
+                            <li>
+                                <a href="#" @click.prevent="changeSection('services')" class="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-teal-50 hover:text-teal-600 transition-all" :class="activeSection === 'services' ? 'bg-teal-50 text-teal-600' : ''">
+                                    <span>บริการทั้งหมด</span>
+                                </a>
+                            </li>
+                            {% for cat in service_categories %}
+                            <li>
+                                <a href="{% url 'store:catalog' %}?category={{ cat.slug }}&section=services" class="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold {% if active_category.id == cat.id %}bg-teal-50 text-teal-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %} transition-all">
+                                    <span>{{ cat.name }}</span>
+                                    {% if active_category.id == cat.id %}<i class="fas fa-chevron-right text-[10px]"></i>{% endif %}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Help Banner -->
+            <div class="bg-gradient-to-br from-blue-600 to-purple-700 rounded-[2rem] p-6 text-white shadow-xl shadow-blue-500/20 relative overflow-hidden group">
+                <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10 pointer-events-none"></div>
+                
+                <div class="relative z-10 text-center">
+                    <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mx-auto mb-4 border border-white/30 shadow-inner">
+                        <i class="fas fa-headset text-xl drop-shadow-sm"></i>
+                    </div>
+                    <h4 class="font-black mb-1 drop-shadow-sm">ต้องการคำแนะนำ?</h4>
+                    <p class="text-sm text-blue-100 mb-4 opacity-90 drop-shadow-md">ทีมงานของเราพร้อมช่วยเหลือคุณ</p>
+                    <a href="{% url 'store:contact' %}" class="block w-full py-2.5 bg-white text-blue-600 rounded-xl font-bold text-sm hover:shadow-lg transition-transform hover:-translate-y-0.5 active:scale-95 shadow-sm text-center">
+                        ติดต่อทีมงาน MCOT
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Product Contents -->
+        <div class="flex-1 w-full min-w-0">
         
         <!-- Empty State -->
         {% if total_results == 0 %}
@@ -347,6 +462,7 @@
         </section>
         {% endif %}
 
+        </div>
     </div>
 
     <!-- Floating Vibrant Cart Button -->
