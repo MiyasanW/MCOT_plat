@@ -58,6 +58,10 @@ def catalog(request):
             )
 
     categories = ProductCategory.objects.all().order_by('name')
+    
+    # Needs ServiceCategory to show service subcategories
+    from apps.store.models import ServiceCategory
+    service_categories = ServiceCategory.objects.all().order_by('name')
 
     # Count total results for empty state rendering
     total_results = studios.count() + packages.count() + equipment.count() + services.count()
@@ -68,6 +72,8 @@ def catalog(request):
         'equipment': equipment,
         'services': services,
         'categories': categories,
+        'equipment_categories': categories,  # Using ProductCategory for Equipment
+        'service_categories': service_categories,
         'search_query': search_query,
         'active_section': active_section,
         'total_results': total_results,
