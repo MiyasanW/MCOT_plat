@@ -104,7 +104,7 @@
     </div>
 
     <!-- Main Commerce Navbar (Premium Light Glass V5) -->
-    <nav
+    <nav x-data="{ mobileMenuOpen: false }"
         class="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b-2 border-gray-400 shadow-lg transition-all duration-300 group/nav">
 
         <!-- 1. Ambient Gradient Glow (Top) -->
@@ -119,15 +119,24 @@
 
         <div class="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between relative">
 
-            <!-- Logo (Glow Effect) -->
-            <a href="/" class="flex items-center gap-3 group/logo flex-shrink-0 relative">
-                <div
-                    class="absolute inset-0 bg-mcot-orange/10 blur-xl rounded-full opacity-0 group-hover/logo:opacity-50 transition-opacity duration-500">
-                </div>
-                <!-- Need Dark Logo or Drop Shadow for Light BG -->
-                <img src="{% static 'images/logo.png' %}" alt="MCOT Rental"
-                    class="h-10 w-auto object-contain relative z-10 transition-transform duration-300 group-hover/logo:scale-105 drop-shadow-md">
-            </a>
+            <!-- Mobile Menu Button & Logo Container -->
+            <div class="flex items-center gap-2 lg:gap-3">
+                <!-- Mobile Hamburger (lg:hidden) -->
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden p-2 -ml-2 text-gray-500 hover:text-mcot-orange focus:outline-none transition-colors">
+                    <i class="fas fa-bars text-xl" x-show="!mobileMenuOpen"></i>
+                    <i class="fas fa-times text-xl" x-show="mobileMenuOpen" style="display: none;"></i>
+                </button>
+
+                <!-- Logo (Glow Effect) -->
+                <a href="/" class="flex items-center gap-3 group/logo flex-shrink-0 relative">
+                    <div
+                        class="absolute inset-0 bg-mcot-orange/10 blur-xl rounded-full opacity-0 group-hover/logo:opacity-50 transition-opacity duration-500">
+                    </div>
+                    <!-- Need Dark Logo or Drop Shadow for Light BG -->
+                    <img src="{% static 'images/logo.png' %}" alt="MCOT Rental"
+                        class="h-10 w-auto object-contain relative z-10 transition-transform duration-300 group-hover/logo:scale-105 drop-shadow-md">
+                </a>
+            </div>
 
             <!-- Main Navigation (Pill For Light Theme) -->
             <div
@@ -333,6 +342,88 @@
                     </div>
                 </a>
             </div>
+        </div>
+
+        <!-- Mobile Off-Canvas Menu -->
+        <div x-show="mobileMenuOpen" 
+             class="fixed inset-0 z-[100] lg:hidden"
+             style="display: none;">
+            
+            <!-- Backdrop -->
+            <div x-show="mobileMenuOpen" 
+                 x-transition:enter="transition-opacity ease-linear duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition-opacity ease-linear duration-300"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm" 
+                 @click="mobileMenuOpen = false"></div>
+                 
+            <!-- Drawer Menu -->
+            <div x-show="mobileMenuOpen"
+                 x-transition:enter="transition ease-in-out duration-300 transform"
+                 x-transition:enter-start="-translate-x-full"
+                 x-transition:enter-end="translate-x-0"
+                 x-transition:leave="transition ease-in-out duration-300 transform"
+                 x-transition:leave-start="translate-x-0"
+                 x-transition:leave-end="-translate-x-full"
+                 class="relative flex w-full max-w-xs flex-col overflow-y-auto bg-white pb-12 shadow-2xl h-full">
+                
+                <div class="flex px-4 pb-2 pt-5 items-center justify-between border-b border-gray-100 pb-4">
+                    <img src="{% static 'images/logo.png' %}" alt="MCOT Rental" class="h-8 w-auto">
+                    <button type="button" class="-m-2 p-2 text-gray-400 hover:text-gray-500" @click="mobileMenuOpen = false">
+                        <span class="sr-only">Close menu</span>
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-6 px-4 py-6">
+                    <div class="space-y-2">
+                        <a href="{% url 'store:home' %}" class="block px-3 py-2 text-base font-bold text-gray-900 hover:text-mcot-orange transition-colors">หน้าหลัก (Home)</a>
+                        <a href="{% url 'store:catalog' %}#section-equipment" class="block px-3 py-2 text-base font-bold text-gray-900 hover:text-blue-600 transition-colors">อุปกรณ์ (Equipment)</a>
+                        <a href="{% url 'store:catalog' %}#section-packages" class="block px-3 py-2 text-base font-bold text-gray-900 hover:text-orange-600 transition-colors">แพ็กเกจ (Packages)</a>
+                        <a href="{% url 'store:catalog' %}#section-studios" class="block px-3 py-2 text-base font-bold text-gray-900 hover:text-purple-600 transition-colors">สตูดิโอ (Studios)</a>
+                        <a href="{% url 'store:catalog' %}#section-services" class="block px-3 py-2 text-base font-bold text-gray-900 hover:text-teal-600 transition-colors">บริการ (Services)</a>
+                    </div>
+                    
+                    <div class="border-t border-gray-100 pt-6 space-y-2">
+                        <a href="{% url 'store:about' %}" class="block px-3 py-2 text-base font-medium text-gray-500 hover:text-gray-900">เกี่ยวกับเรา</a>
+                        <a href="{% url 'store:faq' %}" class="block px-3 py-2 text-base font-medium text-gray-500 hover:text-gray-900">คำถามที่พบบ่อย (FAQ)</a>
+                        <a href="{% url 'store:contact' %}" class="block px-3 py-2 text-base font-medium text-mcot-orange hover:text-orange-700">ติดต่อทีมงาน</a>
+                    </div>
+
+                    <div class="border-t border-gray-100 pt-6">
+                        {% if user.is_authenticated %}
+                            <div class="px-3 py-2 text-sm text-gray-500 font-bold uppercase mb-2">บัญชีผู้ใช้ (Account)</div>
+                            <a href="{% url 'store:my_bookings' %}" class="block px-3 py-2 text-base font-medium text-gray-900"><i class="fas fa-clipboard-list w-6 text-center text-gray-400 mr-2"></i> การจองของฉัน</a>
+                            <a href="{% url 'password_change' %}" class="block px-3 py-2 text-base font-medium text-gray-900"><i class="fas fa-key w-6 text-center text-gray-400 mr-2"></i> เปลี่ยนรหัสผ่าน</a>
+                            {% if user.is_staff %}
+                            <a href="{% url 'admin:index' %}" class="block px-3 py-2 text-base font-medium text-gray-900"><i class="fas fa-cog w-6 text-center text-gray-400 mr-2"></i> จัดการระบบ (Admin)</a>
+                            <a href="{% url 'store:staff_analytics' %}" class="block px-3 py-2 text-base font-medium text-gray-900"><i class="fas fa-chart-line w-6 text-center text-gray-400 mr-2"></i> ข้อมูลสถิติ (Analytics)</a>
+                            <a href="{% url 'store:calendar' %}" class="block px-3 py-2 text-base font-medium text-gray-900"><i class="fas fa-calendar-alt w-6 text-center text-gray-400 mr-2"></i> ปฏิทินงาน (Calendar)</a>
+                            {% endif %}
+                            <a href="{% url 'logout' %}" class="block px-3 py-2 mt-4 text-base font-bold text-red-600 bg-red-50 rounded-lg text-center"><i class="fas fa-sign-out-alt"></i> ออกจากระบบ</a>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="block w-full text-center px-4 py-3 border border-transparent rounded-xl shadow-sm text-base font-bold text-white bg-mcot-orange hover:bg-orange-600 transition-colors">เข้าสู่ระบบ / ลงทะเบียน</a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mt-auto border-t border-gray-100 py-6 px-4">
+                    <div class="flex items-center gap-4 text-mcot-orange mb-4">
+                        <i class="fas fa-phone-alt bg-orange-50 p-3 rounded-full"></i>
+                        <div>
+                            <div class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Support 24/7</div>
+                            <div class="font-bold text-lg">02-201-6000</div>
+                        </div>
+                    </div>
+                    <div class="text-xs text-center text-gray-400">
+                        &copy; {% now "Y" %} MCOT Public Company Limited.
+                    </div>
+                </div>
+            </div>
+        </div>
     </nav>
 
     <!-- Main Content -->

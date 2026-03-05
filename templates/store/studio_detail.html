@@ -6,7 +6,7 @@
 {% block title %}{{ studio.name }} | MCOT Rental Platform{% endblock %}
 
 {% block content %}
-<div class="min-h-screen pb-24 relative overflow-hidden">
+<div class="min-h-screen pb-32 xl:pb-24 relative overflow-hidden">
     <!-- Ambient Light Background -->
     <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-mcot-purple/5 rounded-full blur-[150px] pointer-events-none"></div>
     <div class="absolute bottom-1/4 left-0 w-[600px] h-[600px] bg-mcot-orange/5 rounded-full blur-[150px] pointer-events-none"></div>
@@ -39,21 +39,21 @@
             </span>
         </nav>
 
-        <div class="grid grid-cols-1 xl:grid-cols-12 gap-8 lg:gap-12">
-            
-            <!-- Left Content Column -->
-            <div class="xl:col-span-8 space-y-8">
-                
-                <!-- Title & Brief -->
-                <div>
-                    <div class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/70 border border-white/60 rounded-full text-[10px] font-bold text-gray-800 tracking-wider uppercase mb-5 shadow-sm backdrop-blur-md">
-                        <i class="fas fa-star text-xs text-mcot-orange"></i> พื้นที่ระดับพรีเมียม
-                    </div>
-                    <h1 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-gray-900 via-gray-700 to-gray-500 mb-6 leading-tight font-display tracking-tight drop-shadow-sm">
-                        {{ studio.name }}
-                    </h1>
-                </div>
+        <!-- Title & Brief (Moved outside grid for mobile-first flow) -->
+        <div class="mb-8 xl:mb-12">
+            <div class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/70 border border-white/60 rounded-full text-[10px] font-bold text-gray-800 tracking-wider uppercase mb-5 shadow-sm backdrop-blur-md">
+                <i class="fas fa-star text-xs text-mcot-orange"></i> พื้นที่ระดับพรีเมียม
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-gray-900 via-gray-700 to-gray-500 mb-6 leading-tight font-display tracking-tight drop-shadow-sm">
+                {{ studio.name }}
+            </h1>
+        </div>
 
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-y-8 xl:gap-12">
+            
+            <!-- Left Content Column (Specs & Desc) -->
+            <div class="xl:col-span-8 space-y-8 order-2 xl:order-1">
+                
                 <!-- Glass Technical Specs (Light Frosted) -->
                 <div class="bg-white/60 backdrop-blur-xl p-8 md:p-10 !rounded-[2rem] shadow-xl border border-white/60 relative overflow-hidden group">
                     <div class="absolute -right-20 -top-20 w-64 h-64 bg-mcot-orange/5 rounded-full blur-3xl group-hover:bg-mcot-orange/10 transition-colors duration-700"></div>
@@ -136,8 +136,8 @@
             </div>
 
             <!-- Right Booking Sidebar (Sticky Light Glass) -->
-            <div class="xl:col-span-4 relative mt-12 xl:mt-0">
-                <div class="sticky top-28">
+            <div class="xl:col-span-4 relative mt-4 xl:mt-0 order-1 xl:order-2">
+                <div class="xl:sticky xl:top-28">
                     
                     <!-- Floating Booking Card -->
                     <div class="bg-white/70 backdrop-blur-2xl !rounded-[2rem] p-8 lg:p-10 shadow-2xl border border-white/60 relative overflow-hidden">
@@ -194,5 +194,15 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Fixed Mobile Action Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-gray-200 p-4 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] xl:hidden flex gap-3">
+    <a href="tel:022016000" class="flex-1 bg-mcot-orange text-white text-center py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 active:scale-95 transition-transform">
+        <i class="fas fa-phone-alt"></i> โทรด่วน
+    </a>
+    <a href="mailto:sales@mcot.net" class="flex-1 bg-blue-500 text-white text-center py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-95 transition-transform">
+        <i class="fas fa-envelope"></i> ส่งอีเมล
+    </a>
 </div>
 {% endblock %}
