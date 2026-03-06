@@ -15,6 +15,20 @@ def catalog(request):
     # Get parameters
     search_query = request.GET.get('q', '').strip()
     active_section = request.GET.get('section', 'all')
+    category_slug = request.GET.get('category', '').strip()
+    
+    # Needs ServiceCategory to show service subcategories
+    from apps.store.models import ServiceCategory
+    
+    active_category = None
+    if category_slug:
+        try:
+            active_category = ProductCategory.objects.get(slug=category_slug)
+        except ProductCategory.DoesNotExist:
+            try:
+                active_category = ServiceCategory.objects.get(slug=category_slug)
+            except ServiceCategory.DoesNotExist:
+                pass
     
     # Initialize querysets
     studios = Studio.objects.none()
@@ -28,9 +42,16 @@ def catalog(request):
     if active_section in ['all', 'packages']:
         packages = Package.objects.filter(is_active=True).order_by('-id')
     if active_section in ['all', 'equipment']:
-        equipment = Product.objects.filter(is_active=True).select_related('category').order_by('category__name', '-id')
+        equipment = Product.objects.filter(is_active=True).select_related('category')
+        if isinstance(active_category, ProductCategory):
+            equipment = equipment.filter(category=active_category)
+        equipment = equipment.order_by('category__name', '-id')
+        
     if active_section in ['all', 'services']:
-        services = ServiceOffer.objects.filter(is_active=True).select_related('category').order_by('-id')
+        services = ServiceOffer.objects.filter(is_active=True).select_related('category')
+        if isinstance(active_category, ServiceCategory):
+            services = services.filter(category=active_category)
+        services = services.order_by('-id')
 
     # 2. Apply Search Filter
     if search_query:
@@ -58,9 +79,6 @@ def catalog(request):
             )
 
     categories = ProductCategory.objects.all().order_by('name')
-    
-    # Needs ServiceCategory to show service subcategories
-    from apps.store.models import ServiceCategory
     service_categories = ServiceCategory.objects.all().order_by('name')
 
     # Count total results for empty state rendering
@@ -76,6 +94,7 @@ def catalog(request):
         'service_categories': service_categories,
         'search_query': search_query,
         'active_section': active_section,
+        'active_category': active_category,
         'total_results': total_results,
     }
     return render(request, 'store/catalog_v3.html', context)

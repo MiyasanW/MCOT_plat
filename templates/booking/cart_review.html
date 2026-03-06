@@ -268,7 +268,8 @@
 
                 const payload = {
                     items: this.cartItems.map(item => ({
-                        product_id: item.id,
+                        id: item.id,
+                        type: item.type || 'product',
                         quantity: parseInt(item.quantity)
                     })),
                     start: this.dates.start,

@@ -35,7 +35,7 @@ def cart_checkout(request, booking_id):
     """
     หน้าตะกร้าสินค้า - Step 4/4: ชำระเงิน (Success)
     """
-    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    booking = get_object_or_404(Booking, id=booking_id, created_by=request.user)
     return render(request, 'booking/cart_checkout.html', {'booking': booking})
 @require_GET
 def check_promo_api(request):
@@ -179,7 +179,7 @@ def create_booking_api(request):
         payload = json.loads(request.body)
         cart_items = payload.get('items', [])
         
-        phone = payload.get('phone')
+        phone = payload.get('customer_phone') or payload.get('phone')
         import re
         if phone and not re.match(r'^[0-9\-\+\s\(\)]+$', phone):
             return JsonResponse({"success": False, "message": "เบอร์โทรศัพท์ไม่ถูกต้อง กรุณากรอกเฉพาะตัวเลข"}, status=400)

@@ -159,13 +159,18 @@ def booking_action_api(request, booking_id):
         data = json.loads(request.body)
         action = data.get('action')
         
-        if action == 'request_payment':
+        if action == 'send_quotation':
             if booking.status != 'draft':
                 raise ValueError("ใบจองไม่ได้อยู่ในสถานะรอตรวจสอบ")
+            # Send quotation PDF via email
+            items = booking.items.select_related('product', 'equipment').all()
+            packages = booking.booked_packages.select_related('package').all()
+            studios = booking.booked_studios.select_related('studio').all()
+            NotificationService.send_quotation_email(booking, items, packages, studios)
+            # Change status to pending
             booking.status = 'pending'
             booking.expires_at = timezone.now() + timedelta(hours=24)
             booking.save(update_fields=['status', 'expires_at'])
-            NotificationService.send_notification(booking, 'pending_deposit')
             
         elif action == 'confirm_payment':
             if booking.payment_status != 'pending':

@@ -60,6 +60,8 @@
                 <input type="hidden" name="next" value="{{ next }}" />
             </form>
 
+            {% get_providers as socialaccount_providers %}
+            {% if socialaccount_providers %}
             <!-- Social Login Divider -->
             <div class="relative z-10 mt-6">
                 <div class="flex items-center gap-3">
@@ -82,6 +84,7 @@
                     เข้าสู่ระบบด้วย Google
                 </a>
             </div>
+            {% endif %}
 
             <!-- Footer Links -->
             <div class="mt-8 text-center text-sm text-gray-600 relative z-10">

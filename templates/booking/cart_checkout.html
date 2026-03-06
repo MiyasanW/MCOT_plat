@@ -10,13 +10,13 @@
         
         <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-green-100">
             <!-- Header Banner -->
-            <div class="bg-green-500 py-10 px-8 text-center relative overflow-hidden">
+            <div class="bg-blue-600 py-10 px-8 text-center relative overflow-hidden">
                 <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg relative z-10 text-green-500 text-4xl transform scale-100 animate-bounce">
-                    <i class="fas fa-check"></i>
+                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg relative z-10 text-blue-600 text-4xl transform scale-100 animate-bounce">
+                    <i class="fas fa-paper-plane"></i>
                 </div>
-                <h1 class="text-3xl font-extrabold text-white font-display relative z-10 mb-2">ทำรายการสำเร็จ!</h1>
-                <p class="text-green-50 relative z-10">ระบบได้รับคำขอหมายเลข #{{ booking.id }} ของคุณแล้ว</p>
+                <h1 class="text-3xl font-extrabold text-white font-display relative z-10 mb-2">ส่งคำขอสำเร็จ!</h1>
+                <p class="text-blue-50 relative z-10">ระบบได้รับคำขอหมายเลข #{{ booking.id }} ของคุณเรียบร้อยแล้ว</p>
             </div>
 
             <!-- Content Area -->
@@ -24,49 +24,29 @@
                 <div class="flex flex-col md:flex-row items-center justify-between bg-gray-50 rounded-2xl p-6 border border-gray-100 mb-8">
                     <div class="text-center md:text-left mb-4 md:mb-0">
                         <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">สถานะปัจจุบัน</p>
-                        <p class="text-lg font-bold text-mcot-orange flex items-center gap-2 justify-center md:justify-start">
-                            <i class="fas fa-clock"></i> รอการชำระเงิน
+                        <p class="text-lg font-bold text-blue-600 flex items-center gap-2 justify-center md:justify-start">
+                            <i class="fas fa-hourglass-half"></i> รอจัดส่งใบเสนอราคา
                         </p>
                     </div>
                     <div class="text-center md:text-right">
-                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">ยอดชำระสุทธิ</p>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">ยอดประเมินเบื้องต้น</p>
                         <p class="text-2xl font-extrabold text-gray-900">฿{{ booking.final_total|floatformat:0|intcomma }}</p>
                     </div>
                 </div>
 
-                <div class="prose prose-sm max-w-none text-gray-600 mb-8 px-4 text-center md:text-left">
-                    <h3 class="font-bold text-gray-900 mb-2">ขั้นตอนต่อไป:</h3>
-                    <ol class="list-decimal pl-5 space-y-2">
-                        <li>กรุณาทำการชำระเงินตามช่องทางด้านล่าง เพื่อยืนยันคิวการจองให้สมบูรณ์</li>
-                        <li>แนบหลักฐานการโอนเงิน (สลิป) ผ่านระบบ หรือแนบภายหลังที่หน้า 'การจองของฉัน'</li>
-                        <li>รอรับอีเมลยืนยันจากเจ้าหน้าที่ ภายใน 24 ชั่วโมง</li>
+                <div class="prose prose-sm max-w-none text-gray-600 mb-10 px-4 text-center md:text-left bg-blue-50 rounded-2xl p-6 border border-blue-100">
+                    <h3 class="font-bold text-gray-900 mb-3 text-lg"><i class="fas fa-info-circle text-blue-500 mr-2"></i> ขั้นตอนต่อไป:</h3>
+                    <ol class="list-decimal pl-5 space-y-3">
+                        <li>เจ้าหน้าที่จะทำการตรวจสอบคิวว่างและยืนยันรายละเอียดเครื่องมือกับท่านอีกครั้ง</li>
+                        <li><strong>ใบเสนอราคา (Quotation) อย่างเป็นทางการ จะถูกจัดส่งไปยังอีเมลของท่าน</strong> ภายใน 24 ชั่วโมง</li>
+                        <li>เมื่อท่านตรวจสอบและยืนยันใบเสนอราคาผ่านอีเมลแล้ว จึงจะเข้าสู่ขั้นตอนการชำระเงิน</li>
                     </ol>
-                </div>
-
-                <!-- Payment Info -->
-                <div class="bg-orange-50 rounded-2xl p-6 border border-orange-100 mb-8">
-                    <h3 class="text-sm font-bold text-orange-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <i class="fas fa-money-check-alt"></i> ช่องทางการชำระเงิน
-                    </h3>
-                    <div class="flex items-center gap-4 bg-white p-4 rounded-xl border border-orange-200">
-                        <div class="w-12 h-12 bg-blue-900 rounded-lg flex items-center justify-center shrink-0">
-                            <i class="fas fa-university text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold text-gray-900 text-lg">ธนาคารกรุงไทย (KTB)</p>
-                            <p class="text-gray-600 font-mono text-lg tracking-wider font-bold my-1">000-0-00000-0</p>
-                            <p class="text-sm text-gray-500">บมจ. อสมท (MCOT Public Company Limited)</p>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="{% url 'store:booking_detail' booking.id %}" class="bg-gray-900 hover:bg-gray-800 text-white font-bold py-3 px-8 rounded-xl transition-all text-center flex-1 flex items-center justify-center gap-2">
-                        <i class="fas fa-file-invoice"></i> แนบสลิปชำระเงินทันที
-                    </a>
-                    <a href="{% url 'store:my_bookings' %}" class="bg-white border-2 border-gray-200 hover:border-gray-900 hover:text-gray-900 text-gray-600 font-bold py-3 px-8 rounded-xl transition-all text-center flex-1">
-                        ดูการจองของฉัน
+                    <a href="{% url 'store:my_bookings' %}" class="bg-gray-900 hover:bg-gray-800 text-white font-bold py-3 px-8 rounded-xl transition-all text-center flex-1">
+                        <i class="fas fa-list-ul mr-2"></i> ดูรายการคำขอของฉัน
                     </a>
                 </div>
             </div>

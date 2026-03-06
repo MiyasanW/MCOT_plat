@@ -25,7 +25,11 @@
                 </div>
             </div>
             <div>
-                {% if booking.payment_status == 'paid' %}
+                {% if booking.status == 'draft' %}
+                    <span class="px-5 py-2.5 rounded-xl bg-blue-50 text-blue-600 font-bold border border-blue-200 shadow-sm inline-flex items-center">
+                        <i class="fas fa-file-invoice mr-2 text-blue-500"></i> รอใบเสนอราคา
+                    </span>
+                {% elif booking.payment_status == 'paid' %}
                     <span class="px-5 py-2.5 rounded-xl bg-green-50 text-green-600 font-bold border border-green-200 shadow-sm inline-flex items-center">
                         <i class="fas fa-check-circle mr-2 text-green-500"></i> ชำระเงินแล้ว
                     </span>
@@ -33,9 +37,13 @@
                     <span class="px-5 py-2.5 rounded-xl bg-yellow-50 text-yellow-600 font-bold border border-yellow-200 shadow-sm inline-flex items-center">
                         <i class="fas fa-clock mr-2 text-yellow-500"></i> รอตรวจสอบสลิป
                     </span>
+                {% elif booking.status == 'completed' %}
+                    <span class="px-5 py-2.5 rounded-xl bg-gray-100 text-gray-600 font-bold border border-gray-300 shadow-sm inline-flex items-center">
+                        <i class="fas fa-box-check mr-2 text-gray-500"></i> คืนของเรียบร้อย
+                    </span>
                 {% else %}
                     <span class="px-5 py-2.5 rounded-xl bg-red-50 text-red-600 font-bold border border-red-200 shadow-sm inline-flex items-center">
-                        <i class="fas fa-exclamation-circle mr-2 text-red-500"></i> ยังไม่ชำระมัดจำ
+                        <i class="fas fa-exclamation-circle mr-2 text-red-500"></i> รอชำระเงิน
                     </span>
                 {% endif %}
             </div>
@@ -154,10 +162,18 @@
                 
                 <!-- Helper Buttons -->
                  <div class="bg-white/60 backdrop-blur p-4 rounded-2xl border border-white/60 shadow-md text-center">
-                    <a href="{% url 'store:download_quotation_pdf' booking.id %}" target="_blank" class="block w-full bg-white hover:bg-gray-200 border-2 border-gray-200 hover:border-mcot-orange text-gray-700 hover:text-mcot-orange py-3.5 rounded-xl font-extrabold transition-all mb-3 shadow-sm hover:shadow-md uppercase tracking-wide text-sm">
-                        <i class="fas fa-file-invoice-dollar mr-2"></i> ดาวน์โหลดใบเสนอราคา
-                    </a>
-                    <p class="text-[11px] text-gray-500 font-medium">ใช้สำหรับทำเรื่องเบิกจ่าย หรือยืนยันการจอง</p>
+                    {% if booking.status == 'draft' %}
+                        <div class="block w-full bg-gray-100 border border-gray-200 text-gray-400 py-3.5 rounded-xl font-bold mb-3 shadow-sm uppercase tracking-wide text-sm cursor-not-allowed flex items-center justify-center gap-2">
+                            <i class="fas fa-spinner fa-spin"></i> กำลังจัดทำใบเสนอราคา
+                        </div>
+                        <p class="text-[11px] text-gray-500 font-medium">รอเจ้าหน้าที่ตรวจสอบและจัดส่งใบเสนอราคา</p>
+                    {% else %}
+                        <a href="{% url 'store:download_quotation_pdf' booking.id %}" target="_blank" class="block w-full relative overflow-hidden group bg-gradient-to-r from-mcot-orange to-mcot-purple text-white py-3.5 rounded-xl font-extrabold transition-all mb-3 shadow-lg shadow-orange-500/20 hover:shadow-xl hover:shadow-mcot-orange/30 uppercase tracking-wide text-sm flex items-center justify-center gap-2 border border-white/20">
+                            <div class="absolute inset-0 bg-white/20 transition-transform group-hover:scale-105 pointer-events-none opacity-0 group-hover:opacity-100"></div>
+                            <span class="relative z-10"><i class="fas fa-file-invoice-dollar mr-1"></i> ดาวน์โหลดใบเสนอราคา</span>
+                        </a>
+                        <p class="text-[11px] text-gray-500 font-medium">ใช้สำหรับทำเรื่องเบิกจ่าย หรือยืนยันการจอง</p>
+                    {% endif %}
                 </div>
 
                 <!-- Summary -->
@@ -194,10 +210,18 @@
                             <span>ยอดสุทธิ (Grand Total)</span>
                             <span class="text-gray-900 font-black text-xl font-mono">฿{{ booking.total_price|intcomma }}</span>
                         </div>
+                        
+                        {% if booking.status != 'draft' %}
                         <div class="flex justify-between items-center text-mcot-orange font-bold text-lg pt-4 border-t border-gray-100 bg-orange-50 -mx-8 px-8 py-4 mb--6 shadow-inner">
                             <span class="text-sm uppercase tracking-wider">ยอดชำระมัดจำ 30%</span>
                             <span class="font-black text-2xl font-mono tracking-tight drop-shadow-sm">฿{{ booking.deposit_amount|intcomma }}</span>
                         </div>
+                        {% else %}
+                        <div class="flex justify-between items-center text-blue-600 font-bold text-lg pt-4 border-t border-blue-100 bg-blue-50 -mx-8 px-8 py-4 mb--6 shadow-inner">
+                            <span class="text-sm uppercase tracking-wider text-blue-700/80">รอสรุปยอดชำระที่แน่นอนในอีเมล</span>
+                            <i class="fas fa-envelope text-blue-400"></i>
+                        </div>
+                        {% endif %}
                     </div>
                     
                     <div class="mt-8 relative z-10">
@@ -291,7 +315,7 @@
                                 {% endif %}
 
                                 <!-- Upload Form (Show for pending status, whether unpaid or pending verification) -->
-                                {% if not booking.is_expired %}
+                                {% if not booking.is_expired and booking.status != 'draft' %}
                                 <form id="slip-form" class="space-y-4 bg-white/50 p-6 rounded-2xl border border-gray-200 shadow-sm">
                                     <div>
                                         <label class="block text-gray-600 font-bold text-xs mb-3 uppercase tracking-wide">

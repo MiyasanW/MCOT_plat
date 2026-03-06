@@ -25,17 +25,45 @@
                 </p>
                 
             <!-- Vibrant Search -->
-                <div class="relative max-w-lg group">
+                <div class="relative max-w-lg group w-full mx-auto md:mx-0">
                     <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
-                    <div class="relative bg-white border-2 border-transparent focus-within:border-purple-300 rounded-2xl shadow-xl flex items-center p-2 transition-all">
+                    <div class="relative bg-white border border-gray-100 hover:border-purple-200 focus-within:border-purple-300 rounded-2xl shadow-xl flex items-center p-2 transition-all">
                         <div class="w-12 h-12 flex items-center justify-center text-purple-500 shrink-0">
                             <i class="fas fa-search text-xl"></i>
                         </div>
-                        <input type="text" x-model="searchQuery" @keydown.enter="performSearch()" placeholder="ค้นหาสตูดิโอ, อุปกรณ์, หรือ OB Service..." class="w-full bg-transparent border-none focus:ring-0 text-gray-700 placeholder-gray-400 text-lg font-medium px-2 outline-none">
-                        <button @click="performSearch()" class="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap">
+                        <input type="text" x-model="searchQuery" @keydown.enter="performSearch()" placeholder="ค้นหาสตูดิโอ, อุปกรณ์, หรือ OB Service..." class="w-full bg-transparent border-none focus:ring-0 text-gray-700 placeholder-gray-400 text-[15px] font-medium px-2 outline-none">
+                        <button @click="performSearch()" class="bg-[#6366F1] hover:bg-[#4F46E5] text-white px-6 py-2.5 rounded-xl font-bold transition-all whitespace-nowrap shadow-sm">
                             ค้นหา
                         </button>
                     </div>
+                </div>
+
+                <!-- Horizontal Filter Pills (Screenshot Design) -->
+                <div class="flex flex-wrap items-center gap-3 mt-8">
+                    <!-- All -->
+                    <a href="{% url 'store:catalog' %}" class="flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all {% if not active_category and not search_query and active_section == 'all' %}bg-gray-800 text-white shadow-md{% else %}bg-[#F3F4F6] hover:bg-gray-200 text-gray-600{% endif %}">
+                        <i class="fas fa-compass opacity-80"></i> ทั้งหมด
+                    </a>
+                    
+                    <!-- Studios -->
+                    <a href="{% url 'store:catalog' %}?section=studios" class="flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all {% if not active_category and active_section == 'studios' %}bg-purple-600 text-white shadow-md{% else %}bg-[#FAF5FF] hover:bg-purple-100 text-purple-700{% endif %}">
+                        <i class="fas fa-door-open opacity-80"></i> สตูดิโอ
+                    </a>
+
+                    <!-- Packages -->
+                    <a href="{% url 'store:catalog' %}?section=packages" class="flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all {% if not active_category and active_section == 'packages' %}bg-[#F97316] text-white shadow-md{% else %}bg-[#FFF7ED] hover:bg-orange-100 text-orange-600{% endif %}">
+                        <i class="fas fa-truck opacity-80"></i> OB Service
+                    </a>
+
+                    <!-- Equipment -->
+                    <a href="{% url 'store:catalog' %}?section=equipment" class="flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all {% if not active_category and active_section == 'equipment' %}bg-[#06B6D4] text-white shadow-md{% else %}bg-[#ECFEFF] hover:bg-cyan-100 text-cyan-600{% endif %}">
+                        <i class="fas fa-camera opacity-80"></i> อุปกรณ์
+                    </a>
+
+                    <!-- Services -->
+                    <a href="{% url 'store:catalog' %}?section=services" class="flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all {% if not active_category and active_section == 'services' %}bg-[#10B981] text-white shadow-md{% else %}bg-[#ECFDF5] hover:bg-emerald-100 text-emerald-600{% endif %}">
+                        <i class="fas fa-user-tie opacity-80"></i> บริการ
+                    </a>
                 </div>
             </div>
             
@@ -61,11 +89,59 @@
 
 
 
-    <!-- Main Content -->
-    <div class="max-w-[1600px] mx-auto px-6 py-12 flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
-        
-        <!-- Refined Sidebar (Matches User Design) -->
-        <aside class="w-full lg:w-[260px] shrink-0 lg:sticky lg:top-[140px] lg:block hidden">
+    <!-- Main Content Wrapper -->
+    <div class="max-w-[1600px] mx-auto lg:px-6 lg:py-12 pb-24">
+
+        <!-- Mobile Sticky Navigation (Visible ONLY on mobile) -->
+        <div class="lg:hidden sticky top-[72px] z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm pt-4 pb-2 flex flex-col gap-3 mb-6">
+            <!-- Mobile Search -->
+            <div class="px-4">
+                <div class="relative">
+                    <input type="text" x-model="searchQuery" @keydown.enter="performSearch()" placeholder="ค้นหาสินค้า..." 
+                           class="w-full bg-slate-50 border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-gray-700 outline-none transition-all">
+                    <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            <!-- Horizontal Categories -->
+            <div class="px-4 flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <style>
+                    /* Hide scrollbar for Chrome, Safari and Opera */
+                    .scrollbar-hide::-webkit-scrollbar {
+                        display: none;
+                    }
+                </style>
+                <!-- All -->
+                <a href="{% url 'store:catalog' %}" class="shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors {% if not active_category and not search_query and active_section == 'all' %}bg-gray-800 text-white shadow-sm{% else %}bg-[#F3F4F6] hover:bg-gray-200 text-gray-600{% endif %}">
+                    <i class="fas fa-compass opacity-80"></i> ทั้งหมด
+                </a>
+                
+                <!-- Studios -->
+                <a href="{% url 'store:catalog' %}?section=studios" class="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors {% if not active_category and active_section == 'studios' %}bg-purple-600 text-white shadow-sm{% else %}bg-[#FAF5FF] hover:bg-purple-100 text-purple-700{% endif %}">
+                    <i class="fas fa-door-open opacity-80"></i> สตูดิโอ
+                </a>
+
+                <!-- OB Service -->
+                <a href="{% url 'store:catalog' %}?section=packages" class="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors {% if not active_category and active_section == 'packages' %}bg-[#F97316] text-white shadow-sm{% else %}bg-[#FFF7ED] hover:bg-orange-100 text-orange-600{% endif %}">
+                    <i class="fas fa-truck opacity-80"></i> แพ็กเกจ OB
+                </a>
+
+                <!-- Equipment -->
+                <a href="{% url 'store:catalog' %}?section=equipment" class="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors {% if not active_category and active_section == 'equipment' %}bg-[#06B6D4] text-white shadow-sm{% else %}bg-[#ECFEFF] hover:bg-cyan-100 text-cyan-600{% endif %}">
+                    <i class="fas fa-camera opacity-80"></i> อุปกรณ์ทั้งหมด
+                </a>
+
+                <!-- Services -->
+                <a href="{% url 'store:catalog' %}?section=services" class="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors {% if not active_category and active_section == 'services' %}bg-[#10B981] text-white shadow-sm{% else %}bg-[#ECFDF5] hover:bg-emerald-100 text-emerald-600{% endif %}">
+                    <i class="fas fa-user-tie opacity-80"></i> บริการทั้งหมด
+                </a>
+            </div>
+        </div>
+
+        <!-- Desktop Sidebar & Content Flex Container -->
+        <div class="px-4 lg:px-0 flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+            
+            <!-- Refined Sidebar (Desktop Only) -->
+            <aside class="w-full lg:w-[260px] shrink-0 lg:sticky lg:top-[140px] lg:block hidden">
             
             <!-- Sidebar Search -->
             <div class="mb-8">
@@ -73,104 +149,72 @@
                        class="w-full bg-white border border-gray-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 rounded-2xl py-3.5 px-4 text-sm font-bold text-center text-gray-600 placeholder-gray-400 outline-none transition-all shadow-[0_4px_20px_-5px_rgba(0,0,0,0.05)]">
             </div>
 
-            <nav class="space-y-6">
-
-                <!-- 1. Equipment Section -->
-                <div>
-                    <h4 class="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-3 flex items-center gap-3 px-2">
-                        <i class="fas fa-camera text-blue-400"></i> อุปกรณ์ (EQUIPMENT)
-                    </h4>
-                    <ul class="space-y-1">
-                        <li>
-                            <a href="{% url 'store:catalog' %}?section=equipment" class="flex items-center justify-between px-4 py-2.5 rounded-[1rem] text-sm font-bold transition-all {% if not active_category and not search_query and active_section == 'equipment' %}text-blue-600 bg-blue-50{% else %}text-gray-500 hover:text-gray-900 hover:bg-gray-50{% endif %}">
-                                <span>อุปกรณ์ทั้งหมด</span>
-                                {% if not active_category and not search_query and active_section == 'equipment' %}
-                                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                                {% endif %}
-                            </a>
-                        </li>
-                        {% if equipment_categories %}
-                        <li>
-                            <div class="ml-4 pl-3 border-l-2 border-gray-100 space-y-1 mt-1 mb-2">
-                                {% for cat in equipment_categories %}
-                                <a href="{% url 'store:catalog' %}?category={{ cat.slug }}&section=equipment" class="flex items-center justify-between px-3 py-2 rounded-[1rem] text-sm transition-all {% if active_category.id == cat.id %}text-blue-600 bg-blue-50 font-bold{% else %}text-gray-500 font-medium hover:text-gray-900 hover:bg-gray-50{% endif %}">
-                                    <span>{{ cat.name }}</span>
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.05)] p-5">
+                <h3 class="font-bold text-gray-900 mb-4 text-lg flex items-center gap-2">
+                    <i class="fas fa-layer-group text-purple-500 text-sm"></i> หมวดหมู่สินค้า
+                </h3>
+                
+                <div class="space-y-6">
+                    {% if equipment_categories and active_section in 'all,equipment' %}
+                    <div>
+                        <h4 class="text-[11px] font-black tracking-widest text-gray-400 uppercase mb-3 px-1 flex items-center gap-2">
+                            <i class="fas fa-camera text-blue-400"></i> อุปกรณ์ (Equipment)
+                        </h4>
+                        <ul class="space-y-1">
+                            {% for cat in equipment_categories %}
+                            <li>
+                                <a href="{% url 'store:catalog' %}?category={{ cat.slug }}&section=equipment" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] transition-all {% if active_category.id == cat.id %}bg-blue-50 text-blue-700 font-bold{% else %}text-gray-600 font-medium hover:bg-gray-50 hover:text-gray-900{% endif %}">
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-2 h-2 rounded-full transition-colors {% if active_category.id == cat.id %}bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]{% else %}bg-gray-300{% endif %}"></span>
+                                        <span>{{ cat.name }}</span>
+                                    </div>
                                     {% if active_category.id == cat.id %}
-                                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                                    <i class="fas fa-check text-blue-500 text-xs"></i>
                                     {% endif %}
                                 </a>
-                                {% endfor %}
-                            </div>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
 
-                <div class="w-8 h-px bg-gray-100 ml-4 my-6"></div>
-
-                <!-- 2. Studios Section -->
-                <div>
-                    <h4 class="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-3 flex items-center gap-3 px-2">
-                        <i class="fas fa-video text-purple-400"></i> สตูดิโอ (STUDIOS)
-                    </h4>
-                    <ul class="space-y-1">
-                        <li>
-                            <a href="#" @click.prevent="changeSection('studios')" class="flex items-center justify-between px-4 py-2.5 rounded-[1rem] text-sm font-bold transition-all" :class="activeSection === 'studios' ? 'text-purple-600 bg-purple-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'">
-                                <span>สตูดิโอทั้งหมด</span>
-                                <span x-show="activeSection === 'studios'" class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="w-8 h-px bg-gray-100 ml-4 my-6"></div>
-
-                <!-- 3. OB Service Section -->
-                <div>
-                    <h4 class="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-3 flex items-center gap-3 px-2">
-                        <i class="fas fa-truck-moving text-orange-400"></i> OB SERVICE
-                    </h4>
-                    <ul class="space-y-1">
-                        <li>
-                            <a href="#" @click.prevent="changeSection('packages')" class="flex items-center justify-between px-4 py-2.5 rounded-[1rem] text-sm font-bold transition-all" :class="activeSection === 'packages' ? 'text-orange-600 bg-orange-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'">
-                                <span>แพ็กเกจ OB ทั้งหมด</span>
-                                <span x-show="activeSection === 'packages'" class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="w-8 h-px bg-gray-100 ml-4 my-6"></div>
-
-                <!-- 4. Services Section -->
-                <div>
-                    <h4 class="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-3 flex items-center gap-3 px-2">
-                        <i class="fas fa-concierge-bell text-teal-400"></i> บริการ (SERVICES)
-                    </h4>
-                    <ul class="space-y-1">
-                        <li>
-                            <a href="#" @click.prevent="changeSection('services')" class="flex items-center justify-between px-4 py-2.5 rounded-[1rem] text-sm font-bold transition-all" :class="activeSection === 'services' && !'{{ active_category }}' ? 'text-teal-600 bg-teal-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'">
-                                <span>บริการทั้งหมด</span>
-                                <span x-show="activeSection === 'services' && !'{{ active_category }}'" class="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
-                            </a>
-                        </li>
-                        {% if service_categories %}
-                        <li>
-                            <div class="ml-4 pl-3 border-l-2 border-gray-100 space-y-1 mt-1 mb-2">
-                                {% for cat in service_categories %}
-                                <a href="{% url 'store:catalog' %}?category={{ cat.slug }}&section=services" class="flex items-center justify-between px-3 py-2 rounded-[1rem] text-sm transition-all {% if active_category.id == cat.id %}text-teal-600 bg-teal-50 font-bold{% else %}text-gray-500 font-medium hover:text-gray-900 hover:bg-gray-50{% endif %}">
-                                    <span>{{ cat.name }}</span>
+                    {% if service_categories and active_section in 'all,services' %}
+                    <div>
+                        <h4 class="text-[11px] font-black tracking-widest text-gray-400 uppercase mb-3 px-1 flex items-center gap-2">
+                            <i class="fas fa-concierge-bell text-teal-400"></i> บริการ (Services)
+                        </h4>
+                        <ul class="space-y-1">
+                            {% for cat in service_categories %}
+                            <li>
+                                <a href="{% url 'store:catalog' %}?category={{ cat.slug }}&section=services" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] transition-all {% if active_category.id == cat.id %}bg-teal-50 text-teal-700 font-bold{% else %}text-gray-600 font-medium hover:bg-gray-50 hover:text-gray-900{% endif %}">
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-2 h-2 rounded-full transition-colors {% if active_category.id == cat.id %}bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.6)]{% else %}bg-gray-300{% endif %}"></span>
+                                        <span>{{ cat.name }}</span>
+                                    </div>
                                     {% if active_category.id == cat.id %}
-                                    <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
+                                    <i class="fas fa-check text-teal-500 text-xs"></i>
                                     {% endif %}
                                 </a>
-                                {% endfor %}
-                            </div>
-                        </li>
-                        {% endif %}
-                    </ul>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    {% if active_section == 'studios' or active_section == 'packages' %}
+                    <div class="text-center py-6 px-4 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+                        <div class="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-3 text-gray-400">
+                            {% if active_section == 'studios' %}
+                            <i class="fas fa-video text-lg"></i>
+                            {% else %}
+                            <i class="fas fa-truck-moving text-lg"></i>
+                            {% endif %}
+                        </div>
+                        <p class="text-sm font-medium text-gray-500">รวมทุกรายการในหมวดหมู่นี้</p>
+                    </div>
+                    {% endif %}
                 </div>
-            </nav>
+            </div>
             
             <!-- Quick Help Banner -->
             <div class="mt-12 bg-[#F8FAFC] border border-[#E2E8F0] rounded-3xl p-6 text-center text-[#334155] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.03)] relative">

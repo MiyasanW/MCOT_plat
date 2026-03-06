@@ -17,8 +17,8 @@ echo ""
 echo "📦 Step 1: Committing and pushing code to Git..."
 cd "$PROJECT_DIR"
 git add .
-git commit -m "feat: add Google Login via django-allauth" 2>/dev/null || echo "Nothing new to commit"
-git push origin main 2>/dev/null || git push origin master 2>/dev/null || echo "⚠️ Git push failed - you may need to push manually"
+git commit -m "feat: setup postgresql and latest updates" 2>/dev/null || echo "Nothing new to commit"
+git push origin v2 2>/dev/null || echo "⚠️ Git push failed - you may need to push manually"
 echo ""
 
 # Step 2: SSH to VPS and deploy
@@ -48,7 +48,7 @@ echo ""
 
 # Pull latest code
 echo "📥 Pulling latest code..."
-git pull origin main 2>/dev/null || git pull origin master 2>/dev/null || echo "⚠️ Git pull failed"
+git pull origin v2 2>/dev/null || echo "⚠️ Git pull failed"
 echo ""
 
 # Install dependencies

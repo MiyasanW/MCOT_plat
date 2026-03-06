@@ -81,9 +81,9 @@ class PricingService:
         for pkg_item in booking_instance.booked_packages.all():
              subtotal += PricingService.calculate_item_price(pkg_item.price_at_booking, pkg_item.quantity, rental_days)
 
-        # 5. รวมค่าแรงพนักงาน (Staff)
-        for staff_item in booking_instance.booked_staff.all():
-            subtotal += (staff_item.daily_rate_at_booking * rental_days)
+        # 5. รวมค่าบริการ (Services)
+        for svc_item in booking_instance.booked_services.all():
+            subtotal += PricingService.calculate_item_price(svc_item.price_at_booking, svc_item.quantity, rental_days)
         
         # 6. คำนวณส่วนลด (Discount)
         discount = Decimal('0.00')

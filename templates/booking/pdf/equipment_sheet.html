@@ -1,252 +1,547 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
     <meta charset="utf-8">
-    <title>Equipment Sheet - {{ booking.id }}</title>
+    <title>ใบจ่ายงานอุปกรณ์ (Equipment Sheet) - #{{ booking.id }}</title>
+    
+    <!-- Google Fonts to match website -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --mcot-orange: #F26522;
+            --mcot-purple: #2E1A69;
+            --text-dark: #1F2937;
+            --text-gray: #4B5563;
+            --text-light: #9CA3AF;
+            --border-light: #E5E7EB;
+            --bg-light: #F9FAFB;
+        }
+
         @page {
-            size: a4 portrait;
-            margin: 1cm;
-            @frame footer_frame {           /* Static Footer */
-                -pdf-frame-content: footerContent;
-                bottom: 1cm;
-                margin-left: 1cm;
-                margin-right: 1cm;
-                height: 1cm;
-            }
-        }
-        body {
-            font-family: "Helvetica", sans-serif; /* Use a font that supports Thai if possible, otherwise English for now */
-            font-size: 12px;
-            color: #333;
-        }
-        /* Note: Custom fonts for Thai support need specifically loaded fonts in xhtml2pdf. 
-           For this MVP, we might rely on default or just English field names if Thai fonts are tricky without a file. 
-           We will try to use default fonts first. */
-        
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ff6600; /* MCOT Orange */
-            padding-bottom: 10px;
-        }
-        .header h1 {
-            color: #ff6600;
+            size: A4 portrait;
             margin: 0;
-            font-size: 24px;
-        }
-        .header p {
-            margin: 5px 0;
-            color: #666;
         }
 
-        .info-section {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .info-table td {
-            padding: 5px;
-            vertical-align: top;
-        }
-        .label {
-            font-weight: bold;
-            color: #555;
-            width: 120px;
+        body {
+            font-family: 'Sarabun', 'Inter', sans-serif;
+            font-size: 13px;
+            color: var(--text-dark);
+            line-height: 1.5;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
+        .page-container {
+            width: 210mm;
+            min-height: 297mm;
+            margin: auto;
+            background: white;
+            position: relative;
+            box-sizing: border-box;
+            padding: 40px 50px;
+        }
+
+        /* Top Accent Bar */
+        .top-accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, var(--mcot-purple), var(--mcot-orange));
+        }
+
+        /* Header Area */
+        .header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 30px;
+            margin-top: 10px;
         }
-        .items-table th {
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-            font-weight: bold;
-        }
-        .items-table td {
-            border: 1px solid #ccc;
-            padding: 8px;
-        }
-        .col-no { width: 5%; text-align: center; }
-        .col-item { width: 45%; }
-        .col-sn { width: 25%; }
-        .col-check { width: 25%; text-align: center; }
 
-        .signatures {
+        .company-details {
+            max-width: 50%;
+        }
+
+        .company-name {
+            font-family: 'Inter', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--mcot-purple);
+            margin-bottom: 0px;
+            letter-spacing: -0.5px;
+        }
+
+        .company-subtitle {
+            font-size: 11px;
+            color: var(--mcot-orange);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .company-address {
+            font-size: 11px;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        .doc-details {
+            text-align: right;
+            max-width: 45%;
+        }
+
+        .doc-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--mcot-purple);
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .doc-id {
+            font-size: 18px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: var(--text-gray);
+            margin-bottom: 10px;
+        }
+
+        .doc-info-table {
             width: 100%;
+            margin-left: auto;
+            text-align: left;
+            font-size: 11px;
+            border-collapse: collapse;
+        }
+
+        .doc-info-table td {
+            padding: 3px 0;
+        }
+        .doc-info-table td:first-child {
+            color: var(--text-light);
+            text-align: right;
+            padding-right: 15px;
+            font-weight: 500;
+        }
+        .doc-info-table td:last-child {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* Separator */
+        .divider {
+            height: 1px;
+            background-color: var(--border-light);
+            margin: 20px 0;
+        }
+
+        /* Info Panels */
+        .info-panels {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .panel {
+            flex: 1;
+            background-color: var(--bg-light);
+            border-radius: 12px;
+            padding: 15px 20px;
+            border: 1px solid var(--border-light);
+        }
+
+        .panel-heading {
+            font-size: 11px;
+            color: var(--mcot-purple);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .panel-heading::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-light);
+            margin-left: 10px;
+        }
+
+        .panel-content strong {
+            display: block;
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .panel-content p {
+            margin: 0;
+            font-size: 12px;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background-color: var(--mcot-orange);
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+
+        /* Main Table */
+        .main-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .main-table thead {
+            background-color: var(--bg-light);
+        }
+
+        .main-table th {
+            padding: 12px 15px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-light);
+            text-align: left;
+        }
+
+        .main-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+            color: var(--text-dark);
+        }
+
+        .main-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .text-center { text-align: center !important; }
+
+        .item-name {
+            font-weight: 600;
+            color: var(--mcot-purple);
+            font-size: 13px;
+        }
+
+        .item-meta {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .item-sn {
+            font-family: 'Inter', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+
+        /* Checkbox Box */
+        .check-box {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 1px solid var(--text-gray);
+            border-radius: 2px;
+            margin-right: 5px;
+            vertical-align: middle;
+            position: relative;
+            top: -1px;
+        }
+        
+        .check-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-gray);
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        /* Signatures */
+        .signatures-grid {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
             margin-top: 50px;
             page-break-inside: avoid;
         }
+
         .sig-box {
-            width: 45%;
-            float: left;
-            border-top: 1px solid #333;
-            padding-top: 10px;
-            margin-right: 5%;
-        }
-        .sig-box p { margin: 5px 0; }
-        
-        /* Footer */
-        #footerContent {
+            flex: 1;
+            padding: 20px;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            background: var(--bg-light);
             text-align: center;
-            color: #999;
+        }
+
+        .sig-line {
+            width: 80%;
+            height: 1px;
+            background-color: var(--text-gray);
+            margin: 50px auto 15px auto;
+        }
+
+        .sig-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sig-meta {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 40px;
+            left: 50px;
+            right: 50px;
+            border-top: 1px solid var(--border-light);
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
             font-size: 10px;
+            color: var(--text-light);
+        }
+
+        /* Print Media */
+        @media print {
+            .no-print { display: none; }
+            body { background: white; }
+            .page-container { border: none; box-shadow: none; padding-top: 20px; }
+            .top-accent { top: -20px; }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>MCOT Rental Platform</h1>
-        <p>Equipment Check-out Sheet / ใบจ่ายงานอุปกรณ์</p>
-    </div>
+    <div class="page-container">
+        <div class="top-accent"></div>
 
-    <!-- Booking Info -->
-    <table class="info-table">
-        <tr>
-            <td class="label">Booking Ref:</td>
-            <td>#{{ booking.id }}</td>
-            <td class="label">Date:</td>
-            <td>{{ booking.start_time|date:"d M Y" }} - {{ booking.end_time|date:"d M Y" }}</td>
-        </tr>
-        <tr>
-            <td class="label">Project:</td>
-            <td>{{ booking.project_name }}</td>
-            <td class="label">Customer:</td>
-            <td>{{ booking.customer_name }} ({{ booking.phone }})</td>
-        </tr>
-        <tr>
-            <td class="label">Staff:</td>
-            <td>
-                {% if booking.coordinator %}
-                    {{ booking.coordinator.get_full_name|default:booking.coordinator.username }}
-                {% else %}
-                    -
+        <!-- Header -->
+        <div class="header-wrapper">
+            <div class="company-details">
+                <h1 class="company-name">MCOT</h1>
+                <div class="company-subtitle">Rental Platform</div>
+                <div class="company-address">
+                    <strong>MCOT Public Company Limited</strong><br>
+                    63/1 Rama IX Road, Huay Kwang, Bangkok 10310<br>
+                    Tel: 02-201-6000 | Email: rental@mcot.net
+                </div>
+            </div>
+            
+            <div class="doc-details">
+                <div class="doc-title">ใบจ่ายงานอุปกรณ์</div>
+                <div class="doc-id">EQUIPMENT SHEET</div>
+                
+                <table class="doc-info-table">
+                    <tr>
+                        <td>วันที่ออกเอกสาร:</td>
+                        <td>{% now "d M Y" %}</td>
+                    </tr>
+                    <tr>
+                        <td>รหัสการจอง:</td>
+                        <td>BK-{{ booking.id|stringformat:"05d" }}</td>
+                    </tr>
+                    <tr>
+                        <td>สถานะ:</td>
+                        <td style="color:var(--mcot-orange);">{{ booking.get_status_display }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Info Panels -->
+        <div class="info-panels">
+            <div class="panel">
+                <div class="panel-heading">ข้อมูลลูกค้า (Customer Details)</div>
+                <div class="panel-content">
+                    <strong>{{ booking.customer_name }}</strong>
+                    <p>
+                        ชื่อโปรเจกต์ (Project): {{ booking.project_name }}<br>
+                        เบอร์ติดต่อ (Phone): {{ booking.phone|default:"-" }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">เจ้าหน้าที่ผู้รับผิดชอบ (MCOT Staff)</div>
+                <div class="panel-content">
+                    <strong>
+                        {% if booking.coordinator %}
+                            {{ booking.coordinator.get_full_name|default:booking.coordinator.username }}
+                        {% else %}
+                            รอการจัดสรร
+                        {% endif %}
+                    </strong>
+                    <p>
+                        วันรับของ (Pick-up): {{ booking.start_time|date:"d M Y" }}<br>
+                        วันคืนของ (Return): {{ booking.end_time|date:"d M Y" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="section-title">รายการอุปกรณ์ (Equipment Checklist)</div>
+        <table class="main-table">
+            <thead>
+                <tr>
+                    <th style="width: 5%; text-align: center;">No.</th>
+                    <th style="width: 45%;">รายการ (Item Description)</th>
+                    <th style="width: 25%;">รหัสเครื่อง (S/N / Asset ID)</th>
+                    <th class="text-center" style="width: 25%;">สถานะ (Condition Check)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td class="text-center" style="color: var(--text-light); font-size: 11px;">{{ forloop.counter }}</td>
+                    <td>
+                        <div class="item-name">{{ item.product.name }}</div>
+                        {% if item.notes %}
+                        <div class="item-meta" style="color: var(--mcot-orange);">* {{ item.notes }}</div>
+                        {% endif %}
+                        <div class="item-meta">Qty: {{ item.quantity }}</div>
+                    </td>
+                    <td>
+                        {% if item.equipment %}
+                        <div class="item-sn">{{ item.equipment.serial_number }}</div>
+                        <div class="item-meta" style="color: var(--text-gray);">{{ item.equipment.asset_tag }}</div>
+                        {% else %}
+                        <span style="color:red; font-size: 11px; font-weight: 600;">Not Assigned</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <div style="display: flex; gap: 15px; justify-content: center;">
+                            <div>
+                                <div class="check-label"><span class="check-box"></span> OK</div>
+                                <div class="check-label"><span class="check-box"></span> N/A</div>
+                            </div>
+                            <div>
+                                <div class="check-label" style="color: #EF4444;"><span class="check-box"></span> Damage</div>
+                                <div class="check-label"><span class="check-box"></span> Missing</div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                {% for pkg in packages %}
+                <tr>
+                    <td class="text-center" style="color: var(--text-light); font-size: 11px;">-</td>
+                    <td>
+                        <div class="item-name">{{ pkg.package.name }}</div>
+                        <div class="item-meta">Package - Qty: {{ pkg.quantity }}</div>
+                    </td>
+                    <td>
+                        <span style="color: var(--mcot-orange); font-size: 11px; font-weight: 600;">(See Package Details)</span>
+                    </td>
+                    <td class="text-center">
+                        <div class="check-label" style="justify-content: center;"><span class="check-box"></span> Verified Complete</div>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                {% for studio in studios %}
+                <tr>
+                    <td class="text-center" style="color: var(--text-light); font-size: 11px;">-</td>
+                    <td>
+                        <div class="item-name">{{ studio.studio.name }}</div>
+                        <div class="item-meta">Studio Facility</div>
+                    </td>
+                    <td>
+                        <span style="color: var(--text-light); font-size: 11px;">-</span>
+                    </td>
+                    <td class="text-center">
+                        <div class="check-label" style="justify-content: center;"><span class="check-box"></span> Handover OK</div>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                {% if not items and not packages and not studios %}
+                <tr>
+                    <td colspan="4" class="text-center" style="padding: 30px; color: var(--text-light);">
+                        No items found in this booking.
+                    </td>
+                </tr>
                 {% endif %}
-            </td>
-            <td class="label">Status:</td>
-            <td>{{ booking.get_status_display }}</td>
-        </tr>
-    </table>
-
-    <br>
-
-    <!-- Equipment List -->
-    <h3>Equipment List</h3>
-    <table class="items-table">
-        <thead>
-            <tr>
-                <th class="col-no">#</th>
-                <th class="col-item">Item Name</th>
-                <th class="col-sn">Serial / Asset Tag</th>
-                <th class="col-check">Check (IN / OUT)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in items %}
-            <tr>
-                <td class="col-no">{{ forloop.counter }}</td>
-                <td class="col-item">
-                    {{ item.product.name }}
-                    {% if item.notes %}
-                        <br><span style="color:#f26522; font-size:10px; font-style:italic;">{{ item.notes }}</span>
-                    {% endif %}
-                    {% if item.equipment %}
-                        <br><span style="color:#666; font-size:10px;">{{ item.equipment.inventory_number }}</span>
-                    {% endif %}
-                </td>
-                <td class="col-sn">
-                    {% if item.equipment %}
-                        {{ item.equipment.serial_number }}
-                        <br><span style="color:#666; font-size:10px;">{{ item.equipment.asset_tag }}</span>
-                    {% else %}
-                        <span style="color:red;">Not Assigned</span>
-                    {% endif %}
-                </td>
-                <td class="col-check">
-                    [ ] OK <br>
-                    [ ] Damaged
-                </td>
-            </tr>
-            {% endfor %}
-
-            {% for pkg in packages %}
-            <tr>
-                <td class="col-no">-</td>
-                <td class="col-item">
-                    {{ pkg.package.name }}
-                    <br><span style="color:#666; font-size:10px;">(Package - x{{ pkg.quantity }})</span>
-                </td>
-                <td class="col-sn">
-                    <span style="color:orange;">See Package Details</span>
-                </td>
-                <td class="col-check">
-                    [ ] OK <br>
-                    [ ] Damaged
-                </td>
-            </tr>
-            {% endfor %}
-
-            {% for studio in studios %}
-            <tr>
-                <td class="col-no">-</td>
-                <td class="col-item">
-                    {{ studio.studio.name }}
-                    <br><span style="color:#666; font-size:10px;">(Studio)</span>
-                </td>
-                <td class="col-sn">-</td>
-                <td class="col-check">
-                    [ ] OK
-                </td>
-            </tr>
-            {% endfor %}
-
-            {% if not items and not packages and not studios %}
-            <tr>
-                <td colspan="4" style="text-align:center; padding: 20px;">No items in this booking.</td>
-            </tr>
-            {% endif %}
-        </tbody>
-    </table>
-
-    <!-- Signatures -->
-    <div class="signatures">
-        <table style="width:100%">
-            <tr>
-                <td style="width:45%; vertical-align:top;">
-                    <br><br><br>
-                    <div style="border-top: 1px solid #000; width: 80%;"></div>
-                    <p><strong>Prepared By (Staff)</strong></p>
-                    <p>Name: __________________________</p>
-                    <p>Date: _____/_____/__________</p>
-                </td>
-                <td style="width:10%;">&nbsp;</td>
-                <td style="width:45%; vertical-align:top;">
-                    <br><br><br>
-                    <div style="border-top: 1px solid #000; width: 80%;"></div>
-                    <p><strong>Received By (Customer)</strong></p>
-                    <p>Name: __________________________</p>
-                    <p>Date: _____/_____/__________</p>
-                </td>
-            </tr>
+            </tbody>
         </table>
+
+        <!-- Signatures -->
+        <div class="signatures-grid">
+            <div class="sig-box">
+                <div class="sig-line"></div>
+                <div class="sig-title">ผู้ส่งมอบอุปกรณ์ (MCOT Staff)</div>
+                <div class="sig-meta">วันที่ (Date): _____ / _____ / __________</div>
+            </div>
+            
+            <div class="sig-box">
+                <div class="sig-line"></div>
+                <div class="sig-title">ผู้รับอุปกรณ์ (Customer)</div>
+                <div class="sig-meta">ข้าพเจ้าได้รับอุปกรณ์และตรวจสอบความเรียบร้อยแล้ว</div>
+                <div class="sig-meta">วันที่ (Date): _____ / _____ / __________</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span>เอกสารตรวจสอบการรับ-ส่งมอบอุปกรณ์ (Equipment Delivery Checklist)</span>
+            <span>https://rental.mcot.net</span>
+        </div>
     </div>
 
-    <!-- Footer -->
-    <div id="footerContent">
-        Generated by MCOT Rental Platform on {% now "d M Y H:i" %}
-    </div>
-
-    <script>
+    <!-- Auto Print Script -->
+    <script class="no-print">
         window.onload = function() {
-            window.print();
+            setTimeout(() => {
+                window.print();
+            }, 500); // Small delay to let fonts load
         }
     </script>
 </body>

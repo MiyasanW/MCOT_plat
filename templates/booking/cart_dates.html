@@ -192,7 +192,8 @@
                         start: this.startDate,
                         end: this.endDate,
                         items: cart.map(item => ({
-                            product_id: item.id,
+                            id: item.id,
+                            type: item.type || 'product',
                             quantity: parseInt(item.quantity)
                         }))
                     };
