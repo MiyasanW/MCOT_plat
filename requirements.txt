@@ -19,3 +19,4 @@ django-simple-history==3.7.0  # Track model changes
 django-allauth==65.14.3  # Social Login (Google)
 psycopg2-binary==2.9.10  # PostgreSQL adapter
 dj-database-url==2.3.0  # Database URL utility
+PyJWT==2.10.1  # JSON Web Token support (required by allauth)
