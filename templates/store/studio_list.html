@@ -75,17 +75,16 @@
                     </div>
 
                     <!-- Footer / Call to Action -->
-                    <div class="mt-auto flex items-end justify-between">
-                        <div class="flex flex-col">
-                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">{% trans "Want to book this studio?" %}</span>
-                            <div class="flex items-baseline gap-1">
-                                <span class="text-sm font-bold text-mcot-orange">{% trans "Call for Availability" %}</span>
+                    <div class="mt-auto pt-6 border-t border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">{% trans "Starting at" %}</span>
+                                <span class="text-xl font-bold text-gray-900 pr-2">฿{{ studio.daily_rate|floatformat:0|intcomma }}<span class="text-[10px] text-gray-400 uppercase ml-1">/ วัน</span></span>
                             </div>
-                        </div>
 
-                        <!-- Phone Icon Arrow -->
-                        <div class="w-10 h-10 rounded-full bg-mcot-orange/10 text-mcot-orange flex items-center justify-center group-hover:bg-mcot-orange group-hover:text-white transition-colors">
-                            <i class="fas fa-phone-alt text-sm"></i>
+                            <div class="px-5 py-2.5 bg-gray-900 text-white text-[11px] font-bold uppercase tracking-widest rounded-xl group-hover:bg-mcot-orange transition-colors">
+                                ดูรายละเอียด
+                            </div>
                         </div>
                     </div>
                 </div>

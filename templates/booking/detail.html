@@ -210,8 +210,8 @@
                         <i class="fas fa-file-invoice-dollar"></i> ดาวน์โหลดใบเสนอราคา
                     </a>
                     {% else %}
-                    <div class="hidden lg:flex items-center justify-center gap-2 w-full bg-gray-100 border border-gray-200 text-gray-400 py-3.5 rounded-xl font-bold text-sm cursor-not-allowed">
-                        <i class="fas fa-spinner fa-spin"></i> กำลังจัดทำใบเสนอราคา
+                    <div class="hidden lg:flex items-center justify-center gap-2 w-full bg-blue-50 border border-blue-100 text-blue-500 py-3.5 rounded-xl font-bold text-sm cursor-default">
+                        <i class="fas fa-hourglass-start animate-pulse"></i> รอจัดส่งใบเสนอราคา
                     </div>
                     {% endif %}
 
@@ -225,7 +225,7 @@
                                 {% if booking.discount_amount > 0 or booking.penalty_amount > 0 %}
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-500">Subtotal</span>
-                                    <span class="text-gray-900 font-mono font-bold">฿{{ booking.calculated_total|default:booking.total_price|intcomma }}</span>
+                                    <span class="text-gray-900 font-mono font-bold">฿{{ booking.calculated_total_price|default:booking.total_price|intcomma }}</span>
                                 </div>
                                 {% endif %}
                                 {% if booking.discount_amount > 0 %}
@@ -373,6 +373,16 @@
                     </div>
                     {% endif %}
 
+                    <!-- Cancel Booking -->
+                    {% if booking.status == 'draft' or booking.status == 'pending' %}
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                        <button onclick="cancelBooking({{ booking.id }})"
+                                class="w-full px-5 py-4 flex items-center justify-center gap-2 text-sm font-bold text-red-500 hover:text-white hover:bg-red-500 border-0 transition-all">
+                            <i class="fas fa-times-circle"></i> ยกเลิกการจอง
+                        </button>
+                    </div>
+                    {% endif %}
+
                     <!-- Support -->
                     <div class="bg-gray-50 rounded-xl p-3.5 border border-gray-100 flex items-center gap-3">
                         <div class="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-mcot-orange shrink-0">
@@ -390,6 +400,36 @@
 </div>
 
 <script>
+async function cancelBooking(bookingId) {
+    const result = await Swal.fire({
+        title: 'ยืนยันการยกเลิก?',
+        text: 'คุณต้องการยกเลิกการจอง #' + bookingId + ' ใช่หรือไม่? การยกเลิกไม่สามารถเปลี่ยนกลับได้',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#e5e7eb',
+        confirmButtonText: 'ใช่, ยกเลิกการจอง',
+        cancelButtonText: '<span style="color:#374151">ไว้ก่อน</span>'
+    });
+    if (!result.isConfirmed) return;
+    try {
+        const res = await fetch(`/api/booking/${bookingId}/cancel/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        const data = await res.json();
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: 'ยกเลิกแล้ว', text: data.message, timer: 2000, showConfirmButton: false })
+                .then(() => location.reload());
+        } else {
+            Swal.fire({ icon: 'error', title: 'ไม่สามารถยกเลิกได้', text: data.message });
+        }
+    } catch(e) {
+        console.error(e);
+        Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'กรุณาลองใหม่อีกครั้ง' });
+    }
+}
+
 async function uploadSlip() {
     const input = document.getElementById('slip-input');
     const btn = document.getElementById('btn-upload');

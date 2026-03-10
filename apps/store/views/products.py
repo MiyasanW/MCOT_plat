@@ -1,7 +1,13 @@
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
 from django.utils import timezone
-from apps.store.models import Product, ProductCategory, Studio, Package, ServiceOffer
+from datetime import datetime
+from apps.store.models import (
+    Product, ProductCategory, Studio, Package,
+    ServiceOffer, ServiceCategory,
+)
 from apps.store.utils.ratelimit import ratelimit
+from apps.store.services.availability import AvailabilityService
 
 @ratelimit(key_prefix='catalog', rate=20, period=60, block=True)
 def catalog(request):
@@ -9,16 +15,9 @@ def catalog(request):
     หน้าแสดงรายการสินค้าทั้งหมด (Unified Catalog V3)
     รวมทุกหมวดหมู่ไว้ในหน้าเดียว
     """
-    from apps.store.models import Product, Studio, Package, ServiceOffer
-    from django.db.models import Q
-    
-    # Get parameters
     search_query = request.GET.get('q', '').strip()
     active_section = request.GET.get('section', 'all')
     category_slug = request.GET.get('category', '').strip()
-    
-    # Needs ServiceCategory to show service subcategories
-    from apps.store.models import ServiceCategory
     
     active_category = None
     if category_slug:
@@ -170,35 +169,15 @@ def package_list(request):
 def package_detail(request, package_id):
     """
     หน้าละเอียดแพ็คเกจ (Package Detail)
+    วัน-เวลาเลือกในขั้นตอน Cart (Step 2) แทน
     """
-    package = get_object_or_404(Package, pk=package_id)
-    
-    start_date_str = request.GET.get('start_date')
-    end_date_str = request.GET.get('end_date')
-    is_available = True
-    
-    if not start_date_str or not end_date_str:
-        today_str = timezone.now().strftime("%Y-%m-%d")
-        start_date_str = today_str
-        end_date_str = today_str
-        
-    try:
-        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
-        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
-        start_dt = datetime.combine(start_date, datetime.min.time())
-        end_dt = datetime.combine(end_date, datetime.max.time())
-        
-        is_available, availability_error = AvailabilityService.check_package_availability(package, start_dt, end_dt)
-    except ValueError:
-        is_available = False
-        availability_error = "รูปแบบวันที่ไม่ถูกต้อง"
+    package = get_object_or_404(
+        Package.objects.prefetch_related('packageitem_set__product', 'packageitem_set__product__category'),
+        pk=package_id
+    )
 
     context = {
         'package': package,
-        'selected_start_date': start_date_str,
-        'selected_end_date': end_date_str,
-        'is_available': is_available,
-        'availability_error': availability_error
     }
     return render(request, 'store/package_detail.html', context)
 

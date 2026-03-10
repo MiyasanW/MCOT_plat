@@ -1,225 +1,204 @@
 {% extends 'base.html' %}
-{% load static %}
-{% load humanize %}
-{% load i18n %}
+{% load static humanize i18n %}
 
 {% block title %}{{ product.name }} | MCOT Rental{% endblock %}
 
 {% block content %}
-<!-- PRODUCT DETAIL REDESIGN V4 (Manual Line Breaks) -->
-<div class="min-h-screen pb-36 lg:pb-20 pt-8 relative z-10">
-    <div class="max-w-[1600px] mx-auto px-6">
+<div class="min-h-screen pb-32 xl:pb-24 relative overflow-hidden bg-[#F8FAFC]">
+    <!-- Ambient Light Background -->
+    <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-bl from-blue-400/10 to-transparent rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-1/4 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-purple-400/10 to-transparent rounded-full blur-[120px] pointer-events-none"></div>
 
-        <nav class="flex items-center gap-2 text-xs text-gray-500 mb-8 uppercase tracking-wider font-medium">
-            <a href="/" class="hover:text-gray-900 transition-colors">{% trans "Home" %}</a>
+    <div class="max-w-[1440px] mx-auto px-6 pt-12 relative z-20">
+        <!-- Premium Breadcrumbs -->
+        <nav class="flex items-center gap-3 text-xs text-gray-500 mb-10 uppercase tracking-widest font-bold backdrop-blur-md inline-flex p-3 px-6 rounded-full bg-white/70 border border-white shadow-sm">
+            <a href="/" class="hover:text-blue-600 transition-colors"><i class="fas fa-home"></i></a>
             <span class="text-gray-300">/</span>
-            <a href="{% url 'store:catalog' %}" class="hover:text-gray-900 transition-colors">{% trans "Catalog" %}</a>
+            <a href="{% url 'store:catalog' %}" class="hover:text-blue-600 transition-colors">แคตตาล็อก</a>
             <span class="text-gray-300">/</span>
-            <span class="text-mcot-orange">
-                {{ product.category.name|default:_("Equipment") }}
-            </span>
+            <span class="text-gray-900">{{ product.category.name|default:"อุปกรณ์" }}</span>
         </nav>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-8 lg:gap-12 xl:gap-20">
-
-            <!-- 1. Visual Gallery (Mobile & Desktop Top) -->
-            <div class="lg:col-span-7 xl:col-span-8 order-1">
-                <!-- Image Stage -->
-                <div
-                    class="aspect-video w-full bg-white/60 backdrop-blur-md rounded-3xl overflow-hidden relative group border border-gray-200 flex items-center justify-center p-8 shadow-md hover:shadow-xl transition-shadow duration-300">
-                    {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}"
-                        class="max-w-full max-h-full object-contain filter drop-shadow-lg opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 mix-blend-multiply">
-                    {% else %}
-                    <div class="text-gray-400 flex flex-col items-center">
-                        <i class="fas fa-camera text-6xl mb-4"></i>
-                        <span class="text-sm font-mono uppercase">{% trans "Image Unavailable" %}</span>
-                    </div>
-                    {% endif %}
-
-                    <div class="absolute top-6 left-6">
-                        {% if is_available %}
-                        <div
-                            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 backdrop-blur-md">
-                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                            <span
-                                class="text-[10px] font-bold text-green-400 uppercase tracking-widest">{% trans "Available" %}</span>
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-y-10 xl:gap-16 items-start">
+            
+            <!-- Left Side: Product Stage & Specs (xl:span-8) -->
+            <div class="xl:col-span-8 space-y-12">
+                
+                <!-- 1. The Stage (Visual) -->
+                <div class="relative w-full aspect-[4/3] md:aspect-video rounded-[2.5rem] bg-gradient-to-b from-white to-gray-50 border border-gray-100 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] overflow-hidden group">
+                    <!-- Stage Inner Glow -->
+                    <div class="absolute inset-0 bg-gradient-to-tr from-blue-50/50 via-transparent to-purple-50/50 opacity-50"></div>
+                    
+                    <!-- Top Info Badges -->
+                    <div class="absolute top-6 left-6 right-6 flex justify-between items-start z-30">
+                        {% if is_available and available_qty > 0 %}
+                        <div class="px-4 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse tracking-wide"></span> มีในสต็อก
                         </div>
                         {% else %}
-                        <div
-                            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 backdrop-blur-md">
-                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                            <span
-                                class="text-[10px] font-bold text-red-400 uppercase tracking-widest">{% trans "Unavailable" %}</span>
+                        <div class="px-4 py-2 bg-red-50 text-red-600 border border-red-100 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm flex items-center gap-2">
+                            <i class="fas fa-ban text-xs"></i> สินค้าหมด
+                        </div>
+                        {% endif %}
+
+                        <div class="px-3 py-1.5 bg-white/70 backdrop-blur-md rounded-lg text-[10px] font-mono text-gray-500 font-bold border border-gray-100 shadow-sm">
+                            รหัส: #{{ product.id|stringformat:"04d" }}
+                        </div>
+                    </div>
+
+                    <!-- Product Image -->
+                    <div class="relative z-20 w-full h-full flex items-center justify-center p-12 lg:p-24">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="max-w-full max-h-full object-contain filter drop-shadow-2xl transform group-hover:scale-110 transition-transform duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+                        {% else %}
+                        <div class="flex flex-col items-center text-gray-200">
+                            <i class="fas fa-camera text-9xl"></i>
+                            <span class="text-gray-400 font-bold mt-4 uppercase tracking-widest">ไม่มีรูป</span>
                         </div>
                         {% endif %}
                     </div>
                 </div>
-            </div>
 
-            <!-- 2. Action Sidebar (Mobile Middle, Desktop Right Span-2) -->
-            <div class="lg:col-span-5 xl:col-span-4 order-2 lg:row-span-2 relative">
-                <div class="lg:sticky lg:top-24 space-y-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                        <i class="fas fa-list-ul text-mcot-orange"></i> {% trans "Technical Specifications" %}
-                    </h2>
-
-                    <div class="prose prose-p:text-gray-600 prose-ul:text-gray-600 max-w-none">
-                        {% if product.description %}
-                        <div class="description-content">
-                            {{ product.description|safe }}
+                <!-- 2. Technical Content -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    
+                    <!-- Left Column: Specs -->
+                    <div class="md:col-span-1 space-y-4">
+                        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm transition-shadow hover:shadow-md">
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center mb-4">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">หมวดหมู่</h4>
+                            <p class="text-gray-900 font-black">{{ product.category.name|default:"-" }}</p>
                         </div>
-                        {% else %}
-                        <p class="text-gray-500 italic">{% trans "No detailed description available." %}</p>
-                        {% endif %}
+                        
+                        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm transition-shadow hover:shadow-md">
+                            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center mb-4">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">สภาพ</h4>
+                            <p class="text-gray-900 font-black">ระดับมืออาชีพ</p>
+                        </div>
+
+                        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm transition-shadow hover:shadow-md">
+                            <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center mb-4">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">ที่เก็บ</h4>
+                            <p class="text-gray-900 font-black">คลังหลัก</p>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-gray-200">
-                        <div class="p-4 bg-white/40 rounded-xl border border-gray-100 shadow-sm">
-                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider mb-1">{% trans "Stock ID" %}</span>
-                            <span class="block text-gray-900 font-mono font-bold">#{{ product.id|stringformat:"04d" }}</span>
-                        </div>
-                        <div class="p-4 bg-white/40 rounded-xl border border-gray-100 shadow-sm">
-                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider mb-1">{% trans "Category" %}</span>
-                            <span class="block text-gray-900 font-bold">
-                                {{ product.category.name }}
-                            </span>
-                        </div>
-                        <div class="p-4 bg-white/40 rounded-xl border border-gray-100 shadow-sm">
-                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider mb-1">{% trans "Condition" %}</span>
-                            <span class="block text-green-600 font-bold">{% trans "Excellent" %}</span>
-                        </div>
-                        <div class="p-4 bg-white/40 rounded-xl border border-gray-100 shadow-sm">
-                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider mb-1">{% trans "Location" %}</span>
-                            <span class="block text-gray-900 font-bold">{% trans "HQ" %}</span>
+                    <!-- Right Column: Description -->
+                    <div class="md:col-span-2">
+                        <div class="bg-white h-full rounded-[2rem] p-8 md:p-10 border border-gray-100 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] text-gray-600 leading-relaxed font-medium">
+                            <h3 class="text-xl font-black text-gray-900 mb-6 font-display flex items-center gap-3">
+                                <i class="fas fa-info-circle text-blue-500"></i> รายละเอียดสินค้า
+                            </h3>
+                            <div class="prose prose-sm md:prose-base prose-slate max-w-none 
+                                prose-headings:text-gray-900 prose-headings:font-bold prose-headings:tracking-tight
+                                prose-p:mb-4 prose-p:text-gray-600 
+                                prose-strong:text-gray-900 prose-strong:font-bold
+                                prose-ul:list-none prose-ul:pl-0 prose-ul:space-y-2
+                                prose-li:relative prose-li:pl-6 prose-li:before:content-[''] prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-2 prose-li:before:w-2 prose-li:before:h-2 prose-li:before:bg-blue-500 prose-li:before:rounded-full">
+                                {{ product.description|safe|linebreaks }}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 3. Specs (Mobile Bottom, Desktop Left Bottom) -->
-            <div class="lg:col-span-7 xl:col-span-8 order-3">
-                <div class="bg-white/60 backdrop-blur-md rounded-2xl p-8 border border-gray-200 shadow-md">
+            <!-- Right Side: Booking Card (xl:span-4) -->
+            <div class="xl:col-span-4 relative">
+                <div class="xl:sticky xl:top-[120px] space-y-6">
+                    
+                    <!-- Main Action Card -->
+                    <div class="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] p-8 lg:p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-white relative overflow-hidden">
+                        <!-- Card decorative glow -->
+                        <div class="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/20 rounded-full blur-[60px] pointer-events-none"></div>
 
-                    <div
-                        class="bg-white/80 backdrop-blur-xl rounded-3xl p-8 border border-gray-200 shadow-lg relative overflow-hidden">
-                        <div
-                            class="absolute -top-20 -right-20 w-64 h-64 bg-mcot-orange/5 rounded-full blur-3xl pointer-events-none">
-                        </div>
-
-                        <div class="relative">
-                            <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">
-                                {{ product.category.name }}
-                            </p>
-                            <h1 class="text-3xl lg:text-4xl font-black text-gray-900 mb-6 leading-tight font-display">
+                        <div class="relative z-10">
+                            <div class="inline-block px-3 py-1 bg-gray-100 rounded-lg text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">
+                                {{ product.category.name|default:"อุปกรณ์" }}
+                            </div>
+                            
+                            <h1 class="text-3xl font-black text-gray-900 mb-6 leading-tight tracking-tight font-display">
                                 {{ product.name }}
                             </h1>
 
-                            <div class="flex items-baseline gap-2 mb-8 pb-8 border-b border-gray-200">
-                                <span class="text-5xl font-bold text-mcot-orange tracking-tight">
-                                    ฿{{ product.price|intcomma }}
-                                </span>
-                                <span class="text-gray-500 font-medium">/ {% trans "day" %}</span>
-                            </div>
-
-                            <div
-                                class="bg-gray-50 rounded-xl p-5 mb-8 border border-gray-200 group hover:border-mcot-orange/30 transition-colors shadow-inner">
-                                <div class="flex justify-between items-center mb-3">
-                                    <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">{% trans "Booking Period" %}</span>
-                                    <a href="{% url 'store:catalog' %}"
-                                        class="text-[10px] text-mcot-orange hover:text-orange-700 transition-colors uppercase font-bold">{% trans "Change Dates" %}</a>
-                                </div>
-                                <div class="flex items-center gap-4 text-gray-900 font-bold">
-                                    <div class="flex-1">
-                                        <div class="text-[10px] text-gray-500 mb-1 uppercase font-semibold">{% trans "Start" %}</div>
-                                        <div class="font-mono text-sm border-b border-gray-200 pb-1">
-                                            {{ selected_start_date|default:_("Today") }}
-                                        </div>
-                                    </div>
-                                    <i class="fas fa-arrow-right text-gray-400 text-xs"></i>
-                                    <div class="flex-1 text-right">
-                                        <div class="text-[10px] text-gray-500 mb-1 uppercase font-semibold">{% trans "End" %}</div>
-                                        <div class="font-mono text-sm border-b border-gray-200 pb-1">
-                                            {{ selected_end_date|default:_("Today") }}
-                                        </div>
-                                    </div>
+                            <!-- Price Block -->
+                            <div class="mb-8 p-6 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100/80 shadow-inner">
+                                <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">อัตราค่าเช่า</span>
+                                <div class="flex items-end gap-2">
+                                    <span class="text-5xl font-black text-gray-900 tracking-tighter">฿{{ product.price|floatformat:0|intcomma }}</span>
+                                    <span class="text-gray-500 font-bold uppercase text-xs mb-1">/ วัน</span>
                                 </div>
                             </div>
 
-                            <!-- Quantity & Availability -->
-                            <div class="mb-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <label class="text-xs text-gray-500 uppercase font-bold tracking-wider">{% trans "Quantity" %}</label>
-                                    <span class="text-xs font-bold {% if available_qty > 0 %}text-green-600{% else %}text-red-500{% endif %}">
-                                        {% if available_qty > 0 %}
-                                        {% trans "In Stock" %}: {{ available_qty }}
+                            <!-- Action Content -->
+                            <div class="space-y-6">
+                                    <div>
+                                        <div class="flex items-center justify-between px-2 mb-2">
+                                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">จำนวน</label>
+                                            <span class="text-[10px] font-black {% if available_qty > 0 %}text-emerald-500{% else %}text-red-500{% endif %}">
+                                                คงเหลือ: {{ available_qty|default:0 }}
+                                            </span>
+                                        </div>
+                                        
+                                        <!-- Custom Quantity Selector -->
+                                        <div class="flex items-center bg-gray-50 rounded-2xl p-1.5 border border-gray-200">
+                                            <button onclick="adjustQty(-1)" class="w-12 h-12 shrink-0 flex items-center justify-center bg-white rounded-xl shadow-sm border border-gray-100 text-gray-600 hover:text-blue-600 active:scale-95 transition-all">
+                                                <i class="fas fa-minus text-xs"></i>
+                                            </button>
+                                            <input type="number" id="quantity-input" value="1" min="1" max="{{ available_qty }}" 
+                                                   class="flex-1 bg-transparent text-center text-xl font-black text-gray-900 border-none focus:ring-0 outline-none" readonly>
+                                            <button onclick="adjustQty(1)" class="w-12 h-12 shrink-0 flex items-center justify-center bg-white rounded-xl shadow-sm border border-gray-100 text-gray-600 hover:text-blue-600 active:scale-95 transition-all">
+                                                <i class="fas fa-plus text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- CTA Button -->
+                                    <button onclick="addToCartAndCheckout('{{ product.id }}', '{{ product.name|escapejs }}', {{ product.price|default:0 }}, '{% if product.image %}{{ product.image.url }}{% endif %}', {{ available_qty|default:0 }})"
+                                            class="w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 active:scale-[0.98] overflow-hidden relative group
+                                            {% if is_available and available_qty > 0 %}bg-gray-900 text-white shadow-gray-900/30{% else %}bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none{% endif %}"
+                                            {% if not is_available or available_qty <= 0 %}disabled{% endif %}>
+                                        
+                                        {% if is_available and available_qty > 0 %}
+                                        <div class="absolute inset-0 bg-blue-600 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                                        <div class="relative z-10 flex items-center gap-3">
+                                            <i class="fas fa-file-invoice-dollar"></i> ขอใบเสนอราคา
+                                        </div>
                                         {% else %}
-                                        {% trans "Out of Stock" %}
+                                        <i class="fas fa-ban"></i> ไม่พร้อมให้บริการ
                                         {% endif %}
-                                    </span>
-                                </div>
-                                <div class="flex items-center bg-white rounded-lg border border-gray-200 p-1 shadow-inner">
-                                    <button onclick="adjustQty(-1)" class="w-12 h-12 flex items-center justify-center hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-900 transition-colors" {% if available_qty == 0 %}disabled{% endif %}>
-                                        <i class="fas fa-minus"></i>
                                     </button>
-                                    <input type="number" id="quantity-input" value="1" min="1" max="{{ available_qty }}" 
-                                        class="flex-1 bg-transparent text-center text-gray-900 font-bold focus:outline-none appearance-none"
-                                        readonly>
-                                    <button onclick="adjustQty(1)" class="w-12 h-12 flex items-center justify-center hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-900 transition-colors" {% if available_qty == 0 %}disabled{% endif %}>
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
 
+                                    <a href="{% url 'store:contact' %}" class="w-full py-4 rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all border border-gray-200 text-gray-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50/30">
+                                        <i class="fas fa-headset"></i> ติดต่อเจ้าหน้าที่
+                                    </a>
                             </div>
-
-                            <div class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-gray-200 p-4 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] lg:relative lg:bottom-auto lg:left-auto lg:right-auto lg:z-auto lg:bg-transparent lg:backdrop-blur-none lg:border-none lg:p-0 lg:shadow-none transition-all">
-                                <button
-                                    onclick="addToCartAndCheckout('{{ product.id }}', '{{ product.name|escapejs }}', {{ product.price|default:0 }}, '{% if product.image %}{{ product.image.url }}{% endif %}', {{ available_qty|default:0 }})"
-                                    class="w-full py-4 lg:py-5 rounded-xl lg:rounded-2xl font-bold text-base uppercase tracking-widest transition-all transform lg:hover:-translate-y-1 hover:shadow-2xl flex items-center justify-center gap-3 group {% if is_available and available_qty > 0 %}bg-mcot-orange text-white hover:bg-white hover:text-black shadow-[0_10px_20px_rgba(242,101,34,0.3)]{% else %}bg-[#404040] text-gray-500 cursor-not-allowed{% endif %}"
-                                    {% if not is_available or available_qty == 0 %}disabled{% endif %}>
-                                    {% if is_available and available_qty > 0 %}
-                                    <span>{% trans "Add to Quote" %}</span>
-                                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                                    {% else %}
-                                    <span>{% trans "Unavailable" %}</span>
-                                    {% endif %}
-                                </button>
-                            </div>
-
-                            {% if available_qty == 0 and is_available %}
-                            <p class="text-center text-xs text-red-400 mt-4 font-bold bg-red-400/10 py-2 rounded-lg">
-                                <i class="fas fa-exclamation-circle mr-1"></i> {% trans "Out of stock for selected dates" %}
-                            </p>
-                            {% endif %}
-                            
-                            {% if not is_available %}
-                            <p class="text-center text-xs text-red-400 mt-4 font-bold bg-red-400/10 py-2 rounded-lg">
-                                <i class="fas fa-exclamation-circle mr-1"></i> {% trans "Dates fully booked" %}
-                            </p>
-                            {% endif %}
                         </div>
                     </div>
 
-                    <div class="bg-white/60 backdrop-blur-md rounded-2xl p-6 border border-gray-200 shadow-md flex flex-col gap-4">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="w-8 h-8 rounded-full bg-mcot-orange/10 flex items-center justify-center text-mcot-orange border border-mcot-orange/20">
-                                <i class="fas fa-shield-alt text-xs"></i>
+                    <!-- Trust Features -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 transition-transform hover:-translate-y-1">
+                            <div class="w-10 h-10 shrink-0 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
+                                <i class="fas fa-check-double"></i>
                             </div>
-                            <div class="text-xs text-gray-500">
-                                <span class="block text-gray-900 font-bold mb-0.5">{% trans "Professional QC" %}</span>
-                                {% trans "Tested before every rental" %}
+                            <div>
+                                <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">กระบวนการ QC</span>
+                                <span class="block text-xs font-bold text-gray-900">ตรวจสอบและทำความสะอาด</span>
                             </div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="w-8 h-8 rounded-full bg-mcot-orange/10 flex items-center justify-center text-mcot-orange border border-mcot-orange/20">
-                                <i class="fas fa-headset text-xs"></i>
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 transition-transform hover:-translate-y-1">
+                            <div class="w-10 h-10 shrink-0 rounded-xl bg-orange-50 flex items-center justify-center text-orange-500">
+                                <i class="fas fa-headset"></i>
                             </div>
-                            <div class="text-xs text-gray-500">
-                                <span class="block text-gray-900 font-bold mb-0.5">{% trans "24/7 Support" %}</span>
-                                {% trans "Direct line for rental issues" %}
+                            <div>
+                                <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">การสนับสนุน</span>
+                                <span class="block text-xs font-bold text-gray-900">บริการตลอด 24/7</span>
                             </div>
                         </div>
                     </div>
@@ -230,54 +209,39 @@
     </div>
 </div>
 
+<!-- Mobile Fix bar -->
+<div class="fixed bottom-0 left-0 right-0 z-[60] bg-white/95 backdrop-blur-xl border-t border-gray-100 p-4 xl:hidden shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+    <div class="flex items-center gap-3">
+        <a href="{% url 'store:contact' %}" class="w-14 h-14 shrink-0 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center text-gray-500 hover:text-blue-600 transition-colors">
+            <i class="fas fa-headset text-xl"></i>
+        </a>
+        <button onclick="addToCartAndCheckout('{{ product.id }}', '{{ product.name|escapejs }}', {{ product.price|default:0 }}, '{% if product.image %}{{ product.image.url }}{% endif %}', {{ available_qty|default:0 }})"
+                class="flex-1 py-4 rounded-xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all transform active:scale-95
+                {% if is_available and available_qty > 0 %}bg-gray-900 text-white shadow-lg{% else %}bg-gray-200 text-gray-400 cursor-not-allowed{% endif %}"
+                {% if not is_available or available_qty <= 0 %}disabled{% endif %}>
+            {% if is_available and available_qty > 0 %}
+            <i class="fas fa-file-invoice-dollar"></i> ขอใบเสนอราคา
+            {% else %}
+            ไม่พร้อมให้บริการ
+            {% endif %}
+        </button>
+    </div>
+</div>
+
 <style>
-    /* ... existing styles ... */
-    .description-content ul {
-        list-style-type: none;
-        padding-left: 0;
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .description-content li {
-        position: relative;
-        padding-left: 1.5rem;
-        margin-bottom: 0.5rem;
-        color: #4b5563; /* text-gray-600 */
-        font-size: 0.95rem;
-    }
-
-    .description-content li::before {
-        content: "•";
-        color: #F26522;
-        position: absolute;
-        left: 0;
-        font-weight: bold;
-    }
-
-    .description-content strong {
-        color: #111827; /* text-gray-900 */
-        font-weight: 600;
-        margin-right: 0.25rem;
-    }
-    
-    /* Remove number arrows */
-    input[type=number]::-webkit-inner-spin-button, 
-    input[type=number]::-webkit-outer-spin-button { 
-        -webkit-appearance: none; 
-        margin: 0; 
-    }
+    /* Remove input number arrows */
+    input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 </style>
 
 <script>
     function adjustQty(change) {
         const input = document.getElementById('quantity-input');
-        const max = parseInt(input.getAttribute('max')) || 99;
+        const max = parseInt(input.getAttribute('max')) || 0;
         let val = parseInt(input.value) || 1;
         
         val += change;
         if(val < 1) val = 1;
-        if(val > max) val = max;
+        if(val > max && max > 0) val = max;
         
         input.value = val;
     }
@@ -296,15 +260,15 @@
             }
 
             if (currentInCart + qty > maxStock) {
-                alert(`{% trans "Cannot add more. You already have" %} ${currentInCart} {% trans "in cart, and stock is" %} ${maxStock}.`);
+                alert(`เพิ่มได้ไม่เกิน ${maxStock} ชิ้น (คงเหลือในสต็อก).`);
                 return;
             }
 
             if (existingIndex > -1) {
                 cart[existingIndex].quantity = currentInCart + qty;
-                cart[existingIndex].max_stock = maxStock; // Update stock info
+                cart[existingIndex].max_stock = maxStock;
             } else {
-                cart.push({ id, name, price, image, quantity: qty, max_stock: maxStock });
+                cart.push({ id, name, price, image, quantity: qty, max_stock: maxStock, type: 'product' });
             }
 
             localStorage.setItem('mcot_cart', JSON.stringify(cart));
@@ -321,7 +285,7 @@
 
         } catch (e) {
             console.error(e);
-            alert("{% trans 'Error adding to cart.' %}");
+            alert("เกิดข้อผิดพลาดในการเพิ่มรายการ");
         }
     }
 </script>

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}ลงทะเบียน — MCOT Rental Platform{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-mcot-orange to-mcot-purple mb-4 shadow-lg shadow-mcot-orange/20 border border-white/50">
+                <i class="fas fa-user-plus text-white text-2xl"></i>
+            </div>
+            <h1 class="text-3xl font-extrabold text-gray-900 font-display drop-shadow-sm">ลงทะเบียน</h1>
+            <p class="text-gray-600 text-sm mt-2 font-medium">ขั้นตอนสุดท้าย — ยืนยันข้อมูลจาก Google</p>
+        </div>
+
+        <div class="bg-white/60 backdrop-blur-xl shadow-2xl border border-white/60 rounded-3xl p-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100/50 to-transparent rounded-bl-full pointer-events-none"></div>
+
+            <p class="relative z-10 text-gray-600 text-sm mb-6">
+                คุณกำลังจะใช้บัญชี <strong>{{ account.get_provider.name }}</strong> เพื่อเข้าสู่ระบบ {{ site.name }} กรุณาตรวจสอบข้อมูลด้านล่างแล้วกดลงทะเบียน
+            </p>
+
+            <form method="post" action="{% url 'socialaccount_signup' %}" class="space-y-5 relative z-10">
+                {% csrf_token %}
+                {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+
+                {% if form.errors %}
+                <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm shadow-sm">
+                    <p class="font-bold mb-1"><i class="fas fa-exclamation-triangle mr-1"></i> เกิดข้อผิดพลาด</p>
+                    {{ form.non_field_errors }}
+                    {% for field in form %}{% for error in field.errors %}<p>{{ error }}</p>{% endfor %}{% endfor %}
+                </div>
+                {% endif %}
+
+                {% for field in form %}
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <input type="{% if field.name == 'email' %}email{% else %}text{% endif %}"
+                           name="{{ field.name }}" id="{{ field.id_for_label }}"
+                           value="{{ field.value|default:'' }}"
+                           placeholder="{% if field.name == 'phone' %}0812345678{% elif field.name == 'first_name' %}ชื่อจริง{% elif field.name == 'last_name' %}นามสกุล{% endif %}"
+                           class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-mcot-orange/50 outline-none transition-all shadow-sm"
+                           {% if field.field.required %}required{% endif %}>
+                    {% for error in field.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="w-full bg-mcot-orange text-white font-bold py-3.5 rounded-xl hover:bg-orange-600 transform hover:-translate-y-0.5 transition-all duration-200 shadow-lg shadow-orange-500/30 mt-6">
+                    <i class="fas fa-user-check mr-2"></i> ลงทะเบียน
+                </button>
+            </form>
+
+            <div class="mt-8 text-center text-sm text-gray-600 relative z-10">
+                <div class="h-px w-full bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4"></div>
+                <p>มีบัญชีอยู่แล้ว? <a href="{% url 'account_login' %}" class="text-mcot-orange hover:text-orange-600 font-bold ml-1">เข้าสู่ระบบ</a></p>
+                <a href="/" class="inline-block mt-3 hover:text-mcot-orange transition-colors font-medium"><i class="fas fa-arrow-left text-xs mr-1"></i> กลับหน้าหลัก</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

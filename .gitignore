@@ -11,7 +11,7 @@ build/
 *.env.local
 
 # Database
-db.sqlite3
+*.sqlite3
 
 # Media uploads
 media/
@@ -29,20 +29,28 @@ staticfiles/
 .DS_Store
 Thumbs.db
 
-# Backup
+# Archives
 *.zip
+*.tar.gz
 
 # Virtual Environments
-venv/
-venv2/
-venv_mcot/
-mcot_env/
+venv*/
+*_env/
 helper_venv/
+.venv/
+
+# Broken / vendored deps
 _deps_broken/
 deps/
 python/
+simpleui/
 
-# Temp files
+# Dev artifacts
 get-pip.py
+calibrate_pdf.py
+test_pdf_render.py
+calibration_test.pdf
 deploy_to_vps.sh
-*.tar.gz
+
+# Office temp files
+~$*

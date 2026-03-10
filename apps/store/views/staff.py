@@ -1,7 +1,19 @@
+import json
+from decimal import Decimal
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.http import JsonResponse
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Q, Sum, Count
+from django.db.models.functions import TruncMonth
+from django.views.decorators.http import require_POST
+
 from apps.store.models import Equipment, Product, Booking, BookingItem
+from apps.store.services.notification_service import NotificationService
+from apps.store.services.pricing_service import PricingService
+from apps.store.services.dashboard_service import DashboardService
 
 @login_required
 def equipment_history_search(request):
@@ -60,16 +72,6 @@ def equipment_history_detail(request, equipment_id):
     return render(request, 'inventory/history_detail.html', context)
 
 
-from django.http import JsonResponse
-from django.utils import timezone
-from datetime import timedelta
-from django.db.models import Sum, Count
-from django.db.models.functions import TruncMonth
-from django.views.decorators.http import require_POST
-import json
-from apps.store.services.notification_service import NotificationService
-from apps.store.services.pricing_service import PricingService
-from decimal import Decimal
 
 @login_required
 def booking_summary(request, booking_id):
@@ -178,6 +180,13 @@ def booking_action_api(request, booking_id):
             booking.payment_status = 'paid'
             booking.save(update_fields=['payment_status'])
             # Status doesn't automatically become 'active' yet, depending on flow. Sometimes staff manually sets active.
+
+        elif action == 'skip_deposit':
+            # ข้ามขั้นตอนมัดจำ (บางรายไม่เก็บค่ามัดจำ)
+            if booking.status not in ('draft', 'pending'):
+                raise ValueError("ใช้ได้เฉพาะใบจองที่รอตรวจสอบหรือรออนุมัติ")
+            booking.payment_status = 'waived'
+            booking.save(update_fields=['payment_status'])
             
         elif action == 'mark_active':
             booking.status = 'active'
@@ -218,6 +227,46 @@ def booking_action_api(request, booking_id):
                  if not eq:
                      raise ValueError(f"ไม่พบอุปกรณ์รหัส {asset_tag} ในสินค้านี้")
                  BookingItem.objects.filter(id=item_id, booking=booking).update(equipment=eq)
+
+        elif action == 'update_dates':
+            # เจ้าหน้าที่แก้วันที่ (ขยายระยะเวลา) — ระวังไม่ให้ทับกับ overdue
+            from datetime import datetime as dt
+            start_str = data.get('start')
+            end_str = data.get('end')
+            if not start_str or not end_str:
+                raise ValueError("กรุณาระบุวันเริ่มและวันสิ้นสุด (start, end รูปแบบ YYYY-MM-DD)")
+            try:
+                new_start = timezone.make_aware(dt.strptime(start_str[:10], "%Y-%m-%d").replace(hour=0, minute=0, second=0, microsecond=0))
+                new_end = timezone.make_aware(dt.strptime(end_str[:10], "%Y-%m-%d").replace(hour=23, minute=59, second=59, microsecond=999999))
+            except (ValueError, TypeError):
+                raise ValueError("รูปแบบวันที่ไม่ถูกต้อง ใช้ YYYY-MM-DD")
+            if new_end < new_start:
+                raise ValueError("วันคืนของต้องไม่ก่อนวันรับของ")
+            booking.start_time = new_start
+            booking.end_time = new_end
+            # ถ้าเดิม overdue แต่เลื่อนวันคืนไปข้างหน้าแล้วเกินวันนี้ → กลับเป็น active
+            now = timezone.now()
+            if booking.status == 'overdue' and new_end >= now:
+                booking.status = 'active'
+                booking.save(update_fields=['start_time', 'end_time', 'status'])
+            else:
+                booking.save(update_fields=['start_time', 'end_time'])
+
+        elif action == 'set_item_return_status':
+            # ตอนคืนของ: เจ้าหน้าที่กดว่าคืนแล้ว หรือ ชำรุด (เก็บ log)
+            item_id = data.get('item_id')
+            status = data.get('status')  # 'returned' | 'damaged'
+            notes = data.get('notes', '')
+            if not item_id or status not in ('returned', 'damaged'):
+                raise ValueError("ระบุ item_id และ status (returned หรือ damaged)")
+            bi = BookingItem.objects.filter(id=item_id, booking=booking).first()
+            if not bi:
+                raise ValueError("ไม่พบรายการนี้ในใบจอง")
+            bi.status = status
+            bi.returned_at = timezone.now()
+            if notes:
+                bi.notes = (bi.notes or '') + (' ' + notes).strip()
+            bi.save(update_fields=['status', 'returned_at', 'notes'])
             
         else:
             return JsonResponse({'success': False, 'message': 'Invalid Action'}, status=400)
@@ -254,6 +303,25 @@ def download_booking_pdf(request, booking_id):
     # Fallback to HTML Print due to xhtml2pdf installation issues
     return render(request, template_path, context)
 
+
+@login_required
+def download_checklist_pdf(request, booking_id):
+    """
+    PDF Checklist รายการของที่จอง (สำหรับเจ้าหน้าที่ใช้ตอนส่งของ/คืนของ)
+    """
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect('store:home')
+    booking = get_object_or_404(Booking, id=booking_id)
+    items = booking.items.select_related('product', 'equipment').all()
+    packages = booking.booked_packages.select_related('package').all()
+    studios = booking.booked_studios.select_related('studio').all()
+    return render(request, 'booking/pdf/checklist_return.html', {
+        'booking': booking,
+        'items': items,
+        'packages': packages,
+        'studios': studios,
+    })
+
 @login_required
 def download_quotation_pdf(request, booking_id):
     """
@@ -262,6 +330,10 @@ def download_quotation_pdf(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
 
     # Permission check: Owner or Staff can download
+    # [NEW] Restriction: Customer cannot download if status is 'draft'
+    if booking.created_by == request.user and booking.status == 'draft':
+        return redirect('store:booking_detail', booking_id=booking.id)
+
     if booking.created_by != request.user and not (request.user.is_staff or request.user.is_superuser):
         return redirect('store:home')
 
@@ -282,57 +354,15 @@ def download_quotation_pdf(request, booking_id):
     
     return render(request, 'booking/pdf/quotation.html', context)
 
-from django.db.models import Sum, Count
-from django.db.models.functions import TruncMonth
 
 @login_required
-def staff_analytics(request):
+def staff_dashboard(request):
     """
-    หน้า Dashboard รายงานสถิติสำหรับผู้บริหาร/ทีมงาน
+    หน้า Dashboard ภาพรวมสำหรับ Staff (จุดเข้าแรกหลังล็อกอิน)
     """
     if not (request.user.is_staff or request.user.is_superuser):
         return redirect('store:home')
+    stats = DashboardService.get_admin_dashboard_stats()
+    return render(request, 'staff/dashboard.html', stats)
 
-    # 1. ภาพรวมรายได้และยอดจอง (เฉพาะที่จ่ายเงินแล้วหรืออนุมัติแล้ว)
-    valid_status = ['approved', 'active', 'completed']
-    bookings = Booking.objects.filter(status__in=valid_status)
-    
-    total_revenue = bookings.aggregate(Sum('total_price'))['total_price__sum'] or 0
-    total_bookings = bookings.count()
-    completed_bookings = bookings.filter(status='completed').count()
-    active_bookings = bookings.filter(status='active').count()
 
-    # 2. รายได้รายเดือน (ย้อนหลัง 6 เดือน)
-    six_months_ago = timezone.now() - timedelta(days=180)
-    monthly_revenue = bookings.filter(created_at__gte=six_months_ago)\
-        .annotate(month=TruncMonth('created_at'))\
-        .values('month')\
-        .annotate(revenue=Sum('total_price'))\
-        .order_by('month')
-
-    months = [entry['month'].strftime('%b %Y') for entry in monthly_revenue]
-    revenues = [float(entry['revenue'] or 0) for entry in monthly_revenue]
-
-    # 3. สินค้าที่ถูกเช่าบ่อยที่สุด (Top 5 Products)
-    top_products = BookingItem.objects.filter(booking__status__in=valid_status)\
-        .values('product__name')\
-        .annotate(total_rented=Sum('quantity'))\
-        .order_by('-total_rented')[:5]
-
-    product_names = [item['product__name'] for item in top_products]
-    product_counts = [item['total_rented'] for item in top_products]
-
-    context = {
-        'total_revenue': total_revenue,
-        'total_bookings': total_bookings,
-        'completed_bookings': completed_bookings,
-        'active_bookings': active_bookings,
-        
-        # สำหรับ Chart.js
-        'months_json': json.dumps(months),
-        'revenues_json': json.dumps(revenues),
-        'product_names_json': json.dumps(product_names),
-        'product_counts_json': json.dumps(product_counts),
-    }
-
-    return render(request, 'staff/analytics.html', context)

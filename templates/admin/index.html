@@ -13,8 +13,17 @@
 
 {% block content %}
 <div id="content-main">
-  <!-- Custom Dashboard Panel for Equipment History -->
-  <!-- Custom Dashboard Panel for Equipment History -->
+  <!-- Dashboard & Reports (รายงานหลัก) -->
+  <div class="module" style="margin-bottom: 20px;">
+    <h2>📊 {% trans "Dashboard & Reports" %}</h2>
+    <div style="padding: 15px;">
+        <p class="mb-4">{% trans "ภาพรวมการจองและรายงานใบจอง (กรองช่วงวันที่, Export CSV)." %}</p>
+        <a href="{% url 'store:staff_dashboard' %}" class="button" style="margin-right: 8px;">{% trans "Dashboard" %}</a>
+        <a href="{% url 'store:staff_reports' %}" class="button">{% trans "รายงานใบจอง" %}</a>
+    </div>
+  </div>
+
+  <!-- Equipment Management -->
   <div class="module" style="margin-bottom: 20px;">
     <h2>⚡ {% trans "Equipment Management" %}</h2>
     <div style="padding: 15px;">

@@ -103,6 +103,24 @@
                                         <p>จำนวน: <span class="font-medium text-gray-900" x-text="item.quantity"></span></p>
                                         <p>ราคาต่อหน่วย: <span x-text="'฿' + parseInt(item.price).toLocaleString()"></span></p>
                                     </div>
+                                    
+                                    <!-- Package Sub-items -->
+                                    <template x-if="item.type === 'package' && item.package_items && item.package_items.length > 0">
+                                        <div class="mt-3 bg-orange-50 border border-orange-100 rounded-xl p-3">
+                                            <p class="text-[10px] font-bold text-orange-600 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                                <i class="fas fa-box-open"></i> อุปกรณ์ในแพ็กเกจ
+                                            </p>
+                                            <ul class="space-y-1">
+                                                <template x-for="sub in item.package_items" :key="sub.name">
+                                                    <li class="flex items-center gap-2 text-xs text-gray-700">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0"></span>
+                                                        <span class="font-bold text-orange-700 font-mono" x-text="sub.qty + 'x'"></span>
+                                                        <span x-text="sub.name"></span>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </template>
                                 </div>
                             </div>
                         </template>
@@ -136,6 +154,40 @@
                         <p class="font-bold text-gray-100" x-text="formatDate(dates.end)"></p>
                     </div>
 
+                    <!-- Partner Badge -->
+                    <template x-if="isPartner">
+                        <div class="flex items-center gap-2 bg-purple-500/20 border border-purple-400/30 rounded-xl px-3 py-2.5 mb-4">
+                            <i class="fas fa-crown text-yellow-400 text-sm"></i>
+                            <span class="text-purple-200 text-xs font-bold">Partner — ส่วนลดอัตโนมัติ <span x-text="partnerDiscountPercent + '%'"></span></span>
+                        </div>
+                    </template>
+
+                    <!-- Promo Code -->
+                    <div class="mb-6">
+                        <label class="block text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-2">โค้ดส่วนลด (ถ้ามี)</label>
+                        <div class="flex gap-2">
+                            <input type="text" x-model="promoInput" 
+                                   @keydown.enter.prevent="applyPromo()"
+                                   placeholder="กรอกโค้ดส่วนลด"
+                                   :disabled="promoApplied"
+                                   class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm placeholder-gray-500 focus:ring-2 focus:ring-mcot-orange/50 focus:border-mcot-orange outline-none transition-all disabled:opacity-50">
+                            <template x-if="!promoApplied">
+                                <button @click="applyPromo()" :disabled="!promoInput || promoChecking" class="bg-mcot-orange hover:bg-orange-600 text-white font-bold px-4 py-2.5 rounded-lg text-xs uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap">
+                                    <span x-show="!promoChecking">ใช้โค้ด</span>
+                                    <i x-show="promoChecking" class="fas fa-spinner fa-spin" style="display:none;"></i>
+                                </button>
+                            </template>
+                            <template x-if="promoApplied">
+                                <button @click="removePromo()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-lg text-xs uppercase tracking-wider transition-all whitespace-nowrap">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </template>
+                        </div>
+                        <template x-if="promoMessage">
+                            <p class="mt-2 text-xs font-medium" :class="promoApplied ? 'text-green-400' : 'text-red-400'" x-text="promoMessage"></p>
+                        </template>
+                    </div>
+
                     <!-- Price Breakdown -->
                     <div class="space-y-4 mb-6 text-sm">
                         <div class="flex justify-between items-center text-gray-300">
@@ -143,10 +195,21 @@
                             <span class="font-medium" x-text="'฿' + subtotal.toLocaleString()"></span>
                         </div>
                         
-                        <template x-if="discount > 0">
-                            <div class="flex justify-between items-center text-green-400 bg-green-900/20 p-2 -mx-2 rounded-lg">
-                                <span>ส่วนลด</span>
-                                <span class="font-medium" x-text="'- ฿' + discount.toLocaleString()"></span>
+                        <template x-if="discountDetails.length > 0">
+                            <div class="space-y-2">
+                                <template x-for="d in discountDetails" :key="d.label">
+                                    <div class="flex justify-between items-center text-green-400 bg-green-900/20 p-2 -mx-2 rounded-lg text-xs">
+                                        <span x-text="d.label"></span>
+                                        <span class="font-medium" x-text="'- ฿' + d.amount.toLocaleString()"></span>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+
+                        <template x-if="discount > 0 && discountDetails.length > 1">
+                            <div class="flex justify-between items-center text-green-400 font-bold border-t border-green-800/30 pt-2 -mx-2 px-2">
+                                <span>ส่วนลดรวม</span>
+                                <span x-text="'- ฿' + discount.toLocaleString()"></span>
                             </div>
                         </template>
 
@@ -206,31 +269,112 @@
             // Pricing
             subtotal: 0,
             discount: 0,
+            discountDetails: [],
             promoCode: null,
+
+            // Partner
+            isPartner: false,
+            partnerDiscountPercent: 0,
+
+            // Promo UI
+            promoInput: '',
+            promoApplied: false,
+            promoChecking: false,
+            promoMessage: '',
             
             isSubmitting: false,
 
             init() {
-                // Load Cart
                 const storedCart = localStorage.getItem('mcot_cart');
                 if (storedCart) {
                     this.cartItems = JSON.parse(storedCart);
                     this.calculateTotals();
                 }
 
-                // Load Dates (from Step 2)
                 const storedDates = localStorage.getItem('mcot_booking_dates');
                 if (storedDates) {
                     this.dates = JSON.parse(storedDates);
                 } else {
-                    // Redirect back if no dates selected
                     window.location.href = "{% url 'store:cart_dates' %}";
                 }
+
+                this.checkPartnerDiscount();
             },
 
             calculateTotals() {
                 this.subtotal = this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                // Note: Promo discount logic goes here if carried over from a previous step
+            },
+
+            async checkPartnerDiscount() {
+                if (this.subtotal <= 0) return;
+                try {
+                    const url = new URL("{% url 'store:api_check_promo' %}", window.location.origin);
+                    url.searchParams.set('subtotal', this.subtotal);
+                    url.searchParams.set('code', '');
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    if (data.valid && data.is_partner) {
+                        this.isPartner = true;
+                        this.discount = data.discount_amount || 0;
+                        const match = (data.messages?.[0] || '').match(/(\d+)%/);
+                        if (match) this.partnerDiscountPercent = parseInt(match[1]);
+                        this.discountDetails = [{
+                            label: data.messages[0] || 'ส่วนลดพาร์ทเนอร์',
+                            amount: data.partner_discount || data.discount_amount || 0
+                        }];
+                    }
+                } catch(e) {
+                    console.error('Partner check error:', e);
+                }
+            },
+
+            async applyPromo() {
+                const code = (this.promoInput || '').trim();
+                if (!code) return;
+                this.promoChecking = true;
+                this.promoMessage = '';
+                try {
+                    const url = new URL("{% url 'store:api_check_promo' %}", window.location.origin);
+                    url.searchParams.set('subtotal', this.subtotal);
+                    url.searchParams.set('code', code);
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    if (data.valid) {
+                        this.promoApplied = true;
+                        this.promoCode = data.code_applied;
+                        this.discount = data.discount_amount || 0;
+                        this.isPartner = data.is_partner || false;
+                        this.promoMessage = 'ใช้โค้ดสำเร็จ!';
+
+                        this.discountDetails = [];
+                        if (data.partner_discount > 0) {
+                            const pMsg = data.messages.find(m => m.includes('พาร์ทเนอร์')) || 'ส่วนลดพาร์ทเนอร์';
+                            this.discountDetails.push({ label: pMsg, amount: data.partner_discount });
+                            const match = pMsg.match(/(\d+)%/);
+                            if (match) this.partnerDiscountPercent = parseInt(match[1]);
+                        }
+                        if (data.promo_discount > 0) {
+                            const cMsg = data.messages.find(m => m.includes('โปรโมชั่น')) || 'โค้ดส่วนลด';
+                            this.discountDetails.push({ label: cMsg, amount: data.promo_discount });
+                        }
+                    } else {
+                        this.promoMessage = data.message || 'โค้ดไม่ถูกต้อง';
+                    }
+                } catch(e) {
+                    this.promoMessage = 'เกิดข้อผิดพลาด กรุณาลองใหม่';
+                } finally {
+                    this.promoChecking = false;
+                }
+            },
+
+            removePromo() {
+                this.promoApplied = false;
+                this.promoCode = null;
+                this.promoInput = '';
+                this.promoMessage = '';
+                this.discountDetails = [];
+                this.discount = 0;
+                this.checkPartnerDiscount();
             },
 
             get totalQuantity() {

@@ -31,7 +31,8 @@ def register(request):
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            # ต้องระบุ backend เพราะมีหลาย AUTHENTICATION_BACKENDS (ModelBackend + allauth)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('store:home')
     else:
         form = UserRegisterForm()

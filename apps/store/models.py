@@ -251,6 +251,7 @@ class Booking(models.Model):
         ('unpaid', 'ยังไม่จ่าย (Unpaid)'),
         ('pending', 'รอตรวจสอบ (Pending Verification)'),
         ('paid', 'จ่ายแล้ว (Paid)'),
+        ('waived', 'ไม่เก็บมัดจำ (Waived)'),
         ('refunded', 'คืนเงิน (Refunded)'),
     ]
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='unpaid', verbose_name="สถานะการชำระเงิน")

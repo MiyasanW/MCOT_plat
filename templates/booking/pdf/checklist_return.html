@@ -1,0 +1,89 @@
+{% load static humanize %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <title>Checklist รายการของที่จอง - #{{ booking.id }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --mcot-orange: #F26522; --mcot-purple: #2E1A69; --text-dark: #1F2937; --text-gray: #4B5563; --border-light: #E5E7EB; --bg-light: #F9FAFB; }
+        body { font-family: 'Sarabun', 'Inter', sans-serif; font-size: 13px; color: var(--text-dark); margin: 0; padding: 0; }
+        .page-container { width: 210mm; min-height: 297mm; margin: auto; padding: 40px 50px; box-sizing: border-box; }
+        .top-accent { height: 8px; background: linear-gradient(90deg, var(--mcot-orange), var(--mcot-purple)); margin: -40px -50px 24px -50px; }
+        .header-wrapper { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .company-name { font-size: 22px; font-weight: 800; color: var(--mcot-purple); }
+        .doc-title { font-size: 20px; font-weight: 700; color: var(--mcot-orange); }
+        .doc-id { font-size: 14px; color: var(--text-gray); }
+        .divider { height: 1px; background: var(--border-light); margin: 20px 0; }
+        .info-line { font-size: 12px; color: var(--text-gray); margin-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { border: 1px solid var(--border-light); padding: 10px 12px; text-align: left; }
+        th { background: var(--bg-light); font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-gray); }
+        .col-check { width: 40px; text-align: center; }
+        .col-no { width: 50px; text-align: center; }
+        .col-qty { width: 70px; text-align: center; }
+        .col-notes { width: 28%; }
+        .check-cell { font-size: 18px; color: var(--text-gray); }
+        .footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--border-light); font-size: 10px; color: var(--text-gray); }
+        @media print { body { background: white; } .page-container { box-shadow: none; } }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="top-accent"></div>
+        <div class="header-wrapper">
+            <div>
+                <h1 class="company-name">MCOT Rental</h1>
+                <div class="doc-id">Checklist รายการของที่จอง (สำหรับตรวจรับ/คืนของ)</div>
+            </div>
+            <div>
+                <div class="doc-title">ใบจอง #{{ booking.id }}</div>
+                <div class="info-line">ลูกค้า: {{ booking.customer_name }} | โปรเจกต์: {{ booking.project_name|default:"-" }}</div>
+                <div class="info-line">วันรับ: {{ booking.start_time|date:"d M Y" }} → วันคืน: {{ booking.end_time|date:"d M Y" }}</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-check">✓</th>
+                    <th class="col-no">No.</th>
+                    <th>รายการ</th>
+                    <th class="col-qty">จำนวน</th>
+                    <th class="col-notes">หมายเหตุ (คืนแล้ว/ชำรุด)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td class="col-check check-cell">□</td>
+                    <td class="col-no">{{ forloop.counter }}</td>
+                    <td>{{ item.product.name }}{% if item.equipment %} ({{ item.equipment.serial_number|default:item.equipment.asset_tag }}){% endif %}</td>
+                    <td class="col-qty">{{ item.quantity }}</td>
+                    <td class="col-notes"></td>
+                </tr>
+                {% endfor %}
+                {% for pkg in packages %}
+                <tr>
+                    <td class="col-check check-cell">□</td>
+                    <td class="col-no">-</td>
+                    <td>{{ pkg.package.name }} (แพ็กเกจ)</td>
+                    <td class="col-qty">{{ pkg.quantity }}</td>
+                    <td class="col-notes"></td>
+                </tr>
+                {% endfor %}
+                {% for studio in studios %}
+                <tr>
+                    <td class="col-check check-cell">□</td>
+                    <td class="col-no">-</td>
+                    <td>{{ studio.studio.name }} (สตูดิโอ)</td>
+                    <td class="col-qty">1</td>
+                    <td class="col-notes"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="footer">พิมพ์เมื่อ {% now "d M Y H:i" %} — ใช้สำหรับตรวจรายการตอนส่งของ/คืนของ</div>
+    </div>
+</body>
+</html>

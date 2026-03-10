@@ -1,14 +1,18 @@
+import json
+import re
+from datetime import datetime, timedelta
+from decimal import Decimal
+
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from django.utils import timezone
-from datetime import datetime, timedelta
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
-import json
 
 from apps.store.models import Product, Studio, Package, Booking, BookingItem, PromotionCode, Profile
 from apps.store.services.availability import AvailabilityService
+from apps.store.services.booking_service import BookingService
 
 def cart(request):
     """
@@ -47,7 +51,6 @@ def check_promo_api(request):
     promo_code = request.GET.get('code', '').strip()
     
     try:
-        from decimal import Decimal
         subtotal = Decimal(subtotal_str)
         if subtotal <= 0:
             return JsonResponse({"valid": False, "message": "ยอดรวมต้องมากกว่า 0"})
@@ -84,13 +87,16 @@ def check_promo_api(request):
             except PromotionCode.DoesNotExist:
                 return JsonResponse({"valid": False, "message": "โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว"})
 
-        # จำกัดส่วนลดไม่ให้เกินยอดรวม
+        partner_amount = float(discount - promo_discount)
+
         if discount > subtotal:
             discount = subtotal
 
         return JsonResponse({
             "valid": True,
             "discount_amount": float(discount),
+            "partner_discount": partner_amount,
+            "promo_discount": float(promo_discount),
             "messages": messages,
             "code_applied": promo_code if code_valid else None,
             "is_partner": is_partner
@@ -175,12 +181,10 @@ def create_booking_api(request):
     API สำหรับสร้าง Booking จาก Cart (Refactored to use BookingService)
     """
     try:
-        import json
         payload = json.loads(request.body)
         cart_items = payload.get('items', [])
         
         phone = payload.get('customer_phone') or payload.get('phone')
-        import re
         if phone and not re.match(r'^[0-9\-\+\s\(\)]+$', phone):
             return JsonResponse({"success": False, "message": "เบอร์โทรศัพท์ไม่ถูกต้อง กรุณากรอกเฉพาะตัวเลข"}, status=400)
             
@@ -198,8 +202,6 @@ def create_booking_api(request):
 
         # Parse Dates
         try:
-            from datetime import datetime
-            
             # Use strict YYYY-MM-DD parsing, as sent by frontend
             start_date = datetime.strptime(payload.get('start')[:10], "%Y-%m-%d").date()
             end_date = datetime.strptime(payload.get('end')[:10], "%Y-%m-%d").date()
@@ -210,9 +212,6 @@ def create_booking_api(request):
         except Exception as e:
             return JsonResponse({"success": False, "message": "Invalid Date Format"}, status=400)
             
-        # Call Service (No Transaction Here, Service handles it)
-        from apps.store.services.booking_service import BookingService
-        
         try:
             booking = BookingService.create_booking_from_cart(
                 cart=cart_items,
@@ -245,7 +244,6 @@ def cancel_booking_api(request, booking_id):
     Refactored to use BookingService
     """
     try:
-        from apps.store.services.booking_service import BookingService
         booking = BookingService.cancel_booking(booking_id, request.user)
 
         return JsonResponse({
@@ -273,7 +271,6 @@ def upload_slip_api(request, booking_id):
              
         slip_file = request.FILES['slip']
         
-        from apps.store.services.booking_service import BookingService
         BookingService.process_payment_slip(booking_id, request.user, slip_file)
             
         return JsonResponse({'success': True, 'message': 'Slip uploaded successfully. Waiting for verification.'})

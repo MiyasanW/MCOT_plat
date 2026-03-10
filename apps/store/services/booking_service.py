@@ -1,8 +1,12 @@
+import logging
+
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from datetime import timedelta
+
+logger = logging.getLogger(__name__)
 
 from apps.store.models import (
     Booking, BookingItem, BookingStudio, BookingPackage, 
@@ -209,7 +213,20 @@ class BookingService:
         try:
             NotificationService.send_notification(new_booking, 'booking_created')
         except Exception as e:
-            print(f"Notification Error: {e}")
+            logger.warning("Notification Error: %s", e)
+
+        # [REMOVED] ส่งใบเสนอราคาอัตโนมัติ (Flow ใหม่: เจ้าหน้าที่ตรวจสอบก่อนกดส่งแมนนวล)
+        # if new_booking.customer_email:
+        #     try:
+        #         items = new_booking.items.select_related('product', 'equipment').all()
+        #         packages = new_booking.booked_packages.select_related('package').all()
+        #         studios = new_booking.booked_studios.select_related('studio').all()
+        #         NotificationService.send_quotation_email(new_booking, list(items), list(packages), list(studios))
+        #         new_booking.status = 'pending'
+        #         new_booking.expires_at = timezone.now() + timedelta(hours=24)
+        #         new_booking.save(update_fields=['status', 'expires_at'])
+        #     except Exception as e:
+        #         logger.warning("Quotation email Error: %s", e)
         
         return new_booking
 
@@ -247,7 +264,7 @@ class BookingService:
         try:
            NotificationService.send_notification(booking, 'cancelled')
         except Exception as e:
-           print(f"Notification Logic Error: {e}")
+           logger.warning("Notification Logic Error: %s", e)
            
         return booking
 
@@ -277,8 +294,8 @@ class BookingService:
 
         booking = get_object_or_404(Booking, id=booking_id)
 
-        # Permission Check
-        if booking.created_by != user:
+        # Permission: เจ้าของใบจอง หรือ Staff/Admin สามารถอัปโหลดสลิปได้
+        if booking.created_by != user and not (getattr(user, 'is_staff', False) or getattr(user, 'is_superuser', False)):
              raise PermissionError("คุณไม่มีสิทธิ์อัปโหลดสลิปสำหรับการจองนี้")
 
         # Update
@@ -290,6 +307,6 @@ class BookingService:
         try:
             NotificationService.send_notification(booking, 'verification_pending')
         except Exception as notif_err:
-            print(f"Notification Error: {notif_err}")
+            logger.warning("Notification Error: %s", notif_err)
             
         return booking

@@ -3,7 +3,102 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
 
+from allauth.account.forms import SignupForm as AllauthSignupForm
+from allauth.socialaccount.forms import SignupForm as SocialSignupFormBase
+
+
+class CustomAllauthSignupForm(AllauthSignupForm):
+    """ฟอร์มสมัครสมาชิกของ allauth + ชื่อ นามสกุล เบอร์โทร + เงื่อนไข (ใช้กับ account_signup)"""
+    field_order = ['first_name', 'last_name', 'username', 'email', 'password1', 'password2', 'phone', 'terms_accepted']
+
+    first_name = forms.CharField(
+        required=True,
+        label="ชื่อ",
+        max_length=150,
+        widget=forms.TextInput(attrs={'placeholder': 'ชื่อจริง'})
+    )
+    last_name = forms.CharField(
+        required=True,
+        label="นามสกุล",
+        max_length=150,
+        widget=forms.TextInput(attrs={'placeholder': 'นามสกุล'})
+    )
+    phone = forms.CharField(
+        required=True,
+        label="เบอร์โทรศัพท์",
+        max_length=20,
+        widget=forms.TextInput(attrs={'placeholder': '0812345678'})
+    )
+    terms_accepted = forms.BooleanField(
+        required=True,
+        label=mark_safe('ข้าพเจ้ายอมรับ <a href="#" onclick="openTOSModal(event); return false;" class="text-mcot-orange hover:underline">เงื่อนไขการใช้งาน</a>')
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.field_order:
+            self.order_fields(self.field_order)
+
+    def clean_terms_accepted(self):
+        if not self.cleaned_data.get('terms_accepted'):
+            raise forms.ValidationError('กรุณายอมรับเงื่อนไขการใช้งาน')
+        return True
+
+    def clean_phone(self):
+        phone = (self.cleaned_data.get('phone') or '').strip()
+        if not phone or len(phone) < 9:
+            raise forms.ValidationError('กรุณากรอกเบอร์โทรศัพท์ที่ถูกต้อง (อย่างน้อย 9 หลัก)')
+        return phone
+
+    def signup(self, request, user):
+        from .models import Profile
+        user.first_name = (self.cleaned_data.get('first_name') or '').strip()
+        user.last_name = (self.cleaned_data.get('last_name') or '').strip()
+        user.save(update_fields=['first_name', 'last_name'])
+        Profile.objects.get_or_create(user=user, defaults={'phone': self.cleaned_data.get('phone', '')})
+
+
+class CustomSocialSignupForm(SocialSignupFormBase):
+    """ฟอร์มขั้นตอนสุดท้ายเมื่อสมัครด้วย Google — ชื่อ นามสกุล เบอร์โทร"""
+    first_name = forms.CharField(
+        required=True,
+        label="ชื่อ",
+        max_length=150,
+        widget=forms.TextInput(attrs={'placeholder': 'ชื่อจริง'})
+    )
+    last_name = forms.CharField(
+        required=True,
+        label="นามสกุล",
+        max_length=150,
+        widget=forms.TextInput(attrs={'placeholder': 'นามสกุล'})
+    )
+    phone = forms.CharField(
+        required=True,
+        label="เบอร์โทรศัพท์",
+        max_length=20,
+        widget=forms.TextInput(attrs={'placeholder': '0812345678'})
+    )
+
+    def clean_phone(self):
+        phone = (self.cleaned_data.get('phone') or '').strip()
+        if not phone or len(phone) < 9:
+            raise forms.ValidationError('กรุณากรอกเบอร์โทรศัพท์ที่ถูกต้อง (อย่างน้อย 9 หลัก)')
+        return phone
+
+
 class UserRegisterForm(UserCreationForm):
+    first_name = forms.CharField(
+        required=True,
+        label="ชื่อ",
+        max_length=150,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'ชื่อจริง'})
+    )
+    last_name = forms.CharField(
+        required=True,
+        label="นามสกุล",
+        max_length=150,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'นามสกุล'})
+    )
     email = forms.EmailField(
         required=True,
         label="อีเมล (Email)",
@@ -30,7 +125,7 @@ class UserRegisterForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username', 'email') # UserCreationForm.Meta.fields + email
+        fields = ('username', 'first_name', 'last_name', 'email')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -72,6 +167,8 @@ class UserRegisterForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
+        user.first_name = (self.cleaned_data.get('first_name') or '').strip()
+        user.last_name = (self.cleaned_data.get('last_name') or '').strip()
         if commit:
             user.save()
             # Explicitly create profile since post_save signal is removed

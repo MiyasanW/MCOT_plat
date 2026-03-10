@@ -102,28 +102,32 @@
                     <i class="fas fa-times text-lg" x-show="mobileMenuOpen" style="display: none;"></i>
                 </button>
 
-                <a href="/" class="flex items-center gap-2.5 shrink-0">
-                    <img src="{% static 'images/logo.png' %}" alt="MCOT Rental" class="h-11 w-auto object-contain">
+                <a href="/" class="flex items-center gap-3.5 shrink-0 group">
+                    <img src="{% static 'images/logo.png' %}" alt="MCOT Rental" class="h-10 w-auto object-contain transition-transform group-hover:scale-105">
+                    <div class="hidden sm:block border-l-2 border-orange-100 pl-3.5 py-1">
+                        <span class="block text-base font-black text-gray-900 tracking-tight leading-none mb-0.5">MCOT</span>
+                        <span class="block text-[9px] font-bold text-mcot-orange uppercase tracking-[0.2em] leading-none">Rental</span>
+                    </div>
                 </a>
             </div>
 
             <!-- CENTER: Nav Links (desktop only) -->
-            <div class="hidden lg:flex items-center gap-2 ml-12">
+            <div class="hidden lg:flex items-center gap-1 xl:gap-2 lg:ml-6 xl:ml-12">
                 {% with request.resolver_match.url_name as url_name %}
 
                 <a href="{% url 'store:home' %}"
-                   class="px-5 py-2.5 rounded-full text-[15px] font-bold transition-all {% if url_name == 'home' %}text-mcot-orange bg-orange-50 border border-orange-100{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50{% endif %}">
+                   class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold transition-all {% if url_name == 'home' %}text-mcot-orange bg-orange-50 border border-orange-100{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50{% endif %}">
                     {% trans "หน้าแรก" %}
                 </a>
 
                 <a href="{% url 'store:catalog' %}"
-                   class="px-5 py-2.5 rounded-full text-[15px] font-bold transition-all {% if 'catalog' in url_name %}text-mcot-orange bg-orange-50 border border-orange-100{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50{% endif %}">
+                   class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold transition-all {% if 'catalog' in url_name %}text-mcot-orange bg-orange-50 border border-orange-100{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50{% endif %}">
                     {% trans "อุปกรณ์ทั้งหมด" %}
                 </a>
 
                 <!-- Category Dropdown -->
                 <div x-data="{ open: false }" class="relative" @mouseenter="open = true" @mouseleave="open = false">
-                    <button class="px-5 py-2.5 rounded-full text-[15px] font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all flex items-center gap-1.5">
+                    <button class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all flex items-center gap-1.5">
                         {% trans "หมวดหมู่" %}
                         <i class="fas fa-chevron-down text-[9px] text-gray-400 transition-transform" :class="{'rotate-180': open}"></i>
                     </button>
@@ -149,12 +153,12 @@
                 </div>
 
                 <a href="{% url 'store:about' %}"
-                   class="px-5 py-2.5 rounded-full text-[15px] font-bold transition-all {% if url_name == 'about' %}text-mcot-orange bg-orange-50 border border-orange-100{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50{% endif %}">
+                   class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold transition-all {% if url_name == 'about' %}text-mcot-orange bg-orange-50 border border-orange-100{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50{% endif %}">
                     {% trans "เกี่ยวกับเรา" %}
                 </a>
 
                 <a href="{% url 'store:contact' %}"
-                   class="px-5 py-2.5 rounded-full text-[15px] font-bold transition-all {% if url_name == 'contact' %}text-mcot-orange bg-orange-50 border border-orange-100{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50{% endif %}">
+                   class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold transition-all {% if url_name == 'contact' %}text-mcot-orange bg-orange-50 border border-orange-100{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50{% endif %}">
                     {% trans "ติดต่อ" %}
                 </a>
 
@@ -164,24 +168,35 @@
             <!-- RIGHT: Actions -->
             <div class="flex items-center gap-2.5">
 
-                <!-- Phone (desktop only) -->
-                <a href="tel:022016000" class="hidden xl:flex items-center gap-2.5 hover:text-mcot-orange transition-colors mr-2 group">
-                    <div class="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center text-mcot-orange group-hover:bg-mcot-orange group-hover:text-white transition-all">
-                        <i class="fas fa-phone-alt text-sm"></i>
+                <!-- Contact Info (desktop only) -->
+                <div class="hidden lg:flex items-center gap-4 bg-gray-50/80 hover:bg-orange-50/50 rounded-2xl p-1.5 pr-4 border border-gray-100 hover:border-orange-100 transition-all mr-2">
+                    <div class="flex items-center gap-3 border-r xl:border-r border-gray-200/60 pr-4">
+                        <a href="tel:022016000" class="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center text-mcot-orange hover:bg-mcot-orange hover:text-white transition-all">
+                            <i class="fas fa-phone-alt text-xs"></i>
+                        </a>
+                        <div class="leading-none xl:block hidden">
+                            <span class="block text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1 whitespace-nowrap">ติดต่อเช่าอุปกรณ์</span>
+                            <a href="tel:022016000" class="block text-sm font-black text-gray-900 font-mono hover:text-mcot-orange transition-colors whitespace-nowrap">02-201-6000</a>
+                        </div>
                     </div>
-                    <div class="leading-tight">
-                        <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider">ติดต่อเจ้าหน้าที่</span>
-                        <span class="block text-sm font-bold text-gray-900 font-mono">02-201-6000</span>
+                    <div class="flex items-center gap-3">
+                        <a href="mailto:rental@mcot.net" class="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center text-blue-500 hover:bg-blue-500 hover:text-white transition-all">
+                            <i class="fas fa-envelope text-xs"></i>
+                        </a>
+                        <div class="leading-none xl:block hidden">
+                            <span class="block text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1 whitespace-nowrap">อีเมลฝ่ายขาย</span>
+                            <a href="mailto:rental@mcot.net" class="block text-[13px] font-bold text-gray-900 hover:text-blue-500 transition-colors whitespace-nowrap">rental@mcot.net</a>
+                        </div>
                     </div>
-                </a>
+                </div>
 
                 <div class="hidden xl:block h-8 w-px bg-gray-200 mr-1"></div>
 
                 {% if user.is_authenticated %}
                 <!-- Staff shortcuts (icon only) -->
                 {% if user.is_staff %}
-                <a href="{% url 'store:staff_analytics' %}" class="hidden md:flex w-10 h-10 rounded-full bg-orange-50 text-mcot-orange hover:bg-mcot-orange hover:text-white items-center justify-center transition-all" title="Analytics">
-                    <i class="fas fa-chart-line"></i>
+                <a href="{% url 'store:staff_dashboard' %}" class="hidden md:flex w-10 h-10 rounded-full bg-orange-50 text-mcot-orange hover:bg-mcot-orange hover:text-white items-center justify-center transition-all" title="Dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
                 </a>
                 <a href="{% url 'store:calendar' %}" class="hidden md:flex w-10 h-10 rounded-full bg-purple-50 text-mcot-purple hover:bg-mcot-purple hover:text-white items-center justify-center transition-all" title="Calendar">
                     <i class="fas fa-calendar-alt"></i>
@@ -340,8 +355,8 @@
                             <i class="fas fa-clipboard-list w-5 text-center text-gray-400 text-xs"></i> การจองของฉัน
                         </a>
                         {% if user.is_staff %}
-                        <a href="{% url 'store:staff_analytics' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
-                            <i class="fas fa-chart-line w-5 text-center text-mcot-orange text-xs"></i> Analytics
+                        <a href="{% url 'store:staff_dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-tachometer-alt w-5 text-center text-mcot-orange text-xs"></i> Dashboard
                         </a>
                         <a href="{% url 'store:calendar' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
                             <i class="fas fa-calendar-alt w-5 text-center text-mcot-purple text-xs"></i> ปฏิทินงาน

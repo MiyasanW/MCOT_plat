@@ -1,17 +1,36 @@
+import io
+import logging
+from decimal import Decimal
+
 from django.conf import settings
 from django.core.mail import send_mail, EmailMessage
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from apps.store.models import Notification
-from decimal import Decimal
-import io
+
+logger = logging.getLogger(__name__)
 
 class NotificationService:
     """
     Service รวมศูนย์สำหรับจัดการระบบแจ้งเตือน (Notification System)
     ครอบคลุมทั้ง In-App Notification (Web), Lite Notify (Line Group), และ Email
     """
-    
+
+    @staticmethod
+    def _get_domain():
+        """Return the site domain from Django Sites framework or SITE_DOMAIN setting."""
+        domain = getattr(settings, 'SITE_DOMAIN', '').strip()
+        if domain:
+            if not domain.startswith('http'):
+                domain = f'https://{domain}'
+            return domain
+        try:
+            from django.contrib.sites.models import Site
+            site = Site.objects.get_current()
+            return f'https://{site.domain}'
+        except Exception:
+            return 'http://127.0.0.1:8000'
+
     @staticmethod
     def send_notification(booking, event_type):
         """
@@ -35,7 +54,7 @@ class NotificationService:
             for staff in staff_users:
                 Notification.objects.create(
                     recipient=staff,
-                    message=f"📦 ใบจองใหม่ #{booking.id}: กรุณาตรวจสอบและแจ้งยอดชำระ",
+                    message=f"📦 ใบจองใหม่ #{booking.id}: กรุณาตรวจสอบและส่งใบเสนอราคา (Manual Review Required)",
                     link=f"/staff/booking/{booking.id}/summary/",
                     notification_type='info'
                 )
@@ -43,7 +62,7 @@ class NotificationService:
             # ส่งอีเมลยืนยันการรับเรื่อง (Received)
             context = {
                 'booking': booking,
-                'domain': 'http://127.0.0.1:8000'
+                'domain': NotificationService._get_domain()
             }
             NotificationService.send_email(booking, "ได้รับคำสั่งจองแล้ว (Booking Received)", "rentals/emails/booking_created.html", context)
 
@@ -60,7 +79,7 @@ class NotificationService:
             context = {
                 'booking': booking,
                 'deposit_amount': f"{deposit_amount:,.2f}",
-                'domain': 'http://127.0.0.1:8000' # TODO: ควรดึงจาก settings ในอนาคต
+                'domain': NotificationService._get_domain()
             }
             NotificationService.send_email(booking, "แจ้งสรุปยอดชำระเงิน (Payment Required)", "rentals/emails/pending_deposit.html", context)
             
@@ -91,23 +110,36 @@ class NotificationService:
             # ส่งอีเมลยืนยันผลการจอง
             context = {
                 'booking': booking,
-                'domain': 'http://127.0.0.1:8000'
+                'domain': NotificationService._get_domain()
             }
             NotificationService.send_email(booking, "ยืนยันการจอง (Booking Confirmed)", "rentals/emails/booking_approved.html", context)
 
         # 4. กรณี: ยกเลิกการจอง (Cancelled)
         elif event_type == 'cancelled':
             # แจ้งเตือนบนเว็บ (ให้ลูกค้า)
-            msg = f"Booking #{booking.id}: ถูกยกเลิก"
-            link = f"/booking/{booking.id}/"
-            Notification.objects.create(recipient=booking.created_by, message=msg, link=link, notification_type='error')
+            if booking.created_by:
+                msg = f"Booking #{booking.id}: ถูกยกเลิก"
+                link = f"/booking/{booking.id}/"
+                Notification.objects.create(recipient=booking.created_by, message=msg, link=link, notification_type='error')
             
             # ส่งอีเมลแจ้งยกเลิก
             context = {
                 'booking': booking,
-                'domain': 'http://127.0.0.1:8000'
+                'domain': NotificationService._get_domain()
             }
             NotificationService.send_email(booking, "แจ้งยกเลิกการจอง (Booking Cancelled)", "rentals/emails/booking_cancelled.html", context)
+
+        # 5. กรณี: เกินกำหนด (Overdue) — แจ้ง Staff
+        elif event_type == 'overdue':
+            from django.contrib.auth.models import User
+            staff_users = User.objects.filter(is_staff=True, is_active=True)
+            for staff in staff_users:
+                Notification.objects.create(
+                    recipient=staff,
+                    message=f"⚠️ ใบจอง #{booking.id} ({booking.customer_name}) เกินกำหนดคืนของแล้ว",
+                    link=f"/staff/booking/{booking.id}/summary/",
+                    notification_type='warning'
+                )
 
     @staticmethod
     def send_email(booking, subject, template_path, context=None):
@@ -134,7 +166,7 @@ class NotificationService:
             )
         except Exception as e:
             # Log error ไว้แต่ไม่ให้ระบบพัง
-            print(f"Error sending email: {e}")
+            logger.error("Error sending email: %s", e)
 
     @staticmethod
     def send_quotation_email(booking, items, packages, studios):
@@ -165,7 +197,7 @@ class NotificationService:
                 pdf_data = pdf_buffer.getvalue()
             except ImportError:
                 # xhtml2pdf not installed - send HTML email instead
-                print("xhtml2pdf not available, sending HTML-only email")
+                logger.info("xhtml2pdf not available, sending HTML-only email")
                 pdf_data = None
             finally:
                 pdf_buffer.close()
@@ -205,13 +237,25 @@ class NotificationService:
             email.send(fail_silently=False)
             
             # 4. In-App Notification for customer
-            Notification.objects.create(
-                recipient=booking.created_by,
-                message=f"📧 ใบเสนอราคา #{booking.id} ได้ถูกส่งไปที่อีเมลของคุณแล้ว",
-                link=f"/booking/{booking.id}/",
-                notification_type='info'
-            )
+            if booking.created_by:
+                Notification.objects.create(
+                    recipient=booking.created_by,
+                    message=f"📧 ใบเสนอราคา #{booking.id} ได้ถูกส่งไปที่อีเมลของคุณแล้ว",
+                    link=f"/booking/{booking.id}/",
+                    notification_type='info'
+                )
+
+            # 5. แจ้ง Staff/Admin ว่ามีลูกค้าขอใบเสนอราคา (ส่งไปแล้ว)
+            from django.contrib.auth.models import User
+            staff_users = User.objects.filter(is_staff=True, is_active=True)
+            for staff in staff_users:
+                Notification.objects.create(
+                    recipient=staff,
+                    message=f"📩 ใบเสนอราคา #{booking.id} ส่งให้ {booking.customer_name} แล้ว — กรุณาติดต่อลูกค้าภายใน 24 ชม.",
+                    link=f"/staff/booking/{booking.id}/summary/",
+                    notification_type='info'
+                )
             
         except Exception as e:
-            print(f"Error sending quotation email: {e}")
+            logger.error("Error sending quotation email: %s", e)
             raise

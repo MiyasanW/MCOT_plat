@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Dashboard — Staff{% endblock %}
+
+{% block content %}
+<div class="min-h-screen pt-24 pb-20 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+            <div>
+                <a href="{% url 'admin:store_booking_changelist' %}" class="text-gray-500 hover:text-mcot-orange text-sm font-bold inline-flex items-center mb-2">
+                    <i class="fas fa-arrow-left mr-2"></i> กลับหน้า Admin
+                </a>
+                <h1 class="text-2xl font-black text-gray-900 flex items-center gap-3">
+                    <i class="fas fa-tachometer-alt text-mcot-orange"></i> Dashboard
+                </h1>
+                <p class="text-gray-500 text-sm mt-1">ภาพรวมการจองและสถานะ</p>
+            </div>
+            <div class="flex gap-2">
+                <a href="{% url 'store:staff_reports' %}" class="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-file-export mr-2"></i> รายงาน
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">จองวันนี้</p>
+                <p class="text-2xl font-black text-gray-900">{{ bookings_today }}</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">รอตรวจสอบ</p>
+                <p class="text-2xl font-black text-amber-600">{{ bookings_pending }}</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">จองเดือนนี้</p>
+                <p class="text-2xl font-black text-gray-900">{{ bookings_this_month }}</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">รายได้เดือนนี้</p>
+                <p class="text-2xl font-black text-green-600">฿{{ revenue_this_month|floatformat:0|intcomma }}</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+            <h2 class="text-lg font-bold text-gray-900 mb-4">สัดส่วนสถานะใบจอง</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
+                <div class="p-3 bg-blue-50 rounded-xl border border-blue-100 text-center">
+                    <p class="text-2xl font-black text-blue-600">{{ status_counts.draft }}</p>
+                    <p class="text-xs font-bold text-blue-700">รอตรวจสอบ</p>
+                </div>
+                <div class="p-3 bg-yellow-50 rounded-xl border border-yellow-100 text-center">
+                    <p class="text-2xl font-black text-yellow-600">{{ status_counts.pending }}</p>
+                    <p class="text-xs font-bold text-yellow-700">รออนุมัติ</p>
+                </div>
+                <div class="p-3 bg-green-50 rounded-xl border border-green-100 text-center">
+                    <p class="text-2xl font-black text-green-600">{{ status_counts.approved }}</p>
+                    <p class="text-xs font-bold text-green-700">อนุมัติแล้ว</p>
+                </div>
+                <div class="p-3 bg-orange-50 rounded-xl border border-orange-100 text-center">
+                    <p class="text-2xl font-black text-orange-600">{{ status_counts.active }}</p>
+                    <p class="text-xs font-bold text-orange-700">กำลังใช้งาน</p>
+                </div>
+                <div class="p-3 bg-red-50 rounded-xl border border-red-100 text-center">
+                    <p class="text-2xl font-black text-red-600">{{ status_counts.overdue }}</p>
+                    <p class="text-xs font-bold text-red-700">เกินกำหนด</p>
+                </div>
+                <div class="p-3 bg-gray-100 rounded-xl border border-gray-200 text-center">
+                    <p class="text-2xl font-black text-gray-600">{{ status_counts.completed }}</p>
+                    <p class="text-xs font-bold text-gray-700">คืนของแล้ว</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-center">
+                    <p class="text-2xl font-black text-gray-500">{{ status_counts.cancelled }}</p>
+                    <p class="text-xs font-bold text-gray-600">ยกเลิก</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 flex flex-wrap gap-4">
+            <a href="{% url 'store:equipment_history_search' %}" class="text-gray-500 hover:text-mcot-orange font-bold text-sm">
+                <i class="fas fa-history mr-2"></i> ประวัติอุปกรณ์
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

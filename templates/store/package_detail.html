@@ -1,222 +1,296 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load humanize %}
-{% load i18n %}
 
 {% block title %}{{ package.name }} | MCOT Rental{% endblock %}
 
 {% block content %}
-<!-- PACKAGE DETAIL REDESIGN - Hybrid Light Frosted Glass -->
-<div class="min-h-screen pb-20 pt-8 relative overflow-hidden bg-gray-200 z-0">
+<div class="min-h-screen pb-32 xl:pb-24 relative overflow-hidden bg-[#F8FAFC]">
     <!-- Ambient Light Background -->
-    <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-mcot-orange/5 rounded-full blur-[150px] pointer-events-none z-[-1]"></div>
-    <div class="absolute bottom-1/4 left-0 w-[600px] h-[600px] bg-mcot-purple/5 rounded-full blur-[150px] pointer-events-none z-[-1]"></div>
+    <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-bl from-amber-400/10 to-transparent rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-1/4 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-indigo-400/10 to-transparent rounded-full blur-[120px] pointer-events-none"></div>
 
-    <div class="max-w-[1600px] mx-auto px-6 relative z-10">
+    <!-- Hero Image Section -->
+    <div class="w-full {% if package.image %}h-[45vh] min-h-[400px]{% else %}h-[30vh] min-h-[280px]{% endif %} relative">
+        {% if package.image %}
+        <img src="{{ package.image.url }}" alt="{{ package.name }}" class="w-full h-full object-cover">
+        {% else %}
+        <div class="w-full h-full bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 relative overflow-hidden">
+            <div class="absolute inset-0" style="background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 24px 24px;"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <i class="fas fa-broadcast-tower text-slate-700 text-[120px]"></i>
+            </div>
+        </div>
+        {% endif %}
+        <div class="absolute inset-0 bg-gradient-to-t from-[#F8FAFC] via-[#F8FAFC]/60 to-transparent"></div>
+        <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#F8FAFC] to-transparent"></div>
+    </div>
 
-        <!-- Breadcrumbs (Light Glass) -->
-        <nav class="flex items-center gap-3 text-xs text-gray-500 mb-8 uppercase tracking-widest font-bold backdrop-blur-sm inline-flex px-4 py-2 rounded-full bg-white/60 border border-white/60 shadow-sm">
-            <a href="/" class="hover:text-mcot-orange transition-colors"><i class="fas fa-home"></i></a>
+    <div class="max-w-[1440px] mx-auto px-6 -mt-32 relative z-20">
+        <!-- Breadcrumbs -->
+        <nav class="flex items-center gap-3 text-xs text-gray-500 mb-8 uppercase tracking-widest font-bold backdrop-blur-md inline-flex p-3 px-5 rounded-full bg-white/60 border border-white/60 shadow-md">
+            <a href="/" class="hover:text-amber-600 transition-colors"><i class="fas fa-home"></i></a>
             <span class="text-gray-300">/</span>
-            <a href="{% url 'store:package_list' %}" class="hover:text-mcot-orange transition-colors">{% trans "Packages" %}</a>
+            <a href="{% url 'store:catalog' %}" class="hover:text-amber-600 transition-colors">แคตตาล็อก</a>
             <span class="text-gray-300">/</span>
-            <span class="text-gray-900">
-                {{ package.name }}
-            </span>
+            <span class="text-gray-900 truncate max-w-[200px]">{{ package.name }}</span>
         </nav>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+        <!-- Title Area -->
+        <div class="mb-8 xl:mb-12">
+            <div class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-amber-100/80 border border-amber-200/60 rounded-full text-[10px] font-bold text-amber-700 tracking-wider uppercase mb-5 shadow-sm backdrop-blur-md">
+                <i class="fas fa-cube text-xs"></i> แพ็คเกจบริการ
+            </div>
+            <h1 class="text-3xl md:text-5xl font-black text-gray-900 mb-4 leading-tight tracking-tight font-display">
+                {{ package.name }}
+            </h1>
+            {% if package.short_description %}
+            <p class="text-lg text-gray-500 max-w-2xl font-medium">{{ package.short_description }}</p>
+            {% endif %}
+        </div>
 
-            <!-- Left: Visual & Details -->
-            <div class="lg:col-span-7 xl:col-span-8 space-y-6">
-                <!-- Image Stage -->
-                <div class="aspect-video w-full bg-white/60 backdrop-blur-md rounded-[2rem] overflow-hidden relative group border border-white/60 flex items-center justify-center p-8 shadow-md hover:shadow-xl transition-shadow duration-500">
-                    {% if package.image %}
-                    <img src="{{ package.image.url }}" alt="{{ package.name }}"
-                        class="max-w-full max-h-full object-contain filter drop-shadow-xl group-hover:scale-105 transition-all duration-700 mix-blend-multiply">
-                    {% else %}
-                    <div class="text-gray-300 flex flex-col items-center">
-                        <i class="fas fa-box-open text-6xl mb-4"></i>
-                        <span class="text-sm font-mono uppercase font-bold">{% trans "Image Unavailable" %}</span>
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-y-10 xl:gap-16 items-start">
+
+            <!-- Left Content Column -->
+            <div class="xl:col-span-8 space-y-8">
+
+                <!-- รายละเอียดแพ็คเกจ (Main Content) -->
+                {% if package.description %}
+                <div class="bg-white/80 backdrop-blur-xl rounded-[2rem] p-8 md:p-10 border border-gray-100 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)]">
+                    <h3 class="text-xl font-black text-gray-900 mb-6 font-display flex items-center gap-3">
+                        <i class="fas fa-info-circle text-amber-500"></i> รายละเอียดบริการ
+                    </h3>
+                    <div class="prose prose-lg prose-slate max-w-none
+                        prose-headings:text-gray-900 prose-headings:font-bold prose-headings:tracking-tight
+                        prose-p:mb-4 prose-p:text-gray-600 prose-p:leading-relaxed
+                        prose-strong:text-gray-900 prose-strong:font-bold
+                        prose-ul:list-none prose-ul:pl-0 prose-ul:space-y-2
+                        prose-li:relative prose-li:pl-6 prose-li:before:content-[''] prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-2.5 prose-li:before:w-2 prose-li:before:h-2 prose-li:before:bg-amber-500 prose-li:before:rounded-full">
+                        {{ package.description|safe|linebreaks }}
                     </div>
-                    {% endif %}
                 </div>
+                {% endif %}
 
-                <!-- Package Includes -->
-                <div class="bg-white/60 backdrop-blur-md rounded-[2rem] p-8 md:p-10 border border-white/60 shadow-lg relative overflow-hidden">
-                    <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-mcot-purple/5 rounded-full blur-3xl pointer-events-none"></div>
-
-                    <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3 font-display relative z-10">
-                        <div class="w-8 h-8 rounded-lg bg-mcot-orange/10 flex items-center justify-center text-mcot-orange border border-mcot-orange/20">
-                            <i class="fas fa-layer-group text-sm"></i>
-                        </div>
-                        {% trans "Included Equipment" %}
-                    </h2>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
-                        {% for item in package.items.all %}
-                        <div class="flex items-center gap-4 p-4 bg-gray-200 rounded-2xl border border-gray-100 hover:border-gray-300 hover:shadow-md transition-all">
-                            <div class="w-14 h-14 bg-white border border-gray-100 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden p-1 shadow-sm">
-                                {% if item.image %}
-                                <img src="{{ item.image.url }}" class="w-full h-full object-contain mix-blend-multiply">
+                <!-- อุปกรณ์ในแพ็คเกจ (ถ้ามี) -->
+                {% if package.packageitem_set.exists %}
+                <div class="bg-white/80 backdrop-blur-xl rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="px-6 sm:px-8 py-5 border-b border-gray-100 bg-gray-50/50">
+                        <h3 class="text-base font-black text-gray-900 flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm"><i class="fas fa-box-open"></i></div>
+                            อุปกรณ์ที่รวมอยู่ในแพ็คเกจ
+                        </h3>
+                    </div>
+                    <ul class="divide-y divide-gray-50">
+                        {% for pitem in package.packageitem_set.all %}
+                        <li class="flex items-center gap-4 px-6 sm:px-8 py-4 hover:bg-gray-50/50 transition-colors">
+                            <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0 border border-gray-200">
+                                {% if pitem.product.image %}
+                                <img src="{{ pitem.product.image.url }}" alt="{{ pitem.product.name }}" class="w-full h-full object-contain p-1">
                                 {% else %}
                                 <i class="fas fa-camera text-gray-300 text-xl"></i>
                                 {% endif %}
                             </div>
-                            <div>
-                                <h4 class="text-gray-900 font-extrabold text-sm mb-0.5">{{ item.name }}</h4>
-                                <span class="text-xs text-mcot-orange font-bold uppercase tracking-wider">{{ item.category.name|default:"Equipment" }}</span>
+                            <div class="min-w-0 flex-1">
+                                <p class="font-bold text-gray-900 truncate">{{ pitem.product.name }}</p>
+                                <p class="text-xs text-gray-500">{{ pitem.product.category.name|default:"อุปกรณ์" }}</p>
                             </div>
-                        </div>
+                            <span class="text-sm font-black text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200">× {{ pitem.quantity }}</span>
+                        </li>
                         {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <!-- ขั้นตอนการใช้บริการ -->
+                <div class="bg-white/80 backdrop-blur-xl rounded-[2rem] p-8 md:p-10 border border-gray-100 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)]">
+                    <h3 class="text-xl font-black text-gray-900 mb-8 font-display flex items-center gap-3">
+                        <i class="fas fa-route text-amber-500"></i> ขั้นตอนการใช้บริการ
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="text-center group">
+                            <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 mb-4 group-hover:bg-amber-100 transition-colors shadow-sm">
+                                <i class="fas fa-file-invoice text-xl"></i>
+                            </div>
+                            <div class="w-8 h-8 mx-auto -mt-6 mb-2 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-black shadow-lg relative z-10">1</div>
+                            <h4 class="font-bold text-gray-900 text-sm mb-1">ขอใบเสนอราคา</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed">เลือกแพ็คเกจ กดขอใบเสนอราคา ระบุวันเวลาที่ต้องการ</p>
+                        </div>
+                        <div class="text-center group">
+                            <div class="w-16 h-16 mx-auto rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 mb-4 group-hover:bg-blue-100 transition-colors shadow-sm">
+                                <i class="fas fa-comments text-xl"></i>
+                            </div>
+                            <div class="w-8 h-8 mx-auto -mt-6 mb-2 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-black shadow-lg relative z-10">2</div>
+                            <h4 class="font-bold text-gray-900 text-sm mb-1">พูดคุยรายละเอียด</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed">เจ้าหน้าที่ติดต่อกลับเพื่อยืนยันรายละเอียดงาน</p>
+                        </div>
+                        <div class="text-center group">
+                            <div class="w-16 h-16 mx-auto rounded-2xl bg-green-50 border border-green-100 flex items-center justify-center text-green-600 mb-4 group-hover:bg-green-100 transition-colors shadow-sm">
+                                <i class="fas fa-credit-card text-xl"></i>
+                            </div>
+                            <div class="w-8 h-8 mx-auto -mt-6 mb-2 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-black shadow-lg relative z-10">3</div>
+                            <h4 class="font-bold text-gray-900 text-sm mb-1">ชำระมัดจำ</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed">ชำระมัดจำ 30% เพื่อยืนยันการจอง</p>
+                        </div>
+                        <div class="text-center group">
+                            <div class="w-16 h-16 mx-auto rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 mb-4 group-hover:bg-purple-100 transition-colors shadow-sm">
+                                <i class="fas fa-truck text-xl"></i>
+                            </div>
+                            <div class="w-8 h-8 mx-auto -mt-6 mb-2 rounded-full bg-purple-500 text-white flex items-center justify-center text-xs font-black shadow-lg relative z-10">4</div>
+                            <h4 class="font-bold text-gray-900 text-sm mb-1">รับบริการ</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed">ทีมงานพร้อมอุปกรณ์เดินทางถึงสถานที่ตามกำหนด</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Information -->
-                <div class="bg-white/60 backdrop-blur-md rounded-[2rem] p-8 md:p-10 border border-white/60 shadow-lg mt-8">
-                    <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3 font-display">
-                        <div class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-200">
-                            <i class="fas fa-info-circle text-sm"></i>
+                <!-- จุดเด่น -->
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 transition-transform hover:-translate-y-1">
+                        <div class="w-10 h-10 shrink-0 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500">
+                            <i class="fas fa-check-double"></i>
                         </div>
-                        {% trans "Package Details" %}
-                    </h2>
-                    <div class="prose prose-p:text-gray-600 prose-ul:text-gray-600 prose-strong:text-gray-900 max-w-none leading-relaxed text-sm">
-                        {{ package.description|safe|linebreaks }}
+                        <div>
+                            <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">สภาพอุปกรณ์</span>
+                            <span class="block text-xs font-bold text-gray-900">ตรวจสอบและพร้อมใช้งาน</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 transition-transform hover:-translate-y-1">
+                        <div class="w-10 h-10 shrink-0 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">ทีมงาน</span>
+                            <span class="block text-xs font-bold text-gray-900">ช่างมืออาชีพพร้อมบริการ</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 transition-transform hover:-translate-y-1 col-span-2 md:col-span-1">
+                        <div class="w-10 h-10 shrink-0 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">การสนับสนุน</span>
+                            <span class="block text-xs font-bold text-gray-900">ดูแลตลอดการถ่ายทำ</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right: Action Sidebar -->
-            <div class="lg:col-span-5 xl:col-span-4 relative">
-                <div class="sticky top-24 space-y-6">
+            <!-- Right Sidebar -->
+            <div class="xl:col-span-4 relative">
+                <div class="xl:sticky xl:top-[120px] space-y-5">
 
-                    <div class="bg-white/70 backdrop-blur-2xl rounded-[2rem] p-8 lg:p-10 border border-white/60 shadow-2xl relative overflow-hidden">
-                        <div class="absolute -top-20 -right-20 w-64 h-64 bg-gradient-to-br from-mcot-orange/10 to-transparent rounded-full blur-[80px] pointer-events-none"></div>
+                    <!-- Main Action Card -->
+                    <div class="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] p-8 lg:p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-white relative overflow-hidden">
+                        <div class="absolute -top-24 -right-24 w-48 h-48 bg-amber-500/20 rounded-full blur-[60px] pointer-events-none"></div>
 
                         <div class="relative z-10">
-                            <p class="text-mcot-orange text-xs font-bold uppercase tracking-widest mb-3">
-                                {% trans "Production Bundle" %}
-                            </p>
-                            <h1 class="text-3xl lg:text-4xl font-black text-gray-900 mb-6 leading-tight font-display tracking-tight">
-                                {{ package.name }}
-                            </h1>
-
-                            <div class="flex items-baseline gap-2 mb-8 pb-8 border-b border-gray-200">
-                                <span class="text-5xl font-black text-gray-900 tracking-tighter drop-shadow-sm">
-                                    ฿{{ package.price|intcomma }}
-                                </span>
-                                <span class="text-gray-500 font-medium text-sm">/ {% trans "day" %}</span>
+                            <div class="inline-block px-3 py-1 bg-amber-100 rounded-lg text-[10px] font-bold text-amber-700 uppercase tracking-widest mb-4">
+                                แพ็คเกจบริการ
                             </div>
 
-                            <!-- Date Selection -->
-                            <div class="bg-gray-200 rounded-2xl p-5 mb-8 border border-gray-200 shadow-inner group hover:border-mcot-orange/30 transition-colors">
-                                <div class="flex justify-between items-center mb-4">
-                                    <span class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">{% trans "Booking Period" %}</span>
-                                    <a href="{% url 'store:package_list' %}" class="text-[10px] text-mcot-orange hover:text-orange-600 transition-colors uppercase font-bold flex items-center gap-1"><i class="fas fa-edit"></i> {% trans "Change Dates" %}</a>
+                            <!-- Price Block -->
+                            <div class="mb-8 p-6 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100/80 shadow-inner">
+                                <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">อัตราค่าบริการ</span>
+                                <div class="flex items-end gap-2">
+                                    <span class="text-4xl lg:text-5xl font-black text-gray-900 tracking-tighter">฿{{ package.price|floatformat:0|intcomma }}</span>
+                                    <span class="text-gray-500 font-bold uppercase text-xs mb-1">/ วัน</span>
                                 </div>
-                                <div class="flex items-center gap-4 text-gray-900">
-                                    <div class="flex-1 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-                                        <div class="text-[9px] text-gray-400 mb-1 uppercase font-bold tracking-widest">{% trans "Start" %}</div>
-                                        <div class="font-mono text-sm font-bold">
-                                            {{ selected_start_date|default:_("Today") }}
-                                        </div>
+                            </div>
+
+                            <!-- CTA Buttons -->
+                            <div class="space-y-4">
+                                <button type="button"
+                                        onclick="addPackageToCart('{{ package.id }}', '{{ package.name|escapejs }}', '{{ package.price }}')"
+                                        class="w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 active:scale-[0.98] overflow-hidden relative group bg-gray-900 text-white">
+                                    <div class="absolute inset-0 bg-amber-600 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                                    <div class="relative z-10 flex items-center gap-3">
+                                        <i class="fas fa-file-invoice-dollar"></i> ขอใบเสนอราคา
                                     </div>
-                                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 shrink-0">
-                                        <i class="fas fa-arrow-right text-[10px]"></i>
-                                    </div>
-                                    <div class="flex-1 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-                                        <div class="text-[9px] text-gray-400 mb-1 uppercase font-bold tracking-widest">{% trans "End" %}</div>
-                                        <div class="font-mono text-sm font-bold">
-                                            {{ selected_end_date|default:_("Today") }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                </button>
 
-                            <button
-                                onclick="addPackageToCart('pkg_{{ package.id }}', '{{ package.name|escapejs }}', '{{ package.price|default:0 }}')"
-                                class="w-full relative overflow-hidden rounded-xl font-bold text-base uppercase tracking-widest transition-all group flex items-center justify-center gap-3 shadow-lg hover:shadow-xl {% if is_available %}text-white{% else %}bg-gray-200 border border-gray-200 text-gray-400 cursor-not-allowed{% endif %}"
-                                {% if not is_available %}disabled{% endif %}>
-                                
-                                {% if is_available %}
-                                <div class="absolute inset-0 bg-gradient-to-r from-mcot-orange to-orange-600 transition-transform group-hover:scale-[1.02]"></div>
-                                <div class="relative py-5 w-full flex items-center justify-center gap-2 text-white shadow-inner">
-                                    <span>{% trans "Add Package to Quote" %}</span>
-                                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                                </div>
-                                {% else %}
-                                <div class="py-5 w-full flex items-center justify-center gap-2">
-                                    <i class="fas fa-ban text-sm"></i> <span>{% trans "Unavailable" %}</span>
-                                </div>
-                                {% endif %}
-                                
-                            </button>
-
-                            {% if not is_available %}
-                            <div class="text-left mt-5 text-sm text-red-600 font-bold bg-red-50 p-4 rounded-xl border border-red-200 shadow-sm">
-                                <div class="flex items-start gap-3">
-                                    <i class="fas fa-exclamation-circle mt-0.5 text-red-500"></i> 
-                                    <div>
-                                        {% if availability_error %}
-                                            <span class="block">{{ availability_error }}</span>
-                                        {% else %}
-                                            <span class="block">สินค้าบางรายการในแพ็คเกจนี้ ถูกจองเต็มแล้วในช่วงเวลาที่คุณเลือก</span>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="bg-gray-200 rounded-2xl p-6 border border-gray-200 flex flex-col gap-5 shadow-sm">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-mcot-orange border border-orange-100 shrink-0">
-                                <i class="fas fa-check-circle text-sm"></i>
-                            </div>
-                            <div class="text-[11px] text-gray-500 font-medium">
-                                <span class="block text-gray-900 font-extrabold mb-1 text-xs uppercase tracking-wider">{% trans "Ready to Shoot" %}</span>
-                                {% trans "Includes all essential accessories" %}
-                            </div>
-                        </div>
-                        <div class="h-px w-full bg-gray-200"></div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-mcot-orange border border-orange-100 shrink-0">
-                                <i class="fas fa-box text-sm"></i>
-                            </div>
-                            <div class="text-[11px] text-gray-500 font-medium">
-                                <span class="block text-gray-900 font-extrabold mb-1 text-xs uppercase tracking-wider">{% trans "Hard Case Included" %}</span>
-                                {% trans "Protected transportation" %}
+                                <a href="{% url 'store:contact' %}" class="w-full py-4 rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all border border-gray-200 text-gray-500 hover:text-amber-600 hover:border-amber-200 hover:bg-amber-50/30">
+                                    <i class="fas fa-headset"></i> ติดต่อเจ้าหน้าที่
+                                </a>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Contact Card -->
+                    <div class="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-gray-100 shadow-sm space-y-3">
+                        <h4 class="text-xs font-black text-gray-900 uppercase tracking-widest mb-3">สอบถามรายละเอียดเพิ่มเติม</h4>
+                        <a href="tel:022016000" class="flex items-center gap-4 p-3.5 rounded-xl bg-gray-50 border border-gray-100 hover:border-amber-200 transition-colors group">
+                            <div class="w-9 h-9 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                                <i class="fas fa-phone-alt text-sm"></i>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-bold text-gray-400 uppercase">ฝ่ายขายองค์กร</span>
+                                <span class="text-sm font-black text-gray-900 font-mono">02-201-6000</span>
+                            </div>
+                        </a>
+                        <a href="mailto:sales@mcot.net" class="flex items-center gap-4 p-3.5 rounded-xl bg-gray-50 border border-gray-100 hover:border-blue-200 transition-colors group">
+                            <div class="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                                <i class="fas fa-envelope text-sm"></i>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-bold text-gray-400 uppercase">อีเมล</span>
+                                <span class="text-sm font-bold text-gray-900">sales@mcot.net</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Info Note -->
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3 text-blue-800">
+                        <i class="fas fa-info-circle text-blue-500 mt-0.5 shrink-0"></i>
+                        <p class="text-xs leading-relaxed font-medium">
+                            วัน-เวลาเช่าสามารถเลือกได้ในขั้นตอนถัดไป หรือติดต่อเจ้าหน้าที่เพื่อสอบถามคิวว่างได้เลยครับ
+                        </p>
+                    </div>
+
+                    <!-- Trust Features -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 transition-transform hover:-translate-y-0.5">
+                            <div class="w-8 h-8 shrink-0 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-500">
+                                <i class="fas fa-shield-alt text-sm"></i>
+                            </div>
+                            <span class="text-[11px] font-bold text-gray-700 leading-tight">ประกันความเสียหาย</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 transition-transform hover:-translate-y-0.5">
+                            <div class="w-8 h-8 shrink-0 rounded-lg bg-amber-50 flex items-center justify-center text-amber-500">
+                                <i class="fas fa-truck text-sm"></i>
+                            </div>
+                            <span class="text-[11px] font-bold text-gray-700 leading-tight">จัดส่งถึงสถานที่</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Mobile Fixed Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-[60] bg-white/95 backdrop-blur-xl border-t border-gray-100 p-4 xl:hidden shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+    <div class="flex items-center gap-3">
+        <a href="{% url 'store:contact' %}" class="w-14 h-14 shrink-0 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center text-gray-500 hover:text-amber-600 transition-colors">
+            <i class="fas fa-headset text-xl"></i>
+        </a>
+        <button onclick="addPackageToCart('{{ package.id }}', '{{ package.name|escapejs }}', '{{ package.price }}')"
+                class="flex-1 py-4 rounded-xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all transform active:scale-95 bg-gray-900 text-white shadow-lg">
+            <i class="fas fa-file-invoice-dollar"></i> ขอใบเสนอราคา
+        </button>
+    </div>
+</div>
+
 <script>
     function addPackageToCart(itemId, name, price) {
-        if (event.target.closest('button').disabled) return;
-
         try {
-            let cart = JSON.parse(localStorage.getItem('mcot_cart') || '[]');
-            
-            // Generate basic array of included items for info
-            let packageItems = [];
-            {% for item in package.items.all %}
-                packageItems.push({ 
-                    id: parseInt("{{ item.id }}"), 
-                    name: String("{{ item.name|escapejs }}") 
-                });
+            var cart = JSON.parse(localStorage.getItem('mcot_cart') || '[]');
+            var packageItems = [];
+            {% for item in package.packageitem_set.all %}
+            packageItems.push({ name: "{{ item.product.name|escapejs }}", qty: {{ item.quantity|default:1 }} });
             {% endfor %}
-
-            const existingIndex = cart.findIndex(item => item.id == itemId);
-
+            var existingIndex = cart.findIndex(function(i) { return i.id === itemId && i.type === 'package'; });
             if (existingIndex > -1) {
                 cart[existingIndex].quantity = (parseInt(cart[existingIndex].quantity) || 0) + 1;
+                cart[existingIndex].package_items = packageItems;
             } else {
                 cart.push({
                     id: itemId,
@@ -228,22 +302,12 @@
                     package_items: packageItems
                 });
             }
-
             localStorage.setItem('mcot_cart', JSON.stringify(cart));
             window.dispatchEvent(new Event('cartUpdated'));
-
-            const startDate = '{{ selected_start_date|escapejs }}';
-            const endDate = '{{ selected_end_date|escapejs }}';
-            if (startDate && endDate) {
-                localStorage.setItem('mcot_booking_start', startDate);
-                localStorage.setItem('mcot_booking_end', endDate);
-            }
-
             window.location.href = "{% url 'store:cart' %}";
-
         } catch (e) {
             console.error(e);
-            alert("{% trans 'Error adding to cart.' %}");
+            alert("เกิดข้อผิดพลาดในการเพิ่มรายการ");
         }
     }
 </script>

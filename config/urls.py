@@ -26,8 +26,8 @@ admin.site.__class__ = MCOTAdminSite
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/', include('allauth.urls')),  # Login/Signup + Google (ต้องอยู่ก่อน auth)
+    path('accounts/', include('django.contrib.auth.urls')),  # password_reset, password_change ฯลฯ
     path('summernote/', include('django_summernote.urls')),
-    path('accounts/', include('allauth.urls')),  # Social Login
     path('', include('apps.store.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

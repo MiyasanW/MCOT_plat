@@ -83,9 +83,38 @@
                     <template x-if="!validationStatus.isValid && validationStatus.conflicts && validationStatus.conflicts.length > 0">
                         <ul class="mt-2 space-y-1 text-sm list-disc pl-5">
                             <template x-for="item in validationStatus.conflicts">
-                                <li x-text="item.product_name + ' (มีคิวซ้อนทับ)'"></li>
+                                <li x-text="item.name + ': ' + item.message"></li>
                             </template>
                         </ul>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Selected Items (Compact View) -->
+            <div class="mb-8 overflow-hidden rounded-xl border border-gray-100 bg-gray-50/30">
+                <div class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">รายการในตะกร้า</span>
+                    <a href="{% url 'store:cart' %}" class="text-[10px] font-bold text-blue-600 hover:underline">แก้ไข</a>
+                </div>
+                <div class="divide-y divide-gray-100 max-h-60 overflow-y-auto">
+                    <template x-for="item in JSON.parse(localStorage.getItem('mcot_cart') || '[]')" :key="item.id">
+                        <div class="p-4 bg-white">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-gray-900 text-sm" x-text="item.name"></span>
+                                <span class="text-xs text-gray-500" x-text="'x' + item.quantity"></span>
+                            </div>
+                            <!-- Package Sub-items -->
+                            <template x-if="item.type === 'package' && item.package_items && item.package_items.length > 0">
+                                <div class="mt-2 pl-3 border-l-2 border-orange-200 space-y-1">
+                                    <template x-for="sub in item.package_items" :key="sub.name">
+                                        <div class="text-[10px] text-gray-600 flex items-center gap-2">
+                                            <span class="font-bold text-orange-600" x-text="sub.qty + 'x'"></span>
+                                            <span x-text="sub.name"></span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
                     </template>
                 </div>
             </div>

@@ -1,9 +1,9 @@
+import re
+
 from django.http import JsonResponse
-from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_GET
 from apps.store.models import Notification
-import re
 
 @login_required
 @require_GET

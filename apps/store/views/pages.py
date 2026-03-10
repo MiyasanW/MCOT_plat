@@ -1,7 +1,14 @@
-from django.shortcuts import render
-from apps.store.models import Product, Booking, BookingStudio, Studio
-from django.utils import timezone
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from apps.store.utils.ratelimit import ratelimit
+
+
+@login_required
+def redirect_after_login(request):
+    """หลังล็อกอิน: Staff ไป Dashboard, คนอื่นไปหน้าแรก"""
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect('store:staff_dashboard')
+    return redirect('store:home')
 
 @ratelimit(key_prefix='home', rate=30, period=60, block=True)
 def home(request):

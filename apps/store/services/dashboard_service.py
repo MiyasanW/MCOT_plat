@@ -1,12 +1,12 @@
+import json
+import logging
+
 from django.utils import timezone
 from datetime import timedelta, datetime
 from django.db.models import Count, Q, Sum
 from django.contrib.auth.models import User
-from apps.store.models import Booking, Equipment, Studio, Product, Notification
-from django.contrib.auth.models import User
 from django.contrib.admin.models import LogEntry
-import json
-import logging
+from apps.store.models import Booking, Equipment, Studio, Product, Notification
 
 logger = logging.getLogger(__name__)
 
@@ -102,10 +102,12 @@ class DashboardService:
         # 4. Status Distribution (สัดส่วนสถานะงาน)
         stats['status_counts'] = {
             'draft': Booking.objects.filter(status='draft').count(),
+            'pending': Booking.objects.filter(status='pending').count(),
             'approved': Booking.objects.filter(status='approved').count(),
-            'completed': Booking.objects.filter(status='completed').count(),
             'active': Booking.objects.filter(status='active').count(),
-            'problem': Booking.objects.filter(status='problem').count(),
+            'overdue': Booking.objects.filter(status='overdue').count(),
+            'completed': Booking.objects.filter(status='completed').count(),
+            'cancelled': Booking.objects.filter(status='cancelled').count(),
         }
         
         # 5. Growth Calculation (คำนวณอัตราการเติบโตเทียบเดือนก่อน)
