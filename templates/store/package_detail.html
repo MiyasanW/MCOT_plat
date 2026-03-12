@@ -5,47 +5,47 @@
 {% block title %}{{ package.name }} | MCOT Rental{% endblock %}
 
 {% block content %}
-<div class="min-h-screen pb-32 xl:pb-24 relative overflow-hidden bg-[#F8FAFC]">
+<div class="min-h-screen pb-40 xl:pb-24 relative overflow-hidden bg-[#F8FAFC] dark:bg-slate-900 transition-colors duration-300">
     <!-- Ambient Light Background -->
-    <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-bl from-amber-400/10 to-transparent rounded-full blur-[120px] pointer-events-none"></div>
-    <div class="absolute bottom-1/4 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-indigo-400/10 to-transparent rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-bl from-amber-400/10 dark:from-amber-400/5 to-transparent rounded-full blur-[120px] pointer-events-none transition-colors"></div>
+    <div class="absolute bottom-1/4 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-indigo-400/10 dark:from-indigo-400/5 to-transparent rounded-full blur-[120px] pointer-events-none transition-colors"></div>
 
     <!-- Hero Image Section -->
-    <div class="w-full {% if package.image %}h-[45vh] min-h-[400px]{% else %}h-[30vh] min-h-[280px]{% endif %} relative">
+    <div class="w-full {% if package.image %}h-[38vh] min-h-[300px] sm:h-[45vh] sm:min-h-[400px]{% else %}h-[28vh] min-h-[220px] sm:h-[30vh] sm:min-h-[280px]{% endif %} relative">
         {% if package.image %}
         <img src="{{ package.image.url }}" alt="{{ package.name }}" class="w-full h-full object-cover">
         {% else %}
-        <div class="w-full h-full bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 relative overflow-hidden">
+        <div class="w-full h-full bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 relative overflow-hidden transition-colors">
             <div class="absolute inset-0" style="background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 24px 24px;"></div>
             <div class="absolute inset-0 flex items-center justify-center">
-                <i class="fas fa-broadcast-tower text-slate-700 text-[120px]"></i>
+                <i class="fas fa-broadcast-tower text-slate-700 dark:text-slate-800 text-[120px] transition-colors"></i>
             </div>
         </div>
         {% endif %}
-        <div class="absolute inset-0 bg-gradient-to-t from-[#F8FAFC] via-[#F8FAFC]/60 to-transparent"></div>
-        <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#F8FAFC] to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#F8FAFC] via-[#F8FAFC]/60 to-transparent dark:from-slate-900 dark:via-slate-900/60 transition-colors"></div>
+        <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#F8FAFC] to-transparent dark:from-slate-900 transition-colors"></div>
     </div>
 
-    <div class="max-w-[1440px] mx-auto px-6 -mt-32 relative z-20">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 -mt-24 sm:-mt-32 relative z-20">
         <!-- Breadcrumbs -->
-        <nav class="flex items-center gap-3 text-xs text-gray-500 mb-8 uppercase tracking-widest font-bold backdrop-blur-md inline-flex p-3 px-5 rounded-full bg-white/60 border border-white/60 shadow-md">
-            <a href="/" class="hover:text-amber-600 transition-colors"><i class="fas fa-home"></i></a>
-            <span class="text-gray-300">/</span>
-            <a href="{% url 'store:catalog' %}" class="hover:text-amber-600 transition-colors">แคตตาล็อก</a>
-            <span class="text-gray-300">/</span>
-            <span class="text-gray-900 truncate max-w-[200px]">{{ package.name }}</span>
+        <nav class="flex items-center flex-wrap gap-2 sm:gap-3 text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 mb-8 uppercase tracking-widest font-bold backdrop-blur-md inline-flex max-w-full p-2.5 sm:p-3 px-4 sm:px-5 rounded-full bg-white/60 dark:bg-slate-800/80 border border-white/60 dark:border-slate-700/80 shadow-md transition-colors">
+            <a href="/" class="hover:text-amber-600 dark:hover:text-amber-500 transition-colors"><i class="fas fa-home"></i></a>
+            <span class="text-gray-300 dark:text-gray-600">/</span>
+            <a href="{% url 'store:catalog' %}" class="hover:text-amber-600 dark:hover:text-amber-500 transition-colors">แคตตาล็อก</a>
+            <span class="text-gray-300 dark:text-gray-600">/</span>
+            <span class="text-gray-900 dark:text-white truncate max-w-[45vw] sm:max-w-[200px] transition-colors">{{ package.name }}</span>
         </nav>
 
         <!-- Title Area -->
         <div class="mb-8 xl:mb-12">
-            <div class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-amber-100/80 border border-amber-200/60 rounded-full text-[10px] font-bold text-amber-700 tracking-wider uppercase mb-5 shadow-sm backdrop-blur-md">
+            <div class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-amber-100/80 dark:bg-amber-900/30 border border-amber-200/60 dark:border-amber-800/50 rounded-full text-[10px] font-bold text-amber-700 dark:text-amber-400 tracking-wider uppercase mb-5 shadow-sm backdrop-blur-md transition-colors">
                 <i class="fas fa-cube text-xs"></i> แพ็คเกจบริการ
             </div>
-            <h1 class="text-3xl md:text-5xl font-black text-gray-900 mb-4 leading-tight tracking-tight font-display">
+            <h1 class="text-3xl md:text-5xl font-black text-gray-900 dark:text-white mb-4 leading-tight tracking-tight font-display transition-colors">
                 {{ package.name }}
             </h1>
             {% if package.short_description %}
-            <p class="text-lg text-gray-500 max-w-2xl font-medium">{{ package.short_description }}</p>
+            <p class="text-lg text-gray-500 dark:text-gray-400 max-w-2xl font-medium transition-colors">{{ package.short_description }}</p>
             {% endif %}
         </div>
 
@@ -56,16 +56,16 @@
 
                 <!-- รายละเอียดแพ็คเกจ (Main Content) -->
                 {% if package.description %}
-                <div class="bg-white/80 backdrop-blur-xl rounded-[2rem] p-8 md:p-10 border border-gray-100 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)]">
-                    <h3 class="text-xl font-black text-gray-900 mb-6 font-display flex items-center gap-3">
+                <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-[2rem] p-8 md:p-10 border border-gray-100 dark:border-slate-700/80 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] transition-colors">
+                    <h3 class="text-xl font-black text-gray-900 dark:text-white mb-6 font-display flex items-center gap-3 transition-colors">
                         <i class="fas fa-info-circle text-amber-500"></i> รายละเอียดบริการ
                     </h3>
-                    <div class="prose prose-lg prose-slate max-w-none
-                        prose-headings:text-gray-900 prose-headings:font-bold prose-headings:tracking-tight
-                        prose-p:mb-4 prose-p:text-gray-600 prose-p:leading-relaxed
-                        prose-strong:text-gray-900 prose-strong:font-bold
+                    <div class="prose prose-lg prose-slate dark:prose-invert max-w-none
+                        prose-headings:text-gray-900 dark:prose-headings:text-white prose-headings:font-bold prose-headings:tracking-tight
+                        prose-p:mb-4 prose-p:text-gray-600 dark:prose-p:text-gray-300 prose-p:leading-relaxed
+                        prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-bold
                         prose-ul:list-none prose-ul:pl-0 prose-ul:space-y-2
-                        prose-li:relative prose-li:pl-6 prose-li:before:content-[''] prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-2.5 prose-li:before:w-2 prose-li:before:h-2 prose-li:before:bg-amber-500 prose-li:before:rounded-full">
+                        prose-li:relative prose-li:pl-6 prose-li:before:content-[''] prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-2.5 prose-li:before:w-2 prose-li:before:h-2 prose-li:before:bg-amber-500 prose-li:before:rounded-full transition-colors">
                         {{ package.description|safe|linebreaks }}
                     </div>
                 </div>
@@ -73,28 +73,28 @@
 
                 <!-- อุปกรณ์ในแพ็คเกจ (ถ้ามี) -->
                 {% if package.packageitem_set.exists %}
-                <div class="bg-white/80 backdrop-blur-xl rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
-                    <div class="px-6 sm:px-8 py-5 border-b border-gray-100 bg-gray-50/50">
-                        <h3 class="text-base font-black text-gray-900 flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm"><i class="fas fa-box-open"></i></div>
+                <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-[2rem] border border-gray-100 dark:border-slate-700/80 shadow-sm overflow-hidden transition-colors">
+                    <div class="px-6 sm:px-8 py-5 border-b border-gray-100 dark:border-slate-700/80 bg-gray-50/50 dark:bg-slate-800/50 transition-colors">
+                        <h3 class="text-base font-black text-gray-900 dark:text-white flex items-center gap-3 transition-colors">
+                            <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm transition-colors"><i class="fas fa-box-open"></i></div>
                             อุปกรณ์ที่รวมอยู่ในแพ็คเกจ
                         </h3>
                     </div>
-                    <ul class="divide-y divide-gray-50">
+                    <ul class="divide-y divide-gray-50 dark:divide-slate-700/50 transition-colors">
                         {% for pitem in package.packageitem_set.all %}
-                        <li class="flex items-center gap-4 px-6 sm:px-8 py-4 hover:bg-gray-50/50 transition-colors">
-                            <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0 border border-gray-200">
+                        <li class="flex items-center gap-4 px-6 sm:px-8 py-4 hover:bg-gray-50/50 dark:hover:bg-slate-700/30 transition-colors">
+                            <div class="w-14 h-14 rounded-xl bg-gray-100 dark:bg-slate-700 flex items-center justify-center overflow-hidden flex-shrink-0 border border-gray-200 dark:border-slate-600 transition-colors">
                                 {% if pitem.product.image %}
                                 <img src="{{ pitem.product.image.url }}" alt="{{ pitem.product.name }}" class="w-full h-full object-contain p-1">
                                 {% else %}
-                                <i class="fas fa-camera text-gray-300 text-xl"></i>
+                                <i class="fas fa-camera text-gray-300 dark:text-slate-500 text-xl transition-colors"></i>
                                 {% endif %}
                             </div>
                             <div class="min-w-0 flex-1">
-                                <p class="font-bold text-gray-900 truncate">{{ pitem.product.name }}</p>
-                                <p class="text-xs text-gray-500">{{ pitem.product.category.name|default:"อุปกรณ์" }}</p>
+                                <p class="font-bold text-gray-900 dark:text-white truncate transition-colors">{{ pitem.product.name }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 transition-colors">{{ pitem.product.category.name|default:"อุปกรณ์" }}</p>
                             </div>
-                            <span class="text-sm font-black text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200">× {{ pitem.quantity }}</span>
+                            <span class="text-sm font-black text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-600 transition-colors">× {{ pitem.quantity }}</span>
                         </li>
                         {% endfor %}
                     </ul>
@@ -102,73 +102,73 @@
                 {% endif %}
 
                 <!-- ขั้นตอนการใช้บริการ -->
-                <div class="bg-white/80 backdrop-blur-xl rounded-[2rem] p-8 md:p-10 border border-gray-100 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)]">
-                    <h3 class="text-xl font-black text-gray-900 mb-8 font-display flex items-center gap-3">
+                <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-[2rem] p-8 md:p-10 border border-gray-100 dark:border-slate-700/80 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] transition-colors">
+                    <h3 class="text-xl font-black text-gray-900 dark:text-white mb-8 font-display flex items-center gap-3 transition-colors">
                         <i class="fas fa-route text-amber-500"></i> ขั้นตอนการใช้บริการ
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div class="text-center group">
-                            <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 mb-4 group-hover:bg-amber-100 transition-colors shadow-sm">
+                            <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/30 flex items-center justify-center text-amber-600 dark:text-amber-500 mb-4 group-hover:bg-amber-100 dark:group-hover:bg-amber-900/40 transition-colors shadow-sm">
                                 <i class="fas fa-file-invoice text-xl"></i>
                             </div>
-                            <div class="w-8 h-8 mx-auto -mt-6 mb-2 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-black shadow-lg relative z-10">1</div>
-                            <h4 class="font-bold text-gray-900 text-sm mb-1">ขอใบเสนอราคา</h4>
-                            <p class="text-xs text-gray-500 leading-relaxed">เลือกแพ็คเกจ กดขอใบเสนอราคา ระบุวันเวลาที่ต้องการ</p>
+                            <div class="w-8 h-8 mx-auto -mt-6 mb-2 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-black shadow-lg relative z-10 transition-colors">1</div>
+                            <h4 class="font-bold text-gray-900 dark:text-white text-sm mb-1 transition-colors">ขอใบเสนอราคา</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">เลือกแพ็คเกจ กดขอใบเสนอราคา ระบุวันเวลาที่ต้องการ</p>
                         </div>
                         <div class="text-center group">
-                            <div class="w-16 h-16 mx-auto rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 mb-4 group-hover:bg-blue-100 transition-colors shadow-sm">
+                            <div class="w-16 h-16 mx-auto rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 flex items-center justify-center text-blue-600 dark:text-blue-500 mb-4 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors shadow-sm">
                                 <i class="fas fa-comments text-xl"></i>
                             </div>
-                            <div class="w-8 h-8 mx-auto -mt-6 mb-2 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-black shadow-lg relative z-10">2</div>
-                            <h4 class="font-bold text-gray-900 text-sm mb-1">พูดคุยรายละเอียด</h4>
-                            <p class="text-xs text-gray-500 leading-relaxed">เจ้าหน้าที่ติดต่อกลับเพื่อยืนยันรายละเอียดงาน</p>
+                            <div class="w-8 h-8 mx-auto -mt-6 mb-2 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-black shadow-lg relative z-10 transition-colors">2</div>
+                            <h4 class="font-bold text-gray-900 dark:text-white text-sm mb-1 transition-colors">พูดคุยรายละเอียด</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">เจ้าหน้าที่ติดต่อกลับเพื่อยืนยันรายละเอียดงาน</p>
                         </div>
                         <div class="text-center group">
-                            <div class="w-16 h-16 mx-auto rounded-2xl bg-green-50 border border-green-100 flex items-center justify-center text-green-600 mb-4 group-hover:bg-green-100 transition-colors shadow-sm">
+                            <div class="w-16 h-16 mx-auto rounded-2xl bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800/30 flex items-center justify-center text-green-600 dark:text-green-500 mb-4 group-hover:bg-green-100 dark:group-hover:bg-green-900/40 transition-colors shadow-sm">
                                 <i class="fas fa-credit-card text-xl"></i>
                             </div>
-                            <div class="w-8 h-8 mx-auto -mt-6 mb-2 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-black shadow-lg relative z-10">3</div>
-                            <h4 class="font-bold text-gray-900 text-sm mb-1">ชำระมัดจำ</h4>
-                            <p class="text-xs text-gray-500 leading-relaxed">ชำระมัดจำ 30% เพื่อยืนยันการจอง</p>
+                            <div class="w-8 h-8 mx-auto -mt-6 mb-2 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-black shadow-lg relative z-10 transition-colors">3</div>
+                            <h4 class="font-bold text-gray-900 dark:text-white text-sm mb-1 transition-colors">ชำระมัดจำ</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">ชำระมัดจำ 30% เพื่อยืนยันการจอง</p>
                         </div>
                         <div class="text-center group">
-                            <div class="w-16 h-16 mx-auto rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 mb-4 group-hover:bg-purple-100 transition-colors shadow-sm">
+                            <div class="w-16 h-16 mx-auto rounded-2xl bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/30 flex items-center justify-center text-purple-600 dark:text-purple-500 mb-4 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/40 transition-colors shadow-sm">
                                 <i class="fas fa-truck text-xl"></i>
                             </div>
-                            <div class="w-8 h-8 mx-auto -mt-6 mb-2 rounded-full bg-purple-500 text-white flex items-center justify-center text-xs font-black shadow-lg relative z-10">4</div>
-                            <h4 class="font-bold text-gray-900 text-sm mb-1">รับบริการ</h4>
-                            <p class="text-xs text-gray-500 leading-relaxed">ทีมงานพร้อมอุปกรณ์เดินทางถึงสถานที่ตามกำหนด</p>
+                            <div class="w-8 h-8 mx-auto -mt-6 mb-2 rounded-full bg-purple-500 text-white flex items-center justify-center text-xs font-black shadow-lg relative z-10 transition-colors">4</div>
+                            <h4 class="font-bold text-gray-900 dark:text-white text-sm mb-1 transition-colors">รับบริการ</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">ทีมงานพร้อมอุปกรณ์เดินทางถึงสถานที่ตามกำหนด</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- จุดเด่น -->
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 transition-transform hover:-translate-y-1">
-                        <div class="w-10 h-10 shrink-0 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500">
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm flex items-center gap-4 transition-all hover:-translate-y-1">
+                        <div class="w-10 h-10 shrink-0 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-500 dark:text-emerald-400">
                             <i class="fas fa-check-double"></i>
                         </div>
                         <div>
-                            <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">สภาพอุปกรณ์</span>
-                            <span class="block text-xs font-bold text-gray-900">ตรวจสอบและพร้อมใช้งาน</span>
+                            <span class="block text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider mb-0.5">สภาพอุปกรณ์</span>
+                            <span class="block text-xs font-bold text-gray-900 dark:text-white">ตรวจสอบและพร้อมใช้งาน</span>
                         </div>
                     </div>
-                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 transition-transform hover:-translate-y-1">
-                        <div class="w-10 h-10 shrink-0 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500">
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm flex items-center gap-4 transition-all hover:-translate-y-1">
+                        <div class="w-10 h-10 shrink-0 rounded-xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-amber-500 dark:text-amber-400">
                             <i class="fas fa-users"></i>
                         </div>
                         <div>
-                            <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">ทีมงาน</span>
-                            <span class="block text-xs font-bold text-gray-900">ช่างมืออาชีพพร้อมบริการ</span>
+                            <span class="block text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider mb-0.5">ทีมงาน</span>
+                            <span class="block text-xs font-bold text-gray-900 dark:text-white">ช่างมืออาชีพพร้อมบริการ</span>
                         </div>
                     </div>
-                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 transition-transform hover:-translate-y-1 col-span-2 md:col-span-1">
-                        <div class="w-10 h-10 shrink-0 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500">
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm flex items-center gap-4 transition-all hover:-translate-y-1 col-span-2 md:col-span-1">
+                        <div class="w-10 h-10 shrink-0 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-indigo-500 dark:text-indigo-400">
                             <i class="fas fa-headset"></i>
                         </div>
                         <div>
-                            <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">การสนับสนุน</span>
-                            <span class="block text-xs font-bold text-gray-900">ดูแลตลอดการถ่ายทำ</span>
+                            <span class="block text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider mb-0.5">การสนับสนุน</span>
+                            <span class="block text-xs font-bold text-gray-900 dark:text-white">ดูแลตลอดการถ่ายทำ</span>
                         </div>
                     </div>
                 </div>
@@ -179,20 +179,20 @@
                 <div class="xl:sticky xl:top-[120px] space-y-5">
 
                     <!-- Main Action Card -->
-                    <div class="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] p-8 lg:p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-white relative overflow-hidden">
-                        <div class="absolute -top-24 -right-24 w-48 h-48 bg-amber-500/20 rounded-full blur-[60px] pointer-events-none"></div>
+                    <div class="bg-white/80 dark:bg-slate-800/90 backdrop-blur-2xl rounded-[2.5rem] p-8 lg:p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:shadow-2xl border border-white dark:border-slate-700/80 relative overflow-hidden transition-colors">
+                        <div class="absolute -top-24 -right-24 w-48 h-48 bg-amber-500/20 dark:bg-amber-500/10 rounded-full blur-[60px] pointer-events-none transition-colors"></div>
 
                         <div class="relative z-10">
-                            <div class="inline-block px-3 py-1 bg-amber-100 rounded-lg text-[10px] font-bold text-amber-700 uppercase tracking-widest mb-4">
+                            <div class="inline-block px-3 py-1 bg-amber-100 dark:bg-amber-900/40 rounded-lg text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-4 transition-colors">
                                 แพ็คเกจบริการ
                             </div>
 
                             <!-- Price Block -->
-                            <div class="mb-8 p-6 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100/80 shadow-inner">
-                                <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">อัตราค่าบริการ</span>
+                            <div class="mb-8 p-6 bg-gradient-to-br from-gray-50 to-white dark:from-slate-700/50 dark:to-slate-800/50 rounded-2xl border border-gray-100/80 dark:border-slate-600/50 shadow-inner transition-colors">
+                                <span class="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 transition-colors">อัตราค่าบริการ</span>
                                 <div class="flex items-end gap-2">
-                                    <span class="text-4xl lg:text-5xl font-black text-gray-900 tracking-tighter">฿{{ package.price|floatformat:0|intcomma }}</span>
-                                    <span class="text-gray-500 font-bold uppercase text-xs mb-1">/ วัน</span>
+                                    <span class="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tighter transition-colors">฿{{ package.price|floatformat:0|intcomma }}</span>
+                                    <span class="text-gray-500 dark:text-gray-400 font-bold uppercase text-xs mb-1 transition-colors">/ วัน</span>
                                 </div>
                             </div>
 
@@ -200,14 +200,14 @@
                             <div class="space-y-4">
                                 <button type="button"
                                         onclick="addPackageToCart('{{ package.id }}', '{{ package.name|escapejs }}', '{{ package.price }}')"
-                                        class="w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 active:scale-[0.98] overflow-hidden relative group bg-gray-900 text-white">
-                                    <div class="absolute inset-0 bg-amber-600 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                                        class="w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 active:scale-[0.98] overflow-hidden relative group bg-gray-900 dark:bg-amber-500 text-white dark:text-white">
+                                    <div class="absolute inset-0 bg-amber-600 dark:bg-amber-600 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
                                     <div class="relative z-10 flex items-center gap-3">
                                         <i class="fas fa-file-invoice-dollar"></i> ขอใบเสนอราคา
                                     </div>
                                 </button>
 
-                                <a href="{% url 'store:contact' %}" class="w-full py-4 rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all border border-gray-200 text-gray-500 hover:text-amber-600 hover:border-amber-200 hover:bg-amber-50/30">
+                                <a href="{% url 'store:contact' %}" class="w-full py-4 rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all border border-gray-200 dark:border-slate-600 text-gray-500 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 hover:border-amber-200 dark:hover:border-amber-500/50 hover:bg-amber-50/30 dark:hover:bg-amber-500/10">
                                     <i class="fas fa-headset"></i> ติดต่อเจ้าหน้าที่
                                 </a>
                             </div>
@@ -215,49 +215,49 @@
                     </div>
 
                     <!-- Contact Card -->
-                    <div class="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-gray-100 shadow-sm space-y-3">
-                        <h4 class="text-xs font-black text-gray-900 uppercase tracking-widest mb-3">สอบถามรายละเอียดเพิ่มเติม</h4>
-                        <a href="tel:022016000" class="flex items-center gap-4 p-3.5 rounded-xl bg-gray-50 border border-gray-100 hover:border-amber-200 transition-colors group">
-                            <div class="w-9 h-9 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl p-6 border border-gray-100 dark:border-slate-700/80 shadow-sm space-y-3 transition-colors">
+                        <h4 class="text-xs font-black text-gray-900 dark:text-white uppercase tracking-widest mb-3 transition-colors">สอบถามรายละเอียดเพิ่มเติม</h4>
+                        <a href="tel:022016000" class="flex items-center gap-4 p-3.5 rounded-xl bg-gray-50 dark:bg-slate-700/50 border border-gray-100 dark:border-slate-600 hover:border-amber-200 dark:hover:border-amber-500/50 transition-colors group">
+                            <div class="w-9 h-9 rounded-full bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-amber-500 dark:text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-colors">
                                 <i class="fas fa-phone-alt text-sm"></i>
                             </div>
                             <div>
-                                <span class="block text-[10px] font-bold text-gray-400 uppercase">ฝ่ายขายองค์กร</span>
-                                <span class="text-sm font-black text-gray-900 font-mono">02-201-6000</span>
+                                <span class="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase transition-colors">ฝ่ายขายองค์กร</span>
+                                <span class="text-sm font-black text-gray-900 dark:text-white font-mono transition-colors">02-201-6000</span>
                             </div>
                         </a>
-                        <a href="mailto:sales@mcot.net" class="flex items-center gap-4 p-3.5 rounded-xl bg-gray-50 border border-gray-100 hover:border-blue-200 transition-colors group">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                        <a href="mailto:sales@mcot.net" class="flex items-center gap-4 p-3.5 rounded-xl bg-gray-50 dark:bg-slate-700/50 border border-gray-100 dark:border-slate-600 hover:border-blue-200 dark:hover:border-blue-500/50 transition-colors group">
+                            <div class="w-9 h-9 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-500 dark:text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-colors">
                                 <i class="fas fa-envelope text-sm"></i>
                             </div>
                             <div>
-                                <span class="block text-[10px] font-bold text-gray-400 uppercase">อีเมล</span>
-                                <span class="text-sm font-bold text-gray-900">sales@mcot.net</span>
+                                <span class="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase transition-colors">อีเมล</span>
+                                <span class="text-sm font-bold text-gray-900 dark:text-white transition-colors">sales@mcot.net</span>
                             </div>
                         </a>
                     </div>
 
                     <!-- Info Note -->
-                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3 text-blue-800">
-                        <i class="fas fa-info-circle text-blue-500 mt-0.5 shrink-0"></i>
-                        <p class="text-xs leading-relaxed font-medium">
+                    <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/50 rounded-xl p-4 flex gap-3 text-blue-800 dark:text-blue-300 transition-colors">
+                        <i class="fas fa-info-circle text-blue-500 dark:text-blue-400 mt-0.5 shrink-0 transition-colors"></i>
+                        <p class="text-xs leading-relaxed font-medium transition-colors">
                             วัน-เวลาเช่าสามารถเลือกได้ในขั้นตอนถัดไป หรือติดต่อเจ้าหน้าที่เพื่อสอบถามคิวว่างได้เลยครับ
                         </p>
                     </div>
 
                     <!-- Trust Features -->
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 transition-transform hover:-translate-y-0.5">
-                            <div class="w-8 h-8 shrink-0 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-500">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm flex items-center gap-3 transition-all hover:-translate-y-0.5">
+                            <div class="w-8 h-8 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-500 dark:text-emerald-400 transition-colors">
                                 <i class="fas fa-shield-alt text-sm"></i>
                             </div>
-                            <span class="text-[11px] font-bold text-gray-700 leading-tight">ประกันความเสียหาย</span>
+                            <span class="text-[11px] font-bold text-gray-700 dark:text-gray-300 leading-tight transition-colors">ประกันความเสียหาย</span>
                         </div>
-                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 transition-transform hover:-translate-y-0.5">
-                            <div class="w-8 h-8 shrink-0 rounded-lg bg-amber-50 flex items-center justify-center text-amber-500">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm flex items-center gap-3 transition-all hover:-translate-y-0.5">
+                            <div class="w-8 h-8 shrink-0 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-amber-500 dark:text-amber-400 transition-colors">
                                 <i class="fas fa-truck text-sm"></i>
                             </div>
-                            <span class="text-[11px] font-bold text-gray-700 leading-tight">จัดส่งถึงสถานที่</span>
+                            <span class="text-[11px] font-bold text-gray-700 dark:text-gray-300 leading-tight transition-colors">จัดส่งถึงสถานที่</span>
                         </div>
                     </div>
                 </div>
@@ -267,13 +267,13 @@
 </div>
 
 <!-- Mobile Fixed Bar -->
-<div class="fixed bottom-0 left-0 right-0 z-[60] bg-white/95 backdrop-blur-xl border-t border-gray-100 p-4 xl:hidden shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+<div class="fixed bottom-0 left-0 right-0 z-[60] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-gray-100 dark:border-slate-800 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] xl:hidden shadow-[0_-10px_30px_rgba(0,0,0,0.05)] dark:shadow-none transition-colors">
     <div class="flex items-center gap-3">
-        <a href="{% url 'store:contact' %}" class="w-14 h-14 shrink-0 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center text-gray-500 hover:text-amber-600 transition-colors">
+        <a href="{% url 'store:contact' %}" class="w-14 h-14 shrink-0 bg-gray-50 dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-500 transition-colors">
             <i class="fas fa-headset text-xl"></i>
         </a>
         <button onclick="addPackageToCart('{{ package.id }}', '{{ package.name|escapejs }}', '{{ package.price }}')"
-                class="flex-1 py-4 rounded-xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all transform active:scale-95 bg-gray-900 text-white shadow-lg">
+                class="flex-1 py-4 rounded-xl font-black text-xs sm:text-sm uppercase tracking-wide sm:tracking-widest flex items-center justify-center gap-2 transition-all transform active:scale-95 bg-gray-900 dark:bg-amber-600 text-white shadow-lg">
             <i class="fas fa-file-invoice-dollar"></i> ขอใบเสนอราคา
         </button>
     </div>

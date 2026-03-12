@@ -11,17 +11,17 @@
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-mcot-orange to-mcot-purple mb-4 shadow-lg shadow-mcot-orange/20 border border-white/50">
                 <i class="fas fa-user-plus text-white text-2xl"></i>
             </div>
-            <h1 class="text-3xl font-extrabold text-gray-900 font-display drop-shadow-sm">ลงทะเบียนบัญชีใหม่</h1>
-            <p class="text-gray-600 text-sm mt-2 font-medium">สร้างบัญชีเพื่อเริ่มการจอง — ใช้อีเมลหรือ Google</p>
+            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white font-display drop-shadow-sm transition-colors">ลงทะเบียนบัญชีใหม่</h1>
+            <p class="text-gray-600 dark:text-gray-300 text-sm mt-2 font-medium transition-colors">สร้างบัญชีเพื่อเริ่มการจอง — ใช้อีเมลหรือ Google</p>
         </div>
 
-        <div class="bg-white/60 backdrop-blur-xl shadow-2xl border border-white/60 rounded-3xl p-8 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100/50 to-transparent rounded-bl-full pointer-events-none"></div>
+        <div class="bg-white/60 dark:bg-slate-800/70 backdrop-blur-xl shadow-2xl border border-white/60 dark:border-slate-700/70 rounded-3xl p-6 sm:p-8 relative overflow-hidden transition-colors">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100/50 dark:from-purple-900/20 to-transparent rounded-bl-full pointer-events-none"></div>
 
             {% get_providers as socialaccount_providers %}
             {% if socialaccount_providers %}
             <div class="relative z-10 mb-6">
-                <a href="{% provider_login_url 'google' process='signup' %}" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 text-gray-700 font-bold py-3.5 rounded-xl hover:bg-gray-50 hover:border-gray-300 transform hover:-translate-y-0.5 transition-all duration-200 shadow-sm hover:shadow-md">
+                <a href="{% provider_login_url 'google' process='signup' %}" class="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-900/60 border-2 border-gray-200 dark:border-slate-600 text-gray-700 dark:text-gray-100 text-sm sm:text-base font-bold py-3.5 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 hover:border-gray-300 dark:hover:border-slate-500 transform hover:-translate-y-0.5 transition-all duration-200 shadow-sm hover:shadow-md">
                     <svg class="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
                         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -32,9 +32,9 @@
                 </a>
             </div>
             <div class="relative z-10 flex items-center gap-3 mb-6">
-                <div class="h-px flex-1 bg-gray-200"></div>
-                <span class="text-xs text-gray-400 font-semibold uppercase">หรือใช้อีเมล</span>
-                <div class="h-px flex-1 bg-gray-200"></div>
+                <div class="h-px flex-1 bg-gray-200 dark:bg-slate-600"></div>
+                <span class="text-xs text-gray-400 dark:text-gray-500 font-semibold uppercase transition-colors">หรือใช้อีเมล</span>
+                <div class="h-px flex-1 bg-gray-200 dark:bg-slate-600"></div>
             </div>
             {% endif %}
 
@@ -45,7 +45,7 @@
                 {% endif %}
 
                 {% if form.errors %}
-                <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm shadow-sm">
+                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/40 text-red-600 dark:text-red-300 px-4 py-3 rounded-xl text-sm break-words shadow-sm transition-colors">
                     <p class="font-bold mb-1"><i class="fas fa-exclamation-triangle mr-1"></i> เกิดข้อผิดพลาด</p>
                     {{ form.non_field_errors }}
                 </div>
@@ -54,24 +54,24 @@
                 {% for field in form %}
                 {% if field.name != 'terms_accepted' and field.name != 'username' %}
                 <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                          <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2 transition-colors" for="{{ field.id_for_label }}">{{ field.label }}</label>
                     <input type="{% if field.name == 'password1' or field.name == 'password2' %}password{% elif field.name == 'email' %}email{% else %}text{% endif %}"
                            name="{{ field.name }}" id="{{ field.id_for_label }}"
                            value="{{ field.value|default:'' }}"
                            placeholder="{% if field.name == 'email' %}example@email.com{% elif field.name == 'phone' %}0812345678{% elif field.name == 'first_name' %}ชื่อจริง{% elif field.name == 'last_name' %}นามสกุล{% endif %}"
-                           class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-mcot-orange/50 outline-none transition-all shadow-sm"
+                              class="w-full bg-white/50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-mcot-orange/50 outline-none transition-all shadow-sm"
                            {% if field.field.required %}required{% endif %}>
-                    {% for error in field.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
+                    {% for error in field.errors %}<p class="text-red-500 text-xs mt-1 break-words">{{ error }}</p>{% endfor %}
                 </div>
                 {% endif %}
                 {% endfor %}
 
                 {% if form.terms_accepted %}
-                <div class="flex items-start gap-3 p-3 rounded-xl bg-white/50 border border-gray-200">
+                <div class="flex items-start gap-3 p-3 rounded-xl bg-white/50 dark:bg-slate-900/40 border border-gray-200 dark:border-slate-600 transition-colors">
                     <div class="flex h-6 items-center">{{ form.terms_accepted }}</div>
-                    <label for="{{ form.terms_accepted.id_for_label }}" class="text-sm font-bold text-gray-700">{{ form.terms_accepted.label|safe }}</label>
+                    <label for="{{ form.terms_accepted.id_for_label }}" class="text-sm font-bold text-gray-700 dark:text-gray-200 transition-colors">{{ form.terms_accepted.label|safe }}</label>
                 </div>
-                {% if form.terms_accepted.errors %}<p class="text-red-500 text-xs mt-1">{{ form.terms_accepted.errors.0 }}</p>{% endif %}
+                {% if form.terms_accepted.errors %}<p class="text-red-500 text-xs mt-1 break-words">{{ form.terms_accepted.errors.0 }}</p>{% endif %}
                 {% endif %}
 
                 <button type="submit" class="w-full bg-mcot-orange text-white font-bold py-3.5 rounded-xl hover:bg-orange-600 transform hover:-translate-y-0.5 transition-all duration-200 shadow-lg shadow-orange-500/30 mt-6">
@@ -79,8 +79,8 @@
                 </button>
             </form>
 
-            <div class="mt-8 text-center text-sm text-gray-600 relative z-10">
-                <div class="h-px w-full bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4"></div>
+            <div class="mt-8 text-center text-sm text-gray-600 dark:text-gray-300 relative z-10 transition-colors">
+                <div class="h-px w-full bg-gradient-to-r from-transparent via-gray-200 dark:via-slate-600 to-transparent my-4"></div>
                 <p>มีบัญชีอยู่แล้ว? <a href="{% url 'account_login' %}" class="text-mcot-orange hover:text-orange-600 font-bold ml-1">เข้าสู่ระบบ</a></p>
             </div>
         </div>
@@ -92,14 +92,14 @@
     <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" onclick="closeTOSModal()"></div>
     <div class="fixed inset-0 z-10 overflow-y-auto">
         <div class="flex min-h-full items-end justify-center p-4 sm:items-center sm:p-0">
-            <div class="relative rounded-2xl bg-white border border-gray-200 text-left shadow-2xl sm:max-w-4xl w-full">
+            <div class="relative rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-left shadow-2xl sm:max-w-4xl w-full transition-colors">
                 <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
-                    <h3 class="text-xl font-bold text-gray-900">ข้อกำหนดและเงื่อนไขการใช้งาน</h3>
-                    <button type="button" onclick="closeTOSModal()" class="text-gray-400 hover:text-gray-900"><i class="fas fa-times text-xl"></i></button>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white transition-colors">ข้อกำหนดและเงื่อนไขการใช้งาน</h3>
+                    <button type="button" onclick="closeTOSModal()" class="text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"><i class="fas fa-times text-xl"></i></button>
                 </div>
-                <div class="px-6 py-6 max-h-[60vh] overflow-y-auto">{% include 'pages/terms_partial.html' %}</div>
-                <div class="bg-gray-50 px-6 py-4 border-t flex justify-end gap-3">
-                    <button type="button" onclick="closeTOSModal()" class="px-6 py-2 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-100">ปิด</button>
+                <div class="px-6 py-6 max-h-[60vh] overflow-y-auto text-gray-700 dark:text-gray-200 transition-colors">{% include 'pages/terms_partial.html' %}</div>
+                <div class="bg-gray-50 dark:bg-slate-900/40 px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-3 transition-colors">
+                    <button type="button" onclick="closeTOSModal()" class="px-6 py-2 rounded-xl border border-gray-300 dark:border-slate-600 text-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">ปิด</button>
                     <button type="button" onclick="acceptTOS()" class="px-6 py-2 rounded-xl bg-mcot-orange text-white hover:bg-orange-600">ยอมรับเงื่อนไข</button>
                 </div>
             </div>

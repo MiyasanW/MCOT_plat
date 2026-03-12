@@ -11,13 +11,13 @@
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-mcot-orange to-mcot-purple mb-4 shadow-lg shadow-mcot-orange/20 border border-white/50">
                 <i class="fas fa-film text-white text-2xl"></i>
             </div>
-            <h1 class="text-3xl font-extrabold text-gray-900 font-display drop-shadow-sm">MCOT Rental Platform</h1>
-            <p class="text-gray-600 text-sm mt-2 font-medium">ระบบจัดการเช่าอุปกรณ์ — Login เพื่อเข้าใช้งาน</p>
+            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white font-display drop-shadow-sm transition-colors">MCOT Rental Platform</h1>
+            <p class="text-gray-600 dark:text-gray-300 text-sm mt-2 font-medium transition-colors">ระบบจัดการเช่าอุปกรณ์ — Login เพื่อเข้าใช้งาน</p>
         </div>
 
-        <div class="bg-white/60 backdrop-blur-xl shadow-2xl border border-white/60 rounded-3xl p-8 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-100/50 to-transparent rounded-bl-full pointer-events-none"></div>
-            <h2 class="text-xl font-bold text-gray-900 mb-6 text-center relative z-10">เข้าสู่ระบบ</h2>
+        <div class="bg-white/60 dark:bg-slate-800/70 backdrop-blur-xl shadow-2xl border border-white/60 dark:border-slate-700/70 rounded-3xl p-6 sm:p-8 relative overflow-hidden transition-colors">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-100/50 dark:from-orange-900/20 to-transparent rounded-bl-full pointer-events-none"></div>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center relative z-10 transition-colors">เข้าสู่ระบบ</h2>
 
             <form method="post" action="{% url 'account_login' %}" class="space-y-5">
                 {% csrf_token %}
@@ -26,31 +26,31 @@
                 {% endif %}
 
                 {% if form.errors %}
-                <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm mb-6 shadow-sm">
+                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/40 text-red-600 dark:text-red-300 px-4 py-3 rounded-xl text-sm mb-6 break-words shadow-sm transition-colors">
                     <p class="font-bold mb-1 text-red-700"><i class="fas fa-exclamation-circle mr-1"></i> เข้าสู่ระบบไม่สำเร็จ</p>
                     <p>{{ form.non_field_errors.0|default:"อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง" }}</p>
                 </div>
                 {% endif %}
 
                 <div class="relative z-10">
-                    <label class="block text-gray-700 text-sm font-bold mb-2"><i class="fas fa-envelope mr-1 text-mcot-orange"></i> อีเมล</label>
+                    <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2 transition-colors"><i class="fas fa-envelope mr-1 text-mcot-orange"></i> อีเมล</label>
                     <input type="email" name="login" placeholder="example@email.com" required autofocus
-                        class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-mcot-orange/50 outline-none transition-all shadow-sm"
+                        class="w-full bg-white/50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-mcot-orange/50 outline-none transition-all shadow-sm"
                         value="{{ form.login.value|default:'' }}">
-                    {% if form.login.errors %}<p class="text-red-500 text-xs mt-1">{{ form.login.errors.0 }}</p>{% endif %}
+                    {% if form.login.errors %}<p class="text-red-500 text-xs mt-1 break-words">{{ form.login.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div class="relative z-10">
-                    <label class="block text-gray-700 text-sm font-bold mb-2"><i class="fas fa-lock mr-1 text-mcot-orange"></i> รหัสผ่าน</label>
+                    <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2 transition-colors"><i class="fas fa-lock mr-1 text-mcot-orange"></i> รหัสผ่าน</label>
                     <input type="password" name="password" placeholder="••••••••" required
-                        class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-mcot-orange/50 outline-none transition-all shadow-sm">
-                    {% if form.password.errors %}<p class="text-red-500 text-xs mt-1">{{ form.password.errors.0 }}</p>{% endif %}
+                        class="w-full bg-white/50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-mcot-orange/50 outline-none transition-all shadow-sm">
+                    {% if form.password.errors %}<p class="text-red-500 text-xs mt-1 break-words">{{ form.password.errors.0 }}</p>{% endif %}
                 </div>
 
                 {% if form.remember %}
                 <div class="relative z-10 flex items-center gap-2">
                     {{ form.remember }}
-                    <label for="id_remember" class="text-sm text-gray-600">จดจำการเข้าสู่ระบบ</label>
+                    <label for="id_remember" class="text-sm text-gray-600 dark:text-gray-300 transition-colors">จดจำการเข้าสู่ระบบ</label>
                 </div>
                 {% endif %}
 
@@ -63,9 +63,9 @@
             {% if socialaccount_providers %}
             <div class="relative z-10 mt-6">
                 <div class="flex items-center gap-3">
-                    <div class="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-                    <span class="text-xs text-gray-400 font-semibold uppercase tracking-wider">หรือ</span>
-                    <div class="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+                    <div class="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-slate-600 to-transparent"></div>
+                    <span class="text-xs text-gray-400 dark:text-gray-500 font-semibold uppercase tracking-wider transition-colors">หรือ</span>
+                    <div class="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-slate-600 to-transparent"></div>
                 </div>
             </div>
             <div class="relative z-10 mt-4">
@@ -73,7 +73,7 @@
                 {% if provider.id == 'google' %}
                 <form action="{% provider_login_url 'google' %}" method="post" class="block">
                     {% csrf_token %}
-                    <button type="submit" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 text-gray-700 font-bold py-3.5 rounded-xl hover:bg-gray-50 hover:border-gray-300 transform hover:-translate-y-0.5 transition-all duration-200 shadow-sm hover:shadow-md">
+                    <button type="submit" class="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-900/60 border-2 border-gray-200 dark:border-slate-600 text-gray-700 dark:text-gray-100 font-bold py-3.5 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 hover:border-gray-300 dark:hover:border-slate-500 transform hover:-translate-y-0.5 transition-all duration-200 shadow-sm hover:shadow-md">
                         <svg class="w-5 h-5" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
                             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -87,14 +87,14 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p class="relative z-10 mt-4 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+            <p class="relative z-10 mt-4 text-xs text-amber-700 dark:text-amber-200 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 rounded-xl px-4 py-3 break-words transition-colors">
                 <i class="fas fa-info-circle mr-1"></i> ต้องการปุ่มล็อกอินด้วย Google? ใน Admin → <strong>Social applications</strong> ให้เพิ่มแอป Google (Client ID + Secret) แล้วที่ช่อง <strong>Sites</strong> ต้องเลือก Site ไปที่ "Chosen sites" ด้วย (เช่น 127.0.0.1:8000)
             </p>
             {% endif %}
 
-            <div class="mt-8 text-center text-sm text-gray-600 relative z-10">
+            <div class="mt-8 text-center text-sm text-gray-600 dark:text-gray-300 relative z-10 transition-colors">
                 <p class="mb-3"><a href="{% url 'account_reset_password' %}" class="hover:text-mcot-orange font-medium transition-colors">ลืมรหัสผ่าน?</a></p>
-                <div class="h-px w-full bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4"></div>
+                <div class="h-px w-full bg-gradient-to-r from-transparent via-gray-200 dark:via-slate-600 to-transparent my-4"></div>
                 <p class="mb-4">ยังไม่มีบัญชี? <a href="{% url 'account_signup' %}" class="text-mcot-orange hover:text-orange-600 font-bold ml-1">ลงทะเบียน</a></p>
                 <a href="/" class="hover:text-mcot-orange transition-colors flex items-center justify-center gap-1 font-medium"><i class="fas fa-arrow-left text-xs"></i> กลับหน้าหลัก</a>
             </div>

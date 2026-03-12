@@ -107,6 +107,28 @@ class BookingFlowTests(TestCase):
         
         self.assertEqual(response.status_code, 400)
 
+    def test_create_booking_missing_product_returns_400(self):
+        """Stale cart IDs should return a user-facing validation error, not system error."""
+        self.client.login(username=self.username, password=self.password)
+
+        start_date = (date.today() + timedelta(days=1)).strftime("%Y-%m-%d")
+        end_date = (date.today() + timedelta(days=2)).strftime("%Y-%m-%d")
+
+        payload = {
+            "items": [{"id": 999999, "quantity": 1, "type": "product"}],
+            "start": start_date,
+            "end": end_date,
+            "phone": "0812345678"
+        }
+
+        url = reverse('store:api_create_booking')
+        response = self.client.post(url, data=json.dumps(payload), content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json()['success'])
+        self.assertIn('ไม่พบสินค้า', response.json()['message'])
+        self.assertNotIn('System Error', response.json()['message'])
+
     def test_package_availability(self):
         """Test package availability checks component products correctly"""
         from apps.store.models import Package, PackageItem
@@ -152,3 +174,31 @@ class BookingFlowTests(TestCase):
         # Requesting 1 package = needs 2. Avail: 1 < 2 => False
         is_avail, msg = AvailabilityService.check_package_availability(package, start, end, requested_quantity=1)
         self.assertFalse(is_avail)
+
+    def test_create_booking_with_empty_package_succeeds(self):
+        """Package without PackageItem should still be bookable as standalone item."""
+        from apps.store.models import Package
+
+        self.client.login(username=self.username, password=self.password)
+
+        package = Package.objects.create(
+            name="Standalone Package",
+            price=5000,
+            is_active=True,
+        )
+
+        start_date = (date.today() + timedelta(days=1)).strftime("%Y-%m-%d")
+        end_date = (date.today() + timedelta(days=2)).strftime("%Y-%m-%d")
+
+        payload = {
+            "items": [{"id": f"pkg_{package.id}", "quantity": 1, "type": "package"}],
+            "start": start_date,
+            "end": end_date,
+            "phone": "0812345678"
+        }
+
+        url = reverse('store:api_create_booking')
+        response = self.client.post(url, data=json.dumps(payload), content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['success'])

@@ -59,6 +59,15 @@
         }
     </script>
 
+    <!-- Dark Mode Initializer to prevent "Flash of Unstyled Content" -->
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
     <style type="text/tailwindcss">
         @layer utilities {
             .glass-panel {
@@ -84,11 +93,11 @@
 </head>
 
 <body
-    class="text-gray-900 min-h-screen flex flex-col font-sans antialiased selection:bg-mcot-orange selection:text-white">
+    class="text-gray-900 dark:text-gray-100 dark:bg-slate-900 min-h-screen flex flex-col font-sans antialiased selection:bg-mcot-orange selection:text-white transition-colors duration-300">
 
     <!-- Main Navbar -->
     <nav x-data="{ mobileMenuOpen: false }"
-        class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        class="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 shadow-sm transition-colors duration-300">
 
         <!-- Subtle accent line -->
         <div class="h-[2px] bg-gradient-to-r from-mcot-orange via-orange-400 to-mcot-orange"></div>
@@ -116,18 +125,18 @@
                 {% with request.resolver_match.url_name as url_name %}
 
                 <a href="{% url 'store:home' %}"
-                   class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold transition-all {% if url_name == 'home' %}text-mcot-orange bg-orange-50 border border-orange-100{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50{% endif %}">
+                   class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold transition-all {% if url_name == 'home' %}text-mcot-orange bg-orange-50 dark:bg-mcot-orange/10 dark:text-mcot-orange border border-orange-100 dark:border-mcot-orange/20{% else %}text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800{% endif %}">
                     {% trans "หน้าแรก" %}
                 </a>
 
                 <a href="{% url 'store:catalog' %}"
-                   class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold transition-all {% if 'catalog' in url_name %}text-mcot-orange bg-orange-50 border border-orange-100{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50{% endif %}">
+                   class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold transition-all {% if 'catalog' in url_name %}text-mcot-orange bg-orange-50 dark:bg-mcot-orange/10 dark:text-mcot-orange border border-orange-100 dark:border-mcot-orange/20{% else %}text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800{% endif %}">
                     {% trans "อุปกรณ์ทั้งหมด" %}
                 </a>
 
                 <!-- Category Dropdown -->
                 <div x-data="{ open: false }" class="relative" @mouseenter="open = true" @mouseleave="open = false">
-                    <button class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all flex items-center gap-1.5">
+                    <button class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800 transition-all flex items-center gap-1.5">
                         {% trans "หมวดหมู่" %}
                         <i class="fas fa-chevron-down text-[9px] text-gray-400 transition-transform" :class="{'rotate-180': open}"></i>
                     </button>
@@ -136,29 +145,29 @@
                          x-transition:enter-end="opacity-100 translate-y-0"
                          x-transition:leave="transition ease-in duration-100"
                          x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                         class="absolute top-full left-0 mt-2 w-52 bg-white border border-gray-100 rounded-2xl shadow-lg overflow-hidden z-50" style="display:none;">
-                        <a href="{% url 'store:catalog' %}#section-equipment" class="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors border-b border-gray-50">
+                         class="absolute top-full left-0 mt-2 w-52 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-2xl shadow-lg overflow-hidden z-50 text-left" style="display:none;">
+                        <a href="{% url 'store:catalog' %}#section-equipment" class="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors border-b border-gray-50 dark:border-slate-800/50">
                             <i class="fas fa-camera text-blue-400 w-4 text-center text-xs"></i> {% trans "อุปกรณ์" %}
                         </a>
-                        <a href="{% url 'store:catalog' %}#section-packages" class="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors border-b border-gray-50">
+                        <a href="{% url 'store:catalog' %}#section-packages" class="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors border-b border-gray-50 dark:border-slate-800/50">
                             <i class="fas fa-box-open text-orange-400 w-4 text-center text-xs"></i> {% trans "แพ็กเกจ" %}
                         </a>
-                        <a href="{% url 'store:catalog' %}#section-services" class="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors border-b border-gray-50">
+                        <a href="{% url 'store:catalog' %}#section-services" class="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors border-b border-gray-50 dark:border-slate-800/50">
                             <i class="fas fa-truck text-teal-400 w-4 text-center text-xs"></i> {% trans "OB / บริการ" %}
                         </a>
-                        <a href="{% url 'store:catalog' %}#section-studios" class="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors">
+                        <a href="{% url 'store:catalog' %}#section-studios" class="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
                             <i class="fas fa-building text-purple-400 w-4 text-center text-xs"></i> {% trans "สตูดิโอ" %}
                         </a>
                     </div>
                 </div>
 
                 <a href="{% url 'store:about' %}"
-                   class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold transition-all {% if url_name == 'about' %}text-mcot-orange bg-orange-50 border border-orange-100{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50{% endif %}">
+                   class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold transition-all {% if url_name == 'about' %}text-mcot-orange bg-orange-50 dark:bg-mcot-orange/10 dark:text-mcot-orange border border-orange-100 dark:border-mcot-orange/20{% else %}text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800{% endif %}">
                     {% trans "เกี่ยวกับเรา" %}
                 </a>
 
                 <a href="{% url 'store:contact' %}"
-                   class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold transition-all {% if url_name == 'contact' %}text-mcot-orange bg-orange-50 border border-orange-100{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50{% endif %}">
+                   class="whitespace-nowrap px-3 xl:px-5 py-2.5 rounded-full text-sm xl:text-[15px] font-bold transition-all {% if url_name == 'contact' %}text-mcot-orange bg-orange-50 dark:bg-mcot-orange/10 dark:text-mcot-orange border border-orange-100 dark:border-mcot-orange/20{% else %}text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800{% endif %}">
                     {% trans "ติดต่อ" %}
                 </a>
 
@@ -169,14 +178,14 @@
             <div class="flex items-center gap-2.5">
 
                 <!-- Contact Info (desktop only) -->
-                <div class="hidden lg:flex items-center gap-4 bg-gray-50/80 hover:bg-orange-50/50 rounded-2xl p-1.5 pr-4 border border-gray-100 hover:border-orange-100 transition-all mr-2">
-                    <div class="flex items-center gap-3 border-r xl:border-r border-gray-200/60 pr-4">
-                        <a href="tel:022016000" class="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center text-mcot-orange hover:bg-mcot-orange hover:text-white transition-all">
+                <div class="hidden lg:flex items-center gap-4 bg-gray-50/80 dark:bg-slate-800/80 hover:bg-orange-50/50 dark:hover:bg-mcot-orange/10 rounded-2xl p-1.5 pr-4 border border-gray-100 dark:border-slate-700 hover:border-orange-100 dark:hover:border-mcot-orange/30 transition-all mr-2">
+                    <div class="flex items-center gap-3 border-r xl:border-r border-gray-200/60 dark:border-slate-600/60 pr-4">
+                        <a href="tel:022016000" class="w-8 h-8 rounded-xl bg-white dark:bg-slate-700 shadow-sm flex items-center justify-center text-mcot-orange hover:bg-mcot-orange hover:text-white transition-all">
                             <i class="fas fa-phone-alt text-xs"></i>
                         </a>
                         <div class="leading-none xl:block hidden">
                             <span class="block text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1 whitespace-nowrap">ติดต่อเช่าอุปกรณ์</span>
-                            <a href="tel:022016000" class="block text-sm font-black text-gray-900 font-mono hover:text-mcot-orange transition-colors whitespace-nowrap">02-201-6000</a>
+                            <a href="tel:022016000" class="block text-sm font-black text-gray-900 dark:text-gray-100 font-mono hover:text-mcot-orange transition-colors whitespace-nowrap">02-201-6000</a>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
@@ -185,12 +194,23 @@
                         </a>
                         <div class="leading-none xl:block hidden">
                             <span class="block text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1 whitespace-nowrap">อีเมลฝ่ายขาย</span>
-                            <a href="mailto:rental@mcot.net" class="block text-[13px] font-bold text-gray-900 hover:text-blue-500 transition-colors whitespace-nowrap">rental@mcot.net</a>
+                            <a href="mailto:rental@mcot.net" class="block text-[13px] font-bold text-gray-900 dark:text-gray-100 hover:text-blue-500 transition-colors whitespace-nowrap">rental@mcot.net</a>
                         </div>
                     </div>
                 </div>
 
-                <div class="hidden xl:block h-8 w-px bg-gray-200 mr-1"></div>
+                <div class="hidden xl:block h-8 w-px bg-gray-200 dark:bg-slate-700 mr-1"></div>
+
+                <!-- Dark Mode Toggle -->
+                <button
+                    x-data="{ isDark: document.documentElement.classList.contains('dark') }"
+                    @click="document.documentElement.classList.toggle('dark'); isDark = document.documentElement.classList.contains('dark'); localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');"
+                    class="hidden md:flex relative w-10 h-10 rounded-full text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-slate-800 items-center justify-center transition-all bg-gray-50 dark:bg-slate-800/50 border border-transparent dark:border-slate-700 group mr-2"
+                    title="Toggle Dark Mode"
+                >
+                    <i class="fas fa-moon absolute transition-all duration-300 transform group-hover:rotate-12" :class="isDark ? 'opacity-0 scale-50' : 'opacity-100 scale-100'"></i>
+                    <i class="fas fa-sun absolute transition-all duration-300 transform group-hover:rotate-90 text-amber-500" :class="isDark ? 'opacity-100 scale-100' : 'opacity-0 scale-50'"></i>
+                </button>
 
                 {% if user.is_authenticated %}
                 <!-- Staff shortcuts (icon only) -->
@@ -292,19 +312,19 @@
                  x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
                  x-transition:leave="transition-opacity ease-linear duration-200"
                  x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                 class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm" @click="mobileMenuOpen = false"></div>
+                 class="fixed inset-0 bg-gray-900/60 dark:bg-black/80 backdrop-blur-sm" @click="mobileMenuOpen = false"></div>
 
             <div x-show="mobileMenuOpen"
                  x-transition:enter="transition ease-out duration-250 transform"
                  x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0"
                  x-transition:leave="transition ease-in duration-200 transform"
                  x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full"
-                 class="relative flex w-full max-w-[280px] flex-col overflow-y-auto bg-white h-full shadow-xl">
+                 class="relative flex w-full max-w-[280px] flex-col overflow-y-auto bg-white dark:bg-slate-900 h-full shadow-xl">
 
                 <!-- Drawer Header -->
-                <div class="flex items-center justify-between px-4 py-4 border-b border-gray-100">
+                <div class="flex items-center justify-between px-4 py-4 border-b border-gray-100 dark:border-slate-800">
                     <img src="{% static 'images/logo.png' %}" alt="MCOT" class="h-7 w-auto">
-                    <button @click="mobileMenuOpen = false" class="w-8 h-8 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-100 flex items-center justify-center transition-colors">
+                    <button @click="mobileMenuOpen = false" class="w-8 h-8 rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -312,38 +332,38 @@
                 <!-- Drawer Links -->
                 <div class="flex-1 overflow-y-auto py-4">
                     <div class="px-3 space-y-0.5">
-                        <a href="{% url 'store:home' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-gray-900 hover:bg-orange-50 hover:text-mcot-orange transition-colors">
+                        <a href="{% url 'store:home' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-gray-900 dark:text-gray-100 hover:bg-orange-50 dark:hover:bg-slate-800 hover:text-mcot-orange transition-colors">
                             <i class="fas fa-home w-5 text-center text-gray-400 text-xs"></i> หน้าแรก
                         </a>
-                        <a href="{% url 'store:catalog' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-gray-900 hover:bg-orange-50 hover:text-mcot-orange transition-colors">
+                        <a href="{% url 'store:catalog' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-gray-900 dark:text-gray-100 hover:bg-orange-50 dark:hover:bg-slate-800 hover:text-mcot-orange transition-colors">
                             <i class="fas fa-th-large w-5 text-center text-gray-400 text-xs"></i> อุปกรณ์ทั้งหมด
                         </a>
                     </div>
 
-                    <div class="px-3 mt-2 pt-2 border-t border-gray-100">
+                    <div class="px-3 mt-2 pt-2 border-t border-gray-100 dark:border-slate-800">
                         <p class="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">หมวดหมู่</p>
-                        <a href="{% url 'store:catalog' %}#section-equipment" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                        <a href="{% url 'store:catalog' %}#section-equipment" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors">
                             <i class="fas fa-camera w-5 text-center text-blue-400 text-xs"></i> อุปกรณ์
                         </a>
-                        <a href="{% url 'store:catalog' %}#section-packages" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                        <a href="{% url 'store:catalog' %}#section-packages" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors">
                             <i class="fas fa-box-open w-5 text-center text-orange-400 text-xs"></i> แพ็กเกจ
                         </a>
-                        <a href="{% url 'store:catalog' %}#section-services" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                        <a href="{% url 'store:catalog' %}#section-services" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors">
                             <i class="fas fa-truck w-5 text-center text-teal-400 text-xs"></i> OB / บริการ
                         </a>
-                        <a href="{% url 'store:catalog' %}#section-studios" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                        <a href="{% url 'store:catalog' %}#section-studios" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors">
                             <i class="fas fa-building w-5 text-center text-purple-400 text-xs"></i> สตูดิโอ
                         </a>
                     </div>
 
-                    <div class="px-3 mt-2 pt-2 border-t border-gray-100">
-                        <a href="{% url 'store:about' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <div class="px-3 mt-2 pt-2 border-t border-gray-100 dark:border-slate-800">
+                        <a href="{% url 'store:about' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors">
                             <i class="fas fa-info-circle w-5 text-center text-gray-400 text-xs"></i> เกี่ยวกับเรา
                         </a>
-                        <a href="{% url 'store:faq' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                        <a href="{% url 'store:faq' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors">
                             <i class="fas fa-question-circle w-5 text-center text-gray-400 text-xs"></i> คำถามที่พบบ่อย
                         </a>
-                        <a href="{% url 'store:contact' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-mcot-orange hover:bg-orange-50 transition-colors">
+                        <a href="{% url 'store:contact' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-mcot-orange hover:bg-orange-50 dark:hover:bg-slate-800 transition-colors">
                             <i class="fas fa-phone-alt w-5 text-center text-xs"></i> ติดต่อเรา
                         </a>
                     </div>
@@ -407,38 +427,38 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer (Light Theme) -->
-    <footer class="bg-white border-t border-gray-200 pt-20 pb-10 mt-auto">
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 pt-20 pb-10 mt-auto transition-colors duration-300">
 
         <div class="max-w-[1440px] mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                 <!-- Brand Col -->
                 <div class="space-y-6">
                     <div>
-                        <span class="font-display font-black text-xl text-gray-900">MCOT</span>
+                        <span class="font-display font-black text-xl text-gray-900 dark:text-white">MCOT</span>
                         <span class="text-[10px] tracking-widest text-mcot-orange uppercase block">{% trans "Rental Platform" %}</span>
                     </div>
-                    <p class="text-gray-500 text-sm leading-relaxed font-medium">
+                    <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed font-medium">
                         {% trans "ผู้ให้บริการเช่าอุปกรณ์ถ่ายทำครบวงจร โดย บมจ. อสมท" %} <br>
                         {% trans "มาตรฐานการผลิตระดับประเทศ ยาวนานกว่า 70 ปี" %}
                     </p>
                     <div class="flex gap-4">
                         <a href="https://www.facebook.com/MCOT.Digital/" target="_blank"
-                            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-white hover:bg-blue-600 transition-all border border-gray-200 hover:border-blue-600"><i
+                            class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-white dark:hover:text-white hover:bg-blue-600 transition-all border border-gray-200 dark:border-slate-700 hover:border-blue-600"><i
                                 class="fab fa-facebook-f"></i></a>
                         <a href="https://twitter.com/MCOTofficial" target="_blank"
-                            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-white hover:bg-sky-400 transition-all border border-gray-200 hover:border-sky-400"><i
+                            class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-white dark:hover:text-white hover:bg-sky-400 transition-all border border-gray-200 dark:border-slate-700 hover:border-sky-400"><i
                                 class="fab fa-twitter"></i></a>
                         <a href="https://www.youtube.com/@9MCOT" target="_blank"
-                            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-white hover:bg-red-600 transition-all border border-gray-200 hover:border-red-600"><i
+                            class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-white dark:hover:text-white hover:bg-red-600 transition-all border border-gray-200 dark:border-slate-700 hover:border-red-600"><i
                                 class="fab fa-youtube"></i></a>
                     </div>
                 </div>
 
                 <!-- Product Links -->
                 <div>
-                    <h4 class="text-gray-900 font-bold mb-6">{% trans "Our Services" %}</h4>
-                    <ul class="space-y-3 text-sm text-gray-500 font-medium">
+                    <h4 class="text-gray-900 dark:text-gray-100 font-bold mb-6">{% trans "Our Services" %}</h4>
+                    <ul class="space-y-3 text-sm text-gray-500 dark:text-gray-400 font-medium">
                         <li><a href="{% url 'store:catalog' %}#section-equipment" class="hover:text-mcot-orange transition-colors">{% trans "Camera Rental" %}</a></li>
                         <li><a href="{% url 'store:catalog' %}#section-equipment" class="hover:text-mcot-orange transition-colors">{% trans "Anamorphic Lenses" %}</a>
                         </li>
@@ -451,38 +471,38 @@
 
                 <!-- Support Links -->
                 <div>
-                    <h4 class="text-gray-900 font-bold mb-6">{% trans "About Us" %}</h4>
-                    <ul class="space-y-3 text-sm text-gray-500 font-medium">
+                    <h4 class="text-gray-900 dark:text-gray-100 font-bold mb-6">{% trans "About Us" %}</h4>
+                    <ul class="space-y-3 text-sm text-gray-500 dark:text-gray-400 font-medium">
                         <li><a href="{% url 'store:about' %}" class="hover:text-mcot-orange transition-colors">{% trans "MCOT Rental Profile" %}</a></li>
                         <li><a href="{% url 'store:contact' %}"
                                 class="hover:text-mcot-orange transition-colors">{% trans "Contact Staff" %}</a></li>
                         <li><a href="{% url 'store:faq' %}"
                                 class="hover:text-mcot-orange transition-colors">{% trans "FAQ" %}</a></li>
-                        <li><button onclick="showTerms()" type="button" class="hover:text-gray-900 transition-colors cursor-pointer text-left">{% trans "Terms of Service" %}</button></li>
-                        <li><button onclick="showPrivacy()" type="button" class="hover:text-gray-900 transition-colors cursor-pointer text-left">{% trans "Privacy Policy" %}</button></li>
+                        <li><button onclick="showTerms()" type="button" class="hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer text-left">{% trans "Terms of Service" %}</button></li>
+                        <li><button onclick="showPrivacy()" type="button" class="hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer text-left">{% trans "Privacy Policy" %}</button></li>
                     </ul>
                 </div>
 
                 <!-- Contact -->
                 <div>
-                    <h4 class="text-gray-900 font-bold mb-6">{% trans "Headquarters" %}</h4>
-                    <address class="text-sm text-gray-500 not-italic leading-relaxed mb-4 font-medium">
+                    <h4 class="text-gray-900 dark:text-gray-100 font-bold mb-6">{% trans "Headquarters" %}</h4>
+                    <address class="text-sm text-gray-500 dark:text-gray-400 not-italic leading-relaxed mb-4 font-medium">
                         {% trans "63/1 Rama 9 Road, Huai Khwang" %}<br>
                         {% trans "Huai Khwang, Bangkok 10310" %}
                     </address>
-                    <p class="text-sm text-gray-900 font-bold mb-1">02-201-6000</p>
+                    <p class="text-sm text-gray-900 dark:text-gray-100 font-bold mb-1">02-201-6000</p>
                     <p class="text-sm text-mcot-orange">rental@mcot.net</p>
                 </div>
             </div>
 
             <!-- Bottom Bar -->
             <div
-                class="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 font-medium">
+                class="border-t border-gray-200 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 dark:text-gray-400 font-medium">
                 <p>&copy; {% now "Y" %} {% trans "MCOT Public Company Limited. All rights reserved." %}</p>
                 <div class="flex gap-6 relative z-10">
-                    <button onclick="showSitemap()" type="button" class="hover:text-gray-900 cursor-pointer">{% trans "Sitemap" %}</button>
-                    <button onclick="showCookies()" type="button" class="hover:text-gray-900 cursor-pointer">{% trans "Cookies Usage" %}</button>
-                    <button onclick="showSecurity()" type="button" class="hover:text-gray-900 cursor-pointer">{% trans "Security" %}</button>
+                    <button onclick="showSitemap()" type="button" class="hover:text-gray-900 dark:hover:text-white cursor-pointer">{% trans "Sitemap" %}</button>
+                    <button onclick="showCookies()" type="button" class="hover:text-gray-900 dark:hover:text-white cursor-pointer">{% trans "Cookies Usage" %}</button>
+                    <button onclick="showSecurity()" type="button" class="hover:text-gray-900 dark:hover:text-white cursor-pointer">{% trans "Security" %}</button>
                 </div>
             </div>
         </div>

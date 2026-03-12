@@ -5,23 +5,23 @@
 
 {% block content %}
 <!-- MY BOOKINGS REDESIGN - Hybrid Light Frosted Glass -->
-<div class="min-h-screen pb-20 pt-8 relative overflow-hidden bg-gray-200 z-0">
+<div class="min-h-screen pb-20 pt-8 relative overflow-hidden bg-gray-200 dark:bg-slate-900 z-0 transition-colors duration-300">
     <!-- Ambient Light Background -->
-    <div class="absolute top-0 left-0 w-[800px] h-[800px] bg-mcot-purple/5 rounded-full blur-[150px] pointer-events-none z-[-1]"></div>
-    <div class="absolute bottom-0 right-0 w-[600px] h-[600px] bg-mcot-orange/5 rounded-full blur-[150px] pointer-events-none z-[-1]"></div>
+    <div class="absolute top-0 left-0 w-[800px] h-[800px] bg-mcot-purple/5 dark:bg-mcot-purple/10 rounded-full blur-[150px] pointer-events-none z-[-1] transition-colors"></div>
+    <div class="absolute bottom-0 right-0 w-[600px] h-[600px] bg-mcot-orange/5 dark:bg-mcot-orange/10 rounded-full blur-[150px] pointer-events-none z-[-1] transition-colors"></div>
 
     <div class="max-w-[1200px] mx-auto px-6 relative z-10 py-4">
 
         <!-- Header -->
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
             <div>
-                <h1 class="text-3xl font-black text-gray-900 font-display flex items-center gap-3">
-                    <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-mcot-orange border border-mcot-orange/20 shadow-sm">
+                <h1 class="text-3xl font-black text-gray-900 dark:text-white font-display flex items-center gap-3 transition-colors">
+                    <div class="w-10 h-10 bg-orange-50 dark:bg-orange-900/20 rounded-xl flex items-center justify-center text-mcot-orange dark:text-orange-400 border border-mcot-orange/20 shadow-sm transition-colors">
                         <i class="fas fa-clipboard-list text-lg"></i>
                     </div>
                     การจองของฉัน
                 </h1>
-                <p class="text-gray-500 text-sm mt-2 font-medium">ประวัติการจองทั้งหมดของคุณ</p>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mt-2 font-medium transition-colors">ประวัติการจองทั้งหมดของคุณ</p>
             </div>
             <a href="{% url 'store:catalog' %}"
                class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-mcot-orange to-orange-500 text-white font-bold px-6 py-3 rounded-xl hover:shadow-lg transition-all shadow-md transform hover:-translate-y-0.5 text-sm uppercase tracking-wider relative overflow-hidden group">
@@ -31,17 +31,17 @@
         </div>
 
         <!-- Tabs -->
-        <div class="flex space-x-1 mb-8 bg-white/60 p-1.5 rounded-2xl w-fit border border-white/60 backdrop-blur-md shadow-sm">
+        <div class="flex space-x-1 mb-8 bg-white/60 dark:bg-slate-800/60 p-1.5 rounded-2xl w-fit border border-white/60 dark:border-slate-700/60 backdrop-blur-md shadow-sm transition-colors">
             <button onclick="filterBookings('all')" id="tab-all" 
                 class="tab-btn px-5 py-2.5 rounded-xl text-sm font-bold transition-all bg-mcot-orange text-white shadow-md">
                 ทั้งหมด
             </button>
             <button onclick="filterBookings('active')" id="tab-active" 
-                class="tab-btn px-5 py-2.5 rounded-xl text-sm font-bold text-gray-500 hover:text-gray-900 transition-all hover:bg-white hover:shadow-sm">
+                class="tab-btn px-5 py-2.5 rounded-xl text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm">
                 กำลังดำเนินการ
             </button>
             <button onclick="filterBookings('history')" id="tab-history" 
-                class="tab-btn px-5 py-2.5 rounded-xl text-sm font-bold text-gray-500 hover:text-gray-900 transition-all hover:bg-white hover:shadow-sm">
+                class="tab-btn px-5 py-2.5 rounded-xl text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm">
                 ประวัติ
             </button>
         </div>
@@ -50,21 +50,21 @@
         {% if bookings %}
         <div class="space-y-6" id="booking-list">
             {% for booking in bookings %}
-            <div class="bg-white/60 backdrop-blur-md p-6 sm:p-8 rounded-[2rem] border border-white/60 shadow-lg hover:shadow-xl hover:border-gray-200 transition-all duration-300 group booking-item relative overflow-hidden"
+            <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md p-6 sm:p-8 rounded-[2rem] border border-white/60 dark:border-slate-700/60 shadow-lg hover:shadow-xl hover:border-gray-200 dark:hover:border-slate-600 transition-all duration-300 group booking-item relative overflow-hidden"
                  data-status="{{ booking.status }}"
                  id="booking-card-{{ booking.id }}">
 
                 <!-- Decorative gradient -->
-                <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-gray-100 to-transparent rounded-bl-full pointer-events-none z-0 opacity-50"></div>
+                <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-gray-100 dark:from-slate-700 to-transparent rounded-bl-full pointer-events-none z-0 opacity-50 transition-colors"></div>
 
                 <div class="relative z-10">
                     <!-- Header Row -->
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                         <div class="flex items-center gap-3">
-                            <span class="text-gray-900 font-black text-xl font-mono">#{{ booking.id }}</span>
+                            <span class="text-gray-900 dark:text-white font-black text-xl font-mono transition-colors">#{{ booking.id }}</span>
                             {% if booking.project_name %}
-                            <span class="text-gray-300 font-bold">—</span>
-                            <span class="text-gray-700 font-extrabold uppercase tracking-widest text-sm bg-gray-200 px-3 py-1 rounded-lg border border-gray-100">{{ booking.project_name }}</span>
+                            <span class="text-gray-300 dark:text-gray-600 font-bold transition-colors">—</span>
+                            <span class="text-gray-700 dark:text-gray-300 font-extrabold uppercase tracking-widest text-sm bg-gray-200 dark:bg-slate-700 px-3 py-1 rounded-lg border border-gray-100 dark:border-slate-600 transition-colors">{{ booking.project_name }}</span>
                             {% endif %}
                         </div>
 
@@ -100,50 +100,50 @@
 
                     <!-- Info Grid -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-                        <div class="bg-gray-200 rounded-xl p-3 border border-gray-100 shadow-inner group-hover:bg-white transition-colors">
-                            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest block mb-1">วันรับของ</span>
-                            <span class="text-gray-900 font-bold font-mono text-sm block">
+                        <div class="bg-gray-200 dark:bg-slate-700/50 rounded-xl p-3 border border-gray-100 dark:border-slate-600 shadow-inner group-hover:bg-white dark:group-hover:bg-slate-700 transition-colors">
+                            <span class="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest block mb-1 transition-colors">วันรับของ</span>
+                            <span class="text-gray-900 dark:text-white font-bold font-mono text-sm block transition-colors">
                                 {{ booking.start_time|date:"d M Y" }}
                             </span>
                         </div>
-                        <div class="bg-gray-200 rounded-xl p-3 border border-gray-100 shadow-inner group-hover:bg-white transition-colors">
-                            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest block mb-1">วันคืนของ</span>
-                            <span class="text-gray-900 font-bold font-mono text-sm block">
+                        <div class="bg-gray-200 dark:bg-slate-700/50 rounded-xl p-3 border border-gray-100 dark:border-slate-600 shadow-inner group-hover:bg-white dark:group-hover:bg-slate-700 transition-colors">
+                            <span class="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest block mb-1 transition-colors">วันคืนของ</span>
+                            <span class="text-gray-900 dark:text-white font-bold font-mono text-sm block transition-colors">
                                 {{ booking.end_time|date:"d M Y" }}
                             </span>
                         </div>
-                        <div class="bg-gray-200 rounded-xl p-3 border border-gray-100 shadow-inner group-hover:bg-white transition-colors">
-                            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest block mb-1">จำนวนวัน</span>
-                            <span class="text-gray-900 font-bold text-sm block">
+                        <div class="bg-gray-200 dark:bg-slate-700/50 rounded-xl p-3 border border-gray-100 dark:border-slate-600 shadow-inner group-hover:bg-white dark:group-hover:bg-slate-700 transition-colors">
+                            <span class="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest block mb-1 transition-colors">จำนวนวัน</span>
+                            <span class="text-gray-900 dark:text-white font-bold text-sm block transition-colors">
                                 {{ booking.rental_days }} วัน
                             </span>
                         </div>
-                        <div class="bg-orange-50/50 rounded-xl p-3 border border-orange-100/50 shadow-inner group-hover:bg-orange-50 transition-colors">
+                        <div class="bg-orange-50/50 dark:bg-orange-900/20 rounded-xl p-3 border border-orange-100/50 dark:border-orange-900/50 shadow-inner group-hover:bg-orange-50 dark:group-hover:bg-orange-900/30 transition-colors">
                             <span class="text-[10px] text-orange-400 font-bold uppercase tracking-widest block mb-1">ราคาประมาณ</span>
-                            <span class="text-mcot-orange font-black text-lg block drop-shadow-sm font-display tracking-tight">
+                            <span class="text-mcot-orange dark:text-orange-400 font-black text-lg block drop-shadow-sm font-display tracking-tight transition-colors">
                                 ฿{{ booking.calculated_total|intcomma }}
                             </span>
                         </div>
                     </div>
 
                     <!-- Items List -->
-                    <div class="border-t border-gray-100 pt-5 mb-5">
+                    <div class="border-t border-gray-100 dark:border-slate-700 pt-5 mb-5 transition-colors">
                         <div class="flex flex-wrap gap-2.5">
                             {% for item in booking.items.all %}
-                            <span class="text-[11px] font-bold bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl shadow-sm cursor-default hover:bg-gray-200 hover:border-gray-300 transition-all">
-                                <i class="fas fa-cube text-gray-400 mr-1.5"></i>
-                                {{ item.product.name }} <span class="text-mcot-orange">× {{ item.quantity }}</span>
+                            <span class="text-[11px] font-bold bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-xl shadow-sm cursor-default hover:bg-gray-200 dark:hover:bg-slate-700 hover:border-gray-300 dark:hover:border-slate-500 transition-all">
+                                <i class="fas fa-cube text-gray-400 dark:text-gray-500 mr-1.5 transition-colors"></i>
+                                {{ item.product.name }} <span class="text-mcot-orange dark:text-orange-400 transition-colors">× {{ item.quantity }}</span>
                             </span>
                             {% endfor %}
                             {% for bs in booking.booked_studios.all %}
-                            <span class="text-[11px] font-bold bg-purple-50 border border-purple-200 text-purple-700 px-3 py-1.5 rounded-xl shadow-sm cursor-default">
+                            <span class="text-[11px] font-bold bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/50 text-purple-700 dark:text-purple-400 px-3 py-1.5 rounded-xl shadow-sm cursor-default transition-colors">
                                 <i class="fas fa-door-open mr-1.5"></i>
                                 {{ bs.studio.name }}
                             </span>
                             {% endfor %}
                             {% for bp in booking.booked_packages.all %}
-                            <span class="text-[11px] font-bold bg-orange-50 border border-orange-200 text-mcot-orange px-3 py-1.5 rounded-xl shadow-sm cursor-default">
-                                <i class="fas fa-box border border-orange-200 mr-1.5"></i>
+                            <span class="text-[11px] font-bold bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/50 text-mcot-orange dark:text-orange-400 px-3 py-1.5 rounded-xl shadow-sm cursor-default transition-colors">
+                                <i class="fas fa-box border border-orange-200 dark:border-orange-800/50 mr-1.5 transition-colors"></i>
                                 {{ bp.package.name }} × {{ bp.quantity }}
                             </span>
                             {% endfor %}
@@ -151,50 +151,50 @@
                     </div>
 
                     <!-- Coordinator & Note -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-gray-100 pt-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-gray-100 dark:border-slate-700 pt-5 transition-colors">
                         
                         <!-- Coordinator -->
                         {% if booking.coordinator %}
-                        <div class="flex items-center gap-4 bg-gray-200 rounded-xl p-3 border border-gray-100">
-                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 border border-blue-100 shadow-inner shrink-0">
+                        <div class="flex items-center gap-4 bg-gray-200 dark:bg-slate-700/50 rounded-xl p-3 border border-gray-100 dark:border-slate-600 transition-colors">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-500 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50 shadow-inner shrink-0 transition-colors">
                                 <i class="fas fa-user-tie text-sm"></i>
                             </div>
                             <div>
-                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">ผู้ประสานงาน</p>
+                                <p class="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest mb-0.5 transition-colors">ผู้ประสานงาน</p>
                                 <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                                    <p class="text-sm text-gray-900 font-extrabold">{{ booking.coordinator.name }}</p>
+                                    <p class="text-sm text-gray-900 dark:text-white font-extrabold transition-colors">{{ booking.coordinator.name }}</p>
                                     {% if booking.coordinator.phone %}
-                                    <span class="text-gray-500 text-xs font-mono">• {{ booking.coordinator.phone }}</span>
+                                    <span class="text-gray-500 dark:text-gray-400 text-xs font-mono transition-colors">• {{ booking.coordinator.phone }}</span>
                                     {% endif %}
                                 </div>
                             </div>
                         </div>
                         {% else %}
-                         <div class="flex items-center gap-4 bg-gray-200 rounded-xl p-3 border border-gray-100 opacity-60">
-                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 border border-gray-300 shadow-inner shrink-0">
+                         <div class="flex items-center gap-4 bg-gray-200 dark:bg-slate-700/50 rounded-xl p-3 border border-gray-100 dark:border-slate-600 opacity-60 transition-colors">
+                            <div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-slate-600 flex items-center justify-center text-gray-400 dark:text-gray-500 border border-gray-300 dark:border-slate-500 shadow-inner shrink-0 transition-colors">
                                 <i class="fas fa-user-clock text-sm"></i>
                             </div>
                             <div>
-                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">ผู้ประสานงาน</p>
-                                <p class="text-sm text-gray-500 font-extrabold">รอการจัดสรร</p>
+                                <p class="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest mb-0.5 transition-colors">ผู้ประสานงาน</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 font-extrabold transition-colors">รอการจัดสรร</p>
                             </div>
                         </div>
                         {% endif %}
 
                         <!-- Note -->
                         {% if booking.note %}
-                        <div class="flex items-start gap-3 bg-gray-200 rounded-xl p-3 border border-gray-100 shadow-inner">
-                            <i class="fas fa-sticky-note mt-1 text-gray-400"></i> 
+                        <div class="flex items-start gap-3 bg-gray-200 dark:bg-slate-700/50 rounded-xl p-3 border border-gray-100 dark:border-slate-600 shadow-inner transition-colors">
+                            <i class="fas fa-sticky-note mt-1 text-gray-400 dark:text-gray-500 transition-colors"></i> 
                             <div>
-                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">หมายเหตุ</p>
-                                <p class="text-xs text-gray-700 font-medium leading-relaxed">{{ booking.note }}</p>
+                                <p class="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest mb-0.5 transition-colors">หมายเหตุ</p>
+                                <p class="text-xs text-gray-700 dark:text-gray-300 font-medium leading-relaxed transition-colors">{{ booking.note }}</p>
                             </div>
                         </div>
                         {% endif %}
                     </div>
 
                     <!-- Actions -->
-                    <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-gray-100 pt-5">
+                    <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-gray-100 dark:border-slate-700 pt-5 transition-colors">
                         <div class="flex items-center gap-2">
                             {% if booking.payment_status == 'paid' %}
                                 <span class="text-xs text-green-600 font-bold flex items-center gap-1.5 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100"><i class="fas fa-check-circle"></i> มัดจำแล้ว</span>
@@ -209,8 +209,8 @@
 
                         <div class="flex gap-2 w-full sm:w-auto">
                             <a href="{% url 'store:booking_detail' booking.id %}" 
-                               class="flex-1 sm:flex-none justify-center text-xs font-bold text-gray-700 bg-white border border-gray-200 hover:bg-gray-200 hover:text-gray-900 px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-sm hover:shadow-md">
-                                <i class="fas fa-eye text-gray-400"></i> 
+                               class="flex-1 sm:flex-none justify-center text-xs font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-sm hover:shadow-md">
+                                <i class="fas fa-eye text-gray-400 dark:text-gray-500 transition-colors"></i> 
                                 {% if booking.status == 'draft' %}
                                     ดูรายละเอียด
                                 {% else %}
@@ -234,14 +234,14 @@
 
         {% else %}
         <!-- Empty State -->
-        <div class="bg-white/50 backdrop-blur-md p-16 text-center max-w-lg mx-auto mt-12 rounded-[3rem] border-2 border-dashed border-gray-300 shadow-lg">
-            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gray-200 border border-gray-200 mb-6 shadow-inner">
-                <i class="fas fa-box-open text-gray-400 text-5xl"></i>
+        <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-md p-16 text-center max-w-lg mx-auto mt-12 rounded-[3rem] border-2 border-dashed border-gray-300 dark:border-slate-600 shadow-lg transition-colors">
+            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gray-200 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 mb-6 shadow-inner transition-colors">
+                <i class="fas fa-box-open text-gray-400 dark:text-gray-500 text-5xl transition-colors"></i>
             </div>
-            <h2 class="text-3xl text-gray-900 font-black mb-4 font-display">ยังไม่มีการจอง</h2>
-            <p class="text-gray-600 text-sm mb-8 leading-relaxed font-medium">ค้นหาอุปกรณ์ที่คุณต้องการ แล้วกดจองเพื่อเริ่มต้นใช้งานระบบ<br>เรามีอุปกรณ์คุณภาพสูงพร้อมให้บริการ</p>
+            <h2 class="text-3xl text-gray-900 dark:text-white font-black mb-4 font-display transition-colors">ยังไม่มีการจอง</h2>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-8 leading-relaxed font-medium transition-colors">ค้นหาอุปกรณ์ที่คุณต้องการ แล้วกดจองเพื่อเริ่มต้นใช้งานระบบ<br>เรามีอุปกรณ์คุณภาพสูงพร้อมให้บริการ</p>
             <a href="{% url 'store:catalog' %}"
-               class="inline-flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white font-bold px-8 py-3.5 rounded-full transition-all shadow-xl transform hover:-translate-y-0.5 duration-200 uppercase tracking-widest text-sm">
+               class="inline-flex items-center justify-center gap-2 bg-gray-900 dark:bg-slate-700 hover:bg-black dark:hover:bg-slate-600 text-white font-bold px-8 py-3.5 rounded-full transition-all shadow-xl transform hover:-translate-y-0.5 duration-200 uppercase tracking-widest text-sm">
                 <i class="fas fa-search mr-2"></i> ดูอุปกรณ์ทั้งหมด
             </a>
         </div>
@@ -254,11 +254,11 @@ function filterBookings(type) {
     // 1. Update Tabs
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('bg-mcot-orange', 'text-white', 'shadow-md');
-        btn.classList.add('text-gray-500', 'hover:text-gray-900', 'hover:bg-white', 'hover:shadow-sm');
+        btn.classList.add('text-gray-500', 'dark:text-gray-400', 'hover:text-gray-900', 'hover:bg-white', 'dark:hover:bg-slate-700', 'dark:hover:text-white', 'hover:shadow-sm');
     });
     
     const activeBtn = document.getElementById('tab-' + type);
-    activeBtn.classList.remove('text-gray-500', 'hover:text-gray-900', 'hover:bg-white', 'hover:shadow-sm');
+    activeBtn.classList.remove('text-gray-500', 'dark:text-gray-400', 'hover:text-gray-900', 'hover:bg-white', 'dark:hover:bg-slate-700', 'dark:hover:text-white', 'hover:shadow-sm');
     activeBtn.classList.add('bg-mcot-orange', 'text-white', 'shadow-md');
     
     // 2. Filter Items

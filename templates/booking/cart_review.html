@@ -5,10 +5,10 @@
 {% block title %}ตรวจสอบรายการ — MCOT Rental Platform{% endblock %}
 
 {% block content %}
-<div class="bg-gray-50 min-h-screen pb-12" x-data="checkoutWizard()">
+<div class="bg-gray-50 dark:bg-slate-900 min-h-screen pb-12 transition-colors duration-300" x-data="checkoutWizard()">
     
     <!-- Wizard Header -->
-    <div class="bg-white border-b border-gray-200 sticky top-20 z-40">
+    <div class="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-20 z-40 transition-colors">
         <div class="container mx-auto px-4 py-4">
             <div class="flex items-center justify-between max-w-4xl mx-auto">
                 <a href="{% url 'store:home' %}" class="flex flex-col items-center gap-2 text-green-500 w-1/4">
@@ -31,7 +31,7 @@
 
                 <div class="flex flex-col items-center gap-2 text-mcot-orange w-1/4">
                     <div class="w-8 h-8 rounded-full bg-mcot-orange text-white flex items-center justify-center font-bold ring-4 ring-orange-50">3</div>
-                    <span class="text-xs font-bold text-gray-900 uppercase tracking-wider hidden md:block">3. ตรวจสอบ</span>
+                    <span class="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider hidden md:block transition-colors">3. ตรวจสอบ</span>
                 </div>
 
                 <div class="h-1 flex-grow bg-gray-200 rounded-full mx-2"></div>
@@ -52,67 +52,67 @@
             <div class="lg:w-2/3 space-y-6">
                 
                 <!-- Section 1: Project & Contact Info -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
-                    <h2 class="text-xl font-extrabold text-gray-900 mb-6 flex items-center gap-3">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-6 lg:p-8 transition-colors">
+                    <h2 class="text-xl font-extrabold text-gray-900 dark:text-white mb-6 flex items-center gap-3 transition-colors">
                         <i class="fas fa-user-circle text-mcot-orange"></i> ข้อมูลผู้ติดต่อและโครงการ
                     </h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">ชื่อผู้ติดต่อ / บริษัท <span class="text-red-500">*</span></label>
-                            <input type="text" x-model="customerName" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-mcot-orange/20 focus:border-mcot-orange outline-none transition-all" placeholder="ชื่อ นามสกุล หรือ บริษัท" required>
+                            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 transition-colors">ชื่อผู้ติดต่อ / บริษัท <span class="text-red-500">*</span></label>
+                            <input type="text" x-model="customerName" class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-mcot-orange/20 focus:border-mcot-orange outline-none transition-all" placeholder="ชื่อ นามสกุล หรือ บริษัท" required>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">เบอร์โทรศัพท์ <span class="text-red-500">*</span></label>
-                            <input type="tel" x-model="customerPhone" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-mcot-orange/20 focus:border-mcot-orange outline-none transition-all" placeholder="08X-XXX-XXXX" required>
+                            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 transition-colors">เบอร์โทรศัพท์ <span class="text-red-500">*</span></label>
+                            <input type="tel" x-model="customerPhone" class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-mcot-orange/20 focus:border-mcot-orange outline-none transition-all" placeholder="08X-XXX-XXXX" required>
                         </div>
                     </div>
 
                     <div class="mb-6">
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">ชื่อโครงการ / งาน</label>
-                        <input type="text" x-model="projectName" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-mcot-orange/20 focus:border-mcot-orange outline-none transition-all" placeholder="ระบุชื่อ Production หรือโครงการ">
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 transition-colors">ชื่อโครงการ / งาน</label>
+                        <input type="text" x-model="projectName" class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-mcot-orange/20 focus:border-mcot-orange outline-none transition-all" placeholder="ระบุชื่อ Production หรือโครงการ">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">หมายเหตุเพิ่มเติม (ถ้ามี)</label>
-                        <textarea x-model="note" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-mcot-orange/20 focus:border-mcot-orange outline-none transition-all" rows="3" placeholder="ระบุข้อกำหนดเพิ่มเติม หรือความต้องการพิเศษ..."></textarea>
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 transition-colors">หมายเหตุเพิ่มเติม (ถ้ามี)</label>
+                        <textarea x-model="note" class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-mcot-orange/20 focus:border-mcot-orange outline-none transition-all" rows="3" placeholder="ระบุข้อกำหนดเพิ่มเติม หรือความต้องการพิเศษ..."></textarea>
                     </div>
                 </div>
 
                 <!-- Section 2: Selected Items (Read Only) -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden transition-colors">
+                    <div class="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-900/50 transition-colors">
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 transition-colors">
                             <i class="fas fa-list text-mcot-orange"></i> รายการที่เลือก
                         </h2>
-                        <a href="{% url 'store:home' %}" class="text-sm font-bold text-blue-600 hover:text-blue-700 hover:underline">แก้ไขรายการ</a>
+                        <a href="{% url 'store:home' %}" class="text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline transition-colors">แก้ไขรายการ</a>
                     </div>
                     
-                    <div class="divide-y divide-gray-100">
+                    <div class="divide-y divide-gray-100 dark:divide-slate-700 transition-colors">
                         <template x-for="item in cartItems" :key="item.id">
-                            <div class="p-6 flex gap-4 hover:bg-gray-50 transition-colors">
-                                <div class="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center shrink-0 border border-gray-200">
-                                    <i class="fas fa-box text-gray-400 text-2xl"></i>
+                            <div class="p-6 flex gap-4 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                                <div class="w-20 h-20 bg-gray-100 dark:bg-slate-900/50 rounded-xl flex items-center justify-center shrink-0 border border-gray-200 dark:border-slate-600 transition-colors">
+                                    <i class="fas fa-box text-gray-400 dark:text-gray-500 text-2xl transition-colors"></i>
                                 </div>
                                 <div class="flex-grow">
                                     <div class="flex justify-between items-start mb-2">
-                                        <h3 class="font-bold text-gray-900 text-lg" x-text="item.name"></h3>
-                                        <p class="font-bold text-gray-900 text-lg" x-text="'฿' + (item.price * item.quantity).toLocaleString()"></p>
+                                        <h3 class="font-bold text-gray-900 dark:text-white text-lg transition-colors" x-text="item.name"></h3>
+                                        <p class="font-bold text-gray-900 dark:text-white text-lg transition-colors" x-text="'฿' + (item.price * item.quantity).toLocaleString()"></p>
                                     </div>
-                                    <div class="flex items-center gap-4 text-sm text-gray-500">
-                                        <p>จำนวน: <span class="font-medium text-gray-900" x-text="item.quantity"></span></p>
+                                    <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 transition-colors">
+                                        <p>จำนวน: <span class="font-medium text-gray-900 dark:text-white transition-colors" x-text="item.quantity"></span></p>
                                         <p>ราคาต่อหน่วย: <span x-text="'฿' + parseInt(item.price).toLocaleString()"></span></p>
                                     </div>
                                     
                                     <!-- Package Sub-items -->
                                     <template x-if="item.type === 'package' && item.package_items && item.package_items.length > 0">
-                                        <div class="mt-3 bg-orange-50 border border-orange-100 rounded-xl p-3">
-                                            <p class="text-[10px] font-bold text-orange-600 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                        <div class="mt-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/50 rounded-xl p-3 transition-colors">
+                                            <p class="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest mb-2 flex items-center gap-1.5 transition-colors">
                                                 <i class="fas fa-box-open"></i> อุปกรณ์ในแพ็กเกจ
                                             </p>
                                             <ul class="space-y-1">
                                                 <template x-for="sub in item.package_items" :key="sub.name">
-                                                    <li class="flex items-center gap-2 text-xs text-gray-700">
+                                                    <li class="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 transition-colors">
                                                         <span class="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0"></span>
                                                         <span class="font-bold text-orange-700 font-mono" x-text="sub.qty + 'x'"></span>
                                                         <span x-text="sub.name"></span>
@@ -125,8 +125,8 @@
                             </div>
                         </template>
                         
-                        <div x-show="cartItems.length === 0" class="p-12 text-center text-gray-500">
-                            <i class="fas fa-shopping-cart text-4xl mb-3 text-gray-300"></i>
+                        <div x-show="cartItems.length === 0" class="p-12 text-center text-gray-500 dark:text-gray-400 transition-colors">
+                            <i class="fas fa-shopping-cart text-4xl mb-3 text-gray-300 dark:text-gray-600 transition-colors"></i>
                             <p>ไม่มีรายการในตะกร้า</p>
                             <a href="{% url 'store:home' %}" class="mt-4 inline-block px-6 py-2 bg-mcot-orange text-white rounded-lg font-bold">กลับไปเลือกสินค้า</a>
                         </div>

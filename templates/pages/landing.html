@@ -8,10 +8,10 @@
 <!-- ============================== -->
 <!-- HERO SECTION                    -->
 <!-- ============================== -->
-<section class="bg-slate-100 border-b border-gray-100 relative overflow-hidden">
+<section class="bg-slate-100 dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 relative overflow-hidden transition-colors duration-300">
     <!-- Light Ambient Orbs Background -->
     <div class="absolute inset-0 z-[0] overflow-hidden pointer-events-none">
-        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-mcot-orange/5 rounded-full blur-[100px]"></div>
+        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-mcot-orange/5 dark:bg-mcot-orange/10 rounded-full blur-[100px]"></div>
         <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px]"></div>
     </div>
     <div class="max-w-[1440px] mx-auto px-6 py-16 lg:py-24 relative z-10">
@@ -19,17 +19,17 @@
 
             <!-- Text -->
             <div class="w-full lg:w-1/2 text-center lg:text-left">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-mcot-orange text-[11px] font-bold tracking-widest uppercase mb-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 dark:bg-mcot-orange/10 border border-orange-100 dark:border-mcot-orange/20 text-mcot-orange text-[11px] font-bold tracking-widest uppercase mb-6">
                     <span class="w-1.5 h-1.5 rounded-full bg-mcot-orange"></span>
                     MCOT Rental Service
                 </div>
 
-                <h1 class="text-4xl lg:text-5xl font-black leading-tight text-gray-900 mb-5">
+                <h1 class="text-4xl lg:text-5xl font-black leading-tight text-gray-900 dark:text-white mb-5 transition-colors">
                     เช่าอุปกรณ์ถ่ายทำ<br>
                     <span class="text-mcot-orange">ระดับมืออาชีพ</span>
                 </h1>
 
-                <p class="text-gray-500 text-base lg:text-lg max-w-md mx-auto lg:mx-0 leading-relaxed mb-8">
+                <p class="text-gray-500 dark:text-gray-400 text-base lg:text-lg max-w-md mx-auto lg:mx-0 leading-relaxed mb-8 transition-colors">
                     บริการเช่าอุปกรณ์ สตูดิโอ และรถ OB จาก อสมท<br class="hidden sm:block">
                     ครบจบในที่เดียว พร้อมทีมซัพพอร์ตตลอด 24 ชม.
                 </p>
@@ -38,8 +38,8 @@
                     <a href="{% url 'store:catalog' %}" class="w-full sm:w-auto px-8 py-3.5 rounded-full bg-mcot-orange text-white font-bold hover:bg-orange-600 transition-colors shadow-md flex items-center justify-center gap-2">
                         <i class="fas fa-th-large text-sm"></i> ดูอุปกรณ์ทั้งหมด
                     </a>
-                    <a href="{% url 'store:contact' %}" class="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white border border-gray-200 text-gray-700 font-bold hover:border-gray-400 transition-colors flex items-center justify-center gap-2">
-                        <i class="fas fa-phone-alt text-sm text-gray-400"></i> ปรึกษาทีมงาน
+                    <a href="{% url 'store:contact' %}" class="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-200 font-bold hover:border-gray-400 dark:hover:border-gray-500 transition-colors flex items-center justify-center gap-2">
+                        <i class="fas fa-phone-alt text-sm text-gray-400 dark:text-gray-500"></i> ปรึกษาทีมงาน
                     </a>
                 </div>
             </div>
@@ -48,15 +48,15 @@
             <div class="w-full lg:w-1/2">
                 <div class="grid grid-cols-2 gap-3">
                     <div class="space-y-3 pt-8">
-                        <div class="rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                        <div class="rounded-2xl overflow-hidden border border-gray-100 dark:border-slate-800 shadow-sm">
                             <img src="https://images.unsplash.com/photo-1598555813354-9493976269eb?auto=format&fit=crop&w=600&q=80" alt="Camera" class="w-full h-44 object-cover">
                         </div>
-                        <div class="rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                        <div class="rounded-2xl overflow-hidden border border-gray-100 dark:border-slate-800 shadow-sm">
                             <img src="https://images.unsplash.com/photo-1589886290885-ad6b92a4a75e?auto=format&fit=crop&w=600&q=80" alt="Lens" class="w-full h-56 object-cover">
                         </div>
                     </div>
                     <div class="space-y-3">
-                        <div class="rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                        <div class="rounded-2xl overflow-hidden border border-gray-100 dark:border-slate-800 shadow-sm">
                             <img src="https://images.unsplash.com/photo-1601506521937-0121a7fc2a6b?auto=format&fit=crop&w=600&q=80" alt="Studio" class="w-full h-56 object-cover">
                         </div>
                         <div class="rounded-2xl bg-gray-900 text-white p-6 flex flex-col justify-center h-44">
@@ -75,24 +75,24 @@
 <!-- ============================== -->
 <!-- STATS BAR                       -->
 <!-- ============================== -->
-<section class="bg-slate-100 border-b border-gray-200">
+<section class="bg-slate-100 dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 transition-colors duration-300">
     <div class="max-w-[1440px] mx-auto px-6 py-10">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0">
-            <div class="text-center md:border-r md:border-gray-200">
+            <div class="text-center md:border-r md:border-gray-200 dark:md:border-slate-800">
                 <div class="text-3xl font-black text-mcot-orange">100+</div>
-                <div class="text-xs text-gray-500 font-bold mt-1">อุปกรณ์พร้อมให้เช่า</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 font-bold mt-1">อุปกรณ์พร้อมให้เช่า</div>
             </div>
-            <div class="text-center md:border-r md:border-gray-200">
+            <div class="text-center md:border-r md:border-gray-200 dark:md:border-slate-800">
                 <div class="text-3xl font-black text-mcot-orange">5</div>
-                <div class="text-xs text-gray-500 font-bold mt-1">สตูดิโอมาตรฐาน</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 font-bold mt-1">สตูดิโอมาตรฐาน</div>
             </div>
-            <div class="text-center md:border-r md:border-gray-200">
+            <div class="text-center md:border-r md:border-gray-200 dark:md:border-slate-800">
                 <div class="text-3xl font-black text-mcot-orange">24 ชม.</div>
-                <div class="text-xs text-gray-500 font-bold mt-1">ศูนย์บริการ</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 font-bold mt-1">ศูนย์บริการ</div>
             </div>
             <div class="text-center">
                 <div class="text-3xl font-black text-mcot-orange">ISO</div>
-                <div class="text-xs text-gray-500 font-bold mt-1">9001:2015 Certified</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 font-bold mt-1">9001:2015 Certified</div>
             </div>
         </div>
     </div>
@@ -101,46 +101,46 @@
 <!-- ============================== -->
 <!-- SERVICES                        -->
 <!-- ============================== -->
-<section class="bg-[#f8f9fa] py-16 lg:py-20">
+<section class="bg-[#f8f9fa] dark:bg-slate-800 py-16 lg:py-20 transition-colors duration-300">
     <div class="max-w-[1200px] mx-auto px-6">
 
         <div class="text-center mb-12">
             <p class="text-xs font-bold text-mcot-orange tracking-widest uppercase mb-2">Services</p>
-            <h2 class="text-2xl lg:text-3xl font-black text-gray-900">บริการของเรา</h2>
+            <h2 class="text-2xl lg:text-3xl font-black text-gray-900 dark:text-white">บริการของเรา</h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             <!-- 1: Equipment -->
-            <a href="{% url 'store:catalog' %}#section-equipment" class="group block bg-white rounded-2xl border border-gray-100 p-6 hover:border-orange-200 hover:shadow-lg transition-all">
-                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+            <a href="{% url 'store:catalog' %}#section-equipment" class="group block bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-700 p-6 hover:border-orange-200 dark:hover:border-mcot-orange hover:shadow-lg transition-all">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-500 dark:text-blue-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
                     <i class="fas fa-camera"></i>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">อุปกรณ์ถ่ายทำ</h3>
-                <p class="text-sm text-gray-500 leading-relaxed mb-4">กล้องวิดีโอ เลนส์ ไฟสตูดิโอ เครื่องบันทึกเสียง และอุปกรณ์อื่นๆ จากแบรนด์ชั้นนำ พร้อมการดูแลรักษาอย่างดี</p>
-                <span class="text-sm font-bold text-blue-500 flex items-center gap-1.5 group-hover:gap-2.5 transition-all">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">อุปกรณ์ถ่ายทำ</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">กล้องวิดีโอ เลนส์ ไฟสตูดิโอ เครื่องบันทึกเสียง และอุปกรณ์อื่นๆ จากแบรนด์ชั้นนำ พร้อมการดูแลรักษาอย่างดี</p>
+                <span class="text-sm font-bold text-blue-500 dark:text-blue-400 flex items-center gap-1.5 group-hover:gap-2.5 transition-all">
                     เลือกดูอุปกรณ์ <i class="fas fa-arrow-right text-xs"></i>
                 </span>
             </a>
 
             <!-- 2: Studios -->
-            <a href="{% url 'store:catalog' %}#section-studios" class="group block bg-white rounded-2xl border border-gray-100 p-6 hover:border-purple-200 hover:shadow-lg transition-all">
-                <div class="w-12 h-12 rounded-xl bg-purple-50 text-mcot-purple flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+            <a href="{% url 'store:catalog' %}#section-studios" class="group block bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-700 p-6 hover:border-purple-200 dark:hover:border-mcot-purple hover:shadow-lg transition-all">
+                <div class="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-900/40 text-mcot-purple dark:text-purple-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
                     <i class="fas fa-building"></i>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">สตูดิโอ</h3>
-                <p class="text-sm text-gray-500 leading-relaxed mb-4">สตูดิโอถ่ายทำหลากหลายขนาด พร้อมระบบแสง สี เสียง ห้องควบคุม และสิ่งอำนวยความสะดวกครบครัน</p>
-                <span class="text-sm font-bold text-mcot-purple flex items-center gap-1.5 group-hover:gap-2.5 transition-all">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">สตูดิโอ</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">สตูดิโอถ่ายทำหลากหลายขนาด พร้อมระบบแสง สี เสียง ห้องควบคุม และสิ่งอำนวยความสะดวกครบครัน</p>
+                <span class="text-sm font-bold text-mcot-purple dark:text-purple-400 flex items-center gap-1.5 group-hover:gap-2.5 transition-all">
                     เลือกดูสตูดิโอ <i class="fas fa-arrow-right text-xs"></i>
                 </span>
             </a>
 
             <!-- 3: OB Van -->
-            <a href="{% url 'store:catalog' %}#section-services" class="group block bg-white rounded-2xl border border-gray-100 p-6 hover:border-orange-200 hover:shadow-lg transition-all">
-                <div class="w-12 h-12 rounded-xl bg-orange-50 text-mcot-orange flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+            <a href="{% url 'store:catalog' %}#section-services" class="group block bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-700 p-6 hover:border-orange-200 dark:hover:border-mcot-orange hover:shadow-lg transition-all">
+                <div class="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-900/40 text-mcot-orange flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
                     <i class="fas fa-truck-moving"></i>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">ถ่ายทอดสด / OB Van</h3>
-                <p class="text-sm text-gray-500 leading-relaxed mb-4">รถถ่ายทอดสด 4K พร้อมทีมวิศวกร รองรับงานอีเวนต์ คอนเสิร์ต กีฬา และรายการสด ทั่วประเทศ</p>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">ถ่ายทอดสด / OB Van</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">รถถ่ายทอดสด 4K พร้อมทีมวิศวกร รองรับงานอีเวนต์ คอนเสิร์ต กีฬา และรายการสด ทั่วประเทศ</p>
                 <span class="text-sm font-bold text-mcot-orange flex items-center gap-1.5 group-hover:gap-2.5 transition-all">
                     ติดต่อสอบถาม <i class="fas fa-arrow-right text-xs"></i>
                 </span>
@@ -152,38 +152,38 @@
 <!-- ============================== -->
 <!-- HOW IT WORKS                    -->
 <!-- ============================== -->
-<section class="bg-slate-50 py-16 lg:py-20 border-y border-gray-100">
+<section class="bg-slate-50 dark:bg-slate-900 py-16 lg:py-20 border-y border-gray-100 dark:border-slate-800 transition-colors duration-300">
     <div class="max-w-[1200px] mx-auto px-6">
 
         <div class="text-center mb-12">
             <p class="text-xs font-bold text-mcot-orange tracking-widest uppercase mb-2">How it Works</p>
-            <h2 class="text-2xl lg:text-3xl font-black text-gray-900">เช่าง่าย 4 ขั้นตอน</h2>
+            <h2 class="text-2xl lg:text-3xl font-black text-gray-900 dark:text-white">เช่าง่าย 4 ขั้นตอน</h2>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Step 1 -->
             <div class="text-center">
-                <div class="w-14 h-14 rounded-full bg-white border-2 border-mcot-orange text-mcot-orange flex items-center justify-center text-lg font-black mx-auto mb-4 shadow-sm">1</div>
-                <h4 class="font-bold text-gray-900 mb-1.5">เลือกอุปกรณ์</h4>
-                <p class="text-sm text-gray-500">เลือกอุปกรณ์ที่ต้องการจากแคตตาล็อกออนไลน์</p>
+                <div class="w-14 h-14 rounded-full bg-white dark:bg-slate-800 border-2 border-mcot-orange text-mcot-orange flex items-center justify-center text-lg font-black mx-auto mb-4 shadow-sm transition-colors">1</div>
+                <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-1.5">เลือกอุปกรณ์</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400">เลือกอุปกรณ์ที่ต้องการจากแคตตาล็อกออนไลน์</p>
             </div>
             <!-- Step 2 -->
             <div class="text-center">
-                <div class="w-14 h-14 rounded-full bg-white border-2 border-mcot-orange text-mcot-orange flex items-center justify-center text-lg font-black mx-auto mb-4 shadow-sm">2</div>
-                <h4 class="font-bold text-gray-900 mb-1.5">กำหนดวันเช่า</h4>
-                <p class="text-sm text-gray-500">ระบุวันรับ-คืนอุปกรณ์ตามแผนงาน</p>
+                <div class="w-14 h-14 rounded-full bg-white dark:bg-slate-800 border-2 border-mcot-orange text-mcot-orange flex items-center justify-center text-lg font-black mx-auto mb-4 shadow-sm transition-colors">2</div>
+                <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-1.5">กำหนดวันเช่า</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400">ระบุวันรับ-คืนอุปกรณ์ตามแผนงาน</p>
             </div>
             <!-- Step 3 -->
             <div class="text-center">
-                <div class="w-14 h-14 rounded-full bg-white border-2 border-mcot-orange text-mcot-orange flex items-center justify-center text-lg font-black mx-auto mb-4 shadow-sm">3</div>
-                <h4 class="font-bold text-gray-900 mb-1.5">ชำระมัดจำ</h4>
-                <p class="text-sm text-gray-500">มัดจำ 30% เพื่อยืนยันการจอง</p>
+                <div class="w-14 h-14 rounded-full bg-white dark:bg-slate-800 border-2 border-mcot-orange text-mcot-orange flex items-center justify-center text-lg font-black mx-auto mb-4 shadow-sm transition-colors">3</div>
+                <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-1.5">ชำระมัดจำ</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400">มัดจำ 30% เพื่อยืนยันการจอง</p>
             </div>
             <!-- Step 4 -->
             <div class="text-center">
-                <div class="w-14 h-14 rounded-full bg-white border-2 border-mcot-orange text-mcot-orange flex items-center justify-center text-lg font-black mx-auto mb-4 shadow-sm">4</div>
-                <h4 class="font-bold text-gray-900 mb-1.5">รับอุปกรณ์</h4>
-                <p class="text-sm text-gray-500">รับอุปกรณ์ที่สำนักงาน อสมท ตามวันที่กำหนด</p>
+                <div class="w-14 h-14 rounded-full bg-white dark:bg-slate-800 border-2 border-mcot-orange text-mcot-orange flex items-center justify-center text-lg font-black mx-auto mb-4 shadow-sm transition-colors">4</div>
+                <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-1.5">รับอุปกรณ์</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400">รับอุปกรณ์ที่สำนักงาน อสมท ตามวันที่กำหนด</p>
             </div>
         </div>
     </div>
@@ -192,42 +192,42 @@
 <!-- ============================== -->
 <!-- WHY CHOOSE US                   -->
 <!-- ============================== -->
-<section class="bg-[#f8f9fa] py-16 lg:py-20">
+<section class="bg-[#f8f9fa] dark:bg-slate-800 py-16 lg:py-20 transition-colors duration-300">
     <div class="max-w-[1200px] mx-auto px-6">
 
         <div class="text-center mb-12">
             <p class="text-xs font-bold text-mcot-orange tracking-widest uppercase mb-2">Why MCOT</p>
-            <h2 class="text-2xl lg:text-3xl font-black text-gray-900">ทำไมต้องเช่ากับเรา</h2>
+            <h2 class="text-2xl lg:text-3xl font-black text-gray-900 dark:text-white">ทำไมต้องเช่ากับเรา</h2>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
-                <div class="w-10 h-10 rounded-lg bg-green-50 text-green-500 flex items-center justify-center mb-3">
+            <div class="bg-gray-50 dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-700 transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-900/40 text-green-500 dark:text-green-400 flex items-center justify-center mb-3">
                     <i class="fas fa-check-circle"></i>
                 </div>
-                <h4 class="font-bold text-gray-900 text-sm mb-1">อุปกรณ์คุณภาพ</h4>
-                <p class="text-xs text-gray-500 leading-relaxed">ตรวจสอบก่อนส่งมอบทุกครั้ง มีทีมช่างดูแลตลอด</p>
+                <h4 class="font-bold text-gray-900 dark:text-gray-100 text-sm mb-1">อุปกรณ์คุณภาพ</h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">ตรวจสอบก่อนส่งมอบทุกครั้ง มีทีมช่างดูแลตลอด</p>
             </div>
-            <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
-                <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center mb-3">
+            <div class="bg-gray-50 dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-700 transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-500 dark:text-blue-400 flex items-center justify-center mb-3">
                     <i class="fas fa-shield-alt"></i>
                 </div>
-                <h4 class="font-bold text-gray-900 text-sm mb-1">ประกันภัย</h4>
-                <p class="text-xs text-gray-500 leading-relaxed">อุปกรณ์ทุกชิ้นมีประกัน คุ้มครองระหว่างการเช่า</p>
+                <h4 class="font-bold text-gray-900 dark:text-gray-100 text-sm mb-1">ประกันภัย</h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">อุปกรณ์ทุกชิ้นมีประกัน คุ้มครองระหว่างการเช่า</p>
             </div>
-            <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
-                <div class="w-10 h-10 rounded-lg bg-orange-50 text-mcot-orange flex items-center justify-center mb-3">
+            <div class="bg-gray-50 dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-700 transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-900/40 text-mcot-orange flex items-center justify-center mb-3">
                     <i class="fas fa-headset"></i>
                 </div>
-                <h4 class="font-bold text-gray-900 text-sm mb-1">ซัพพอร์ต 24 ชม.</h4>
-                <p class="text-xs text-gray-500 leading-relaxed">ทีมงานพร้อมให้บริการตลอด มีปัญหาโทรหาได้ทันที</p>
+                <h4 class="font-bold text-gray-900 dark:text-gray-100 text-sm mb-1">ซัพพอร์ต 24 ชม.</h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">ทีมงานพร้อมให้บริการตลอด มีปัญหาโทรหาได้ทันที</p>
             </div>
-            <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
-                <div class="w-10 h-10 rounded-lg bg-purple-50 text-mcot-purple flex items-center justify-center mb-3">
+            <div class="bg-gray-50 dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-700 transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-900/40 text-mcot-purple dark:text-purple-400 flex items-center justify-center mb-3">
                     <i class="fas fa-certificate"></i>
                 </div>
-                <h4 class="font-bold text-gray-900 text-sm mb-1">มาตรฐาน ISO</h4>
-                <p class="text-xs text-gray-500 leading-relaxed">ระบบงานได้มาตรฐาน ISO 9001:2015 เชื่อถือได้</p>
+                <h4 class="font-bold text-gray-900 dark:text-gray-100 text-sm mb-1">มาตรฐาน ISO</h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">ระบบงานได้มาตรฐาน ISO 9001:2015 เชื่อถือได้</p>
             </div>
         </div>
     </div>

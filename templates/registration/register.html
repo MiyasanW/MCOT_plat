@@ -11,18 +11,18 @@
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-mcot-orange to-mcot-purple mb-4 shadow-lg shadow-mcot-orange/20 border border-white/50">
                 <i class="fas fa-user-plus text-white text-2xl"></i>
             </div>
-            <h1 class="text-3xl font-extrabold text-gray-900 font-display drop-shadow-sm">ลงทะเบียนบัญชีใหม่</h1>
-            <p class="text-gray-600 text-sm mt-2 font-medium">สร้างบัญชีผู้ใช้งานเพื่อเริ่มการจอง</p>
+            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white font-display drop-shadow-sm transition-colors">ลงทะเบียนบัญชีใหม่</h1>
+            <p class="text-gray-600 dark:text-gray-300 text-sm mt-2 font-medium transition-colors">สร้างบัญชีผู้ใช้งานเพื่อเริ่มการจอง</p>
         </div>
 
         <!-- Register Card -->
-        <div class="bg-white/60 backdrop-blur-xl shadow-2xl border border-white/60 rounded-3xl p-8 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100/50 to-transparent rounded-bl-full pointer-events-none"></div>
+        <div class="bg-white/60 dark:bg-slate-800/70 backdrop-blur-xl shadow-2xl border border-white/60 dark:border-slate-700/70 rounded-3xl p-6 sm:p-8 relative overflow-hidden transition-colors">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100/50 dark:from-purple-900/20 to-transparent rounded-bl-full pointer-events-none"></div>
             <form method="post" class="space-y-5 relative z-10">
                 {% csrf_token %}
 
                 {% if form.errors %}
-                <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm shadow-sm">
+                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/40 text-red-600 dark:text-red-300 px-4 py-3 rounded-xl text-sm break-words shadow-sm transition-colors">
                     <p class="font-bold mb-1"><i class="fas fa-exclamation-triangle mr-1"></i> เกิดข้อผิดพลาด</p>
                     {{ form.non_field_errors }}
                 </div>
@@ -32,38 +32,38 @@
                 <div class="mb-4">
                     {% if field.field.widget.input_type == 'checkbox' %}
                     <!-- Checkbox Style -->
-                    <div class="flex items-start gap-3 p-3 rounded-xl bg-white/50 border border-gray-200 hover:bg-white transition-colors shadow-sm">
+                    <div class="flex items-start gap-3 p-3 rounded-xl bg-white/50 dark:bg-slate-900/40 border border-gray-200 dark:border-slate-600 hover:bg-white dark:hover:bg-slate-900/70 transition-colors shadow-sm">
                         <div class="flex h-6 items-center">
                             {{ field }}
                         </div>
                         <div class="text-sm">
-                            <label for="{{ field.id_for_label }}" class="font-bold text-gray-700">
+                            <label for="{{ field.id_for_label }}" class="font-bold text-gray-700 dark:text-gray-200 transition-colors">
                                 {{ field.label|safe }}
                             </label>
                             {% if field.help_text %}
-                            <p class="text-gray-500 text-[11px] mt-1">{{ field.help_text|safe }}</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-[11px] mt-1 break-words transition-colors">{{ field.help_text|safe }}</p>
                             {% endif %}
                         </div>
                     </div>
                     {% else %}
                     <!-- Normal Input Style -->
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
+                    <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2 transition-colors" for="{{ field.id_for_label }}">
                         {{ field.label }}
                     </label>
                     <input type="{{ field.field.widget.input_type|default:'text' }}" 
                            name="{{ field.name }}" 
                            id="{{ field.id_for_label }}"
                            value="{{ field.value|default:'' }}"
-                           class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-mcot-orange/50 focus:border-mcot-orange/50 outline-none transition-all shadow-sm"
+                           class="w-full bg-white/50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-mcot-orange/50 focus:border-mcot-orange/50 outline-none transition-all shadow-sm"
                            {% if field.field.required %}required{% endif %}>
                     
                     {% if field.help_text %}
-                    <div class="text-[11px] text-gray-500 mt-2">{{ field.help_text|safe }}</div>
+                    <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-2 break-words transition-colors">{{ field.help_text|safe }}</div>
                     {% endif %}
                     {% endif %}
                     
                     {% for error in field.errors %}
-                    <p class="text-red-400 text-xs mt-1"><i class="fas fa-exclamation-circle mr-1"></i> {{ error }}</p>
+                    <p class="text-red-400 text-xs mt-1 break-words"><i class="fas fa-exclamation-circle mr-1"></i> {{ error }}</p>
                     {% endfor %}
                 </div>
                 {% endfor %}
@@ -76,14 +76,13 @@
             </form>
 
             <!-- Footer Links -->
-            <div class="mt-8 text-center text-sm text-gray-600 relative z-10">
-                <div class="h-px w-full bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4"></div>
+            <div class="mt-8 text-center text-sm text-gray-600 dark:text-gray-300 relative z-10 transition-colors">
+                <div class="h-px w-full bg-gradient-to-r from-transparent via-gray-200 dark:via-slate-600 to-transparent my-4"></div>
                 <p>มีบัญชีอยู่แล้ว? 
                     <a href="{% url 'login' %}" class="text-mcot-orange hover:text-orange-600 transition-colors font-bold ml-1">เข้าสู่ระบบ</a>
                 </p>
             </div>
         </div>
-    </div>
     </div>
 </div>
 
@@ -95,24 +94,24 @@
     <!-- Modal Panel -->
     <div class="fixed inset-0 z-10 overflow-y-auto">
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <div class="relative transform overflow-hidden rounded-2xl bg-white border border-gray-200 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-4xl">
+            <div class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-4xl">
                 
                 <!-- Header -->
-                <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                    <h3 class="text-xl font-bold text-gray-900">ข้อกำหนดและเงื่อนไขการใช้งาน</h3>
-                    <button onclick="closeTOSModal()" class="text-gray-400 hover:text-gray-900 transition-colors">
+                <div class="bg-gray-50 dark:bg-slate-900/40 px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between transition-colors">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white transition-colors">ข้อกำหนดและเงื่อนไขการใช้งาน</h3>
+                    <button onclick="closeTOSModal()" class="text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors">
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
                 
                 <!-- Content -->
-                <div class="px-6 py-6 max-h-[60vh] overflow-y-auto custom-scrollbar text-gray-700 bg-white">
+                <div class="px-6 py-6 max-h-[60vh] overflow-y-auto custom-scrollbar text-gray-700 dark:text-gray-200 bg-white dark:bg-slate-800 transition-colors">
                     {% include 'pages/terms_partial.html' %}
                 </div>
                 
                 <!-- Footer -->
-                <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
-                    <button onclick="closeTOSModal()" class="px-6 py-2 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors shadow-sm bg-white">
+                <div class="bg-gray-50 dark:bg-slate-900/40 px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-3 transition-colors">
+                    <button onclick="closeTOSModal()" class="px-6 py-2 rounded-xl border border-gray-300 dark:border-slate-600 text-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white transition-colors shadow-sm bg-white dark:bg-slate-800">
                         ปิด
                     </button>
                     <button onclick="acceptTOS()" class="px-6 py-2 rounded-xl bg-mcot-orange text-white hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30">

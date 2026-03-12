@@ -183,6 +183,8 @@ def create_booking_api(request):
     try:
         payload = json.loads(request.body)
         cart_items = payload.get('items', [])
+        with open("/tmp/cart_log.txt", "a") as f:
+            f.write(f"CART ITEMS: {cart_items}\n")
         
         phone = payload.get('customer_phone') or payload.get('phone')
         if phone and not re.match(r'^[0-9\-\+\s\(\)]+$', phone):

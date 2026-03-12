@@ -3,7 +3,6 @@ import logging
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.utils import timezone
-from django.shortcuts import get_object_or_404
 from datetime import timedelta
 
 logger = logging.getLogger(__name__)
@@ -99,8 +98,11 @@ class BookingService:
                     if item_type == 'studio' or str(raw_id).startswith('studio_'):
                         studio_id = str(raw_id).replace('studio_', '')
                         
-                        # Lock Studio Row
-                        studio_obj = get_object_or_404(Studio.objects.select_for_update(), pk=studio_id)
+                        # Lock Studio row if it exists; stale cart IDs should be a user-facing conflict, not 500
+                        studio_obj = Studio.objects.select_for_update().filter(pk=studio_id).first()
+                        if not studio_obj:
+                            error_messages.append(f"ไม่พบสตูดิโอที่เลือก (ID: {raw_id}) ข้อมูลตะกร้าอาจไม่อัปเดต กรุณาลบรายการแล้วเลือกใหม่")
+                            continue
 
                         # Check Availability
                         is_valid, conflict = AvailabilityService.check_resource_overlap(
@@ -121,8 +123,11 @@ class BookingService:
                     elif item_type == 'package' or str(raw_id).startswith('pkg_'):
                         pkg_id = str(raw_id).replace('pkg_', '')
                         
-                        # Lock Package Row
-                        package_obj = get_object_or_404(Package.objects.select_for_update(), pk=pkg_id)
+                        # Lock Package row if it exists; stale cart IDs should be a user-facing conflict, not 500
+                        package_obj = Package.objects.select_for_update().filter(pk=pkg_id).first()
+                        if not package_obj:
+                            error_messages.append(f"ไม่พบแพ็กเกจที่เลือก (ID: {raw_id}) ข้อมูลตะกร้าอาจไม่อัปเดต กรุณาลบรายการแล้วเลือกใหม่")
+                            continue
                         
                         # Check Availability
                         is_valid, msg = AvailabilityService.check_package_availability(
@@ -154,9 +159,12 @@ class BookingService:
                     elif item_type == 'service' or str(raw_id).startswith('srv_'):
                         svc_id = str(raw_id).replace('srv_', '').replace('svc_', '')
                         
-                        # Lock Service Row
+                        # Lock Service row if it exists; stale cart IDs should be a user-facing conflict, not 500
                         from apps.store.models import ServiceOffer, BookingServiceOffer
-                        service_obj = get_object_or_404(ServiceOffer.objects.select_for_update(), pk=svc_id)
+                        service_obj = ServiceOffer.objects.select_for_update().filter(pk=svc_id).first()
+                        if not service_obj:
+                            error_messages.append(f"ไม่พบบริการที่เลือก (ID: {raw_id}) ข้อมูลตะกร้าอาจไม่อัปเดต กรุณาลบรายการแล้วเลือกใหม่")
+                            continue
                         
                         # Services usually don't have strict physical overlap since it's a category of work.
                         # If a capacity check is needed later, it can be added here.
@@ -170,10 +178,13 @@ class BookingService:
 
                     # --- Case 4: Product (Default) ---
                     else:
-                        product_id = raw_id
+                        product_id = str(raw_id).replace('product_', '')
                         
                         # --- CRITICAL: LOCK PRODUCT ROW ---
-                        product_obj = get_object_or_404(Product.objects.select_for_update(), id=product_id)
+                        product_obj = Product.objects.select_for_update().filter(id=product_id).first()
+                        if not product_obj:
+                            error_messages.append(f"ไม่พบสินค้าที่เลือก (ID: {raw_id}) ข้อมูลตะกร้าอาจไม่อัปเดต กรุณาลบรายการแล้วเลือกใหม่")
+                            continue
                         
                         # Check Availability
                         is_valid, msg = AvailabilityService.check_availability(

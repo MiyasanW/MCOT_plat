@@ -1,58 +1,69 @@
-# 🤖 AI Context: MCOT Rental Platform
+# AI Context: MCOT Rental Platform (Updated)
 
-**Welcome, next AI assistant!** Please read this document first to quickly understand the project context, stack, and recent updates.
+This file is a practical handoff note for the next AI pass.
 
-## 📌 Project Overview
+## Project Snapshot
 
-- **Name**: MCOT Rental Platform
-- **Purpose**: A comprehensive rental system for MCOT (บมจ. อสมท) managing production equipment, studios, packages, and OB services. It handles the entire flow: cart selection, checking availability, booking, quotation generation, payment confirmation, and equipment handover.
-- **Git Branch**: Currently working and deploying from the `v2` branch.
+- Name: MCOT Rental Platform
+- Stack: Django 4.2, Python 3.9, django-allauth, Tailwind via CDN, Alpine.js
+- Main domain: equipment/studio/package booking, quotation flow, payment confirmation
+- Cart source of truth: localStorage key `mcot_cart`
 
-## 🛠 Tech Stack
+## Current Truth (March 2026)
 
-- **Backend**: Python 3.9+ / Django 4.2.27
-- **Database**:
-  - **Production (VPS)**: PostgreSQL 16
-  - **Local Development**: SQLite (`db_mock.sqlite3`)
-  - Configured seamlessly using `dj-database-url` in `config/settings.py`.
-- **Authentication**: `django-allauth` configured for Google OAuth2 Login.
-- **Frontend**: HTML Templates, Tailwind CSS (via CDN), Alpine.js (for interactivity like dropdowns).
-- **PDF Generation**: `xhtml2pdf` (used for Generating Quotations and Equipment Sheets).
-- **Other Key Packages**: `django-simple-history`, `django-import-export`, `django-filter`, `crispy-bootstrap5`.
+### Booking/Backend Status
 
-## 🚀 Recent Major Updates (March 2026)
+- The previous checkout crash (`No Product matches the given query`) was addressed.
+- Missing/stale cart item IDs now return a user-facing conflict/validation response instead of a system-level crash.
+- Package booking behavior was changed to allow standalone package booking even when no `PackageItem` rows exist.
+- Regression tests were added for:
+  - missing product ID handling
+  - empty package booking success
 
-1. **Quotation Flow & Email System**:
-   - Added functionality for Staff to generate Quoation PDFs (`ใบเสนอราคา`) and email them directly to customers as attachments.
-   - The mail backend defaults to Gmail SMTP (configured via environment variables).
-2. **PostgreSQL Migration**:
-   - Moved away from SQLite for production. The VPS now fully runs on PostgreSQL.
-   - Local DB dumped to `data.json` and loaded into the VPS database successfully (2000+ objects).
-3. **Navbar Redesign**:
-   - Removed deep dropdowns in favor of a "Flat Pill" navigation design.
-   - Now features a prominent gradient "ALL EQUIPMENT" button alongside color-coded sub-categories (Equipment, Packages, OB/Services, Studios) with FontAwesome icons.
-4. **Smart Notification Polling**:
-   - Integrated the Page Visibility API in `templates/base.html` to pause background notification polling when the browser tab is hidden, drastically reducing unnecessary API calls.
+### Frontend/Theming Status
 
-## 🖥 Deployment & Server Info
+- Dark mode coverage has been expanded across auth pages and key customer-facing pages.
+- Mobile-first policy is now the default expectation for UI changes.
+- Additional responsive fixes were applied to reduce overlap/overflow on mobile, especially around:
+  - hero blocks
+  - sticky bars/nav
+  - fixed bottom action bars
+  - long text wrapping in auth forms
 
-- **VPS IP**: `43.173.251.244`
-- **SSH Port**: `8022`
-- **User**: `ubuntu`
-- **SSH Key**: `~/.ssh/id_ed25519_mcot` (Set up for passwordless login)
-- **Path on VPS**: `/home/ubuntu/MCOT_Rental_Platform`
-- **Virtual Env on VPS**: `venv_new`
-- **Running State**: Currently running in the background via `nohup python3 manage.py runserver 0.0.0.0:8000 &`.
-- **Deployment Script**: `deploy_to_vps.sh` (Pushes local `v2` branch to GitHub, SSHs into VPS, pulls `v2` branch, runs migrations).
+### Repository Hygiene Status
 
-## 📂 Key Files & Logic
+- Removed unneeded local artifacts and migration leftovers from git tracking.
+- Files removed from index (kept locally where needed):
+  - `.vscode/settings.json`
+  - `db.sqlite3`
+  - `db_mock.sqlite3`
+  - `deploy_to_vps.sh`
+- Unused root clutter was cleaned (e.g., temporary markdown/presentation/package files from prior migration context).
 
-- **`config/settings.py`**: Contains `dj-database-url` config, Allauth settings, and Email SMTP logic.
-- **`apps/store/services/notification_service.py`**: Handles sending emails with PDF attachments.
-- **`apps/store/views/staff.py`**: Contains the logic for the Staff Dashboard, PDF generation (`send_quotation` action), and state management.
-- **`templates/base.html`**: Core layout, containing the new Flat Pill Navbar and smart notification polling script.
-- **`templates/booking/pdf/`**: Contains the HTML templates used by `xhtml2pdf` to generate documents (`quotation.html`, `equipment_sheet.html`).
+## Important Working Rules
 
----
+1. Treat this repo as mobile-first by default.
+2. Prevent regression when touching booking or auth flows.
+3. Do not re-track local DB/editor artifacts.
+4. Keep UI edits consistent with current dark/light design language.
 
-**Next Steps for AI**: Start by reviewing the user's new request. If debugging the database, test locally against `db_mock.sqlite3` first before SSHing into the VPS to interact with PostgreSQL.
+## Key Files (High Impact)
+
+- `apps/store/views/booking.py`
+- `apps/store/services/booking_service.py`
+- `apps/store/services/availability.py`
+- `templates/base.html`
+- `templates/booking/*`
+- `templates/store/*`
+- `templates/account/*` and `templates/registration/*`
+
+## Quick Validation Commands
+
+- `python3 manage.py check`
+- `python3 manage.py test apps.store.tests_auth -v 1`
+
+## Notes for Next AI Pass
+
+- Assume there may be many modified files in a dirty worktree; never reset unrelated user work.
+- If user asks for more cleanup, run `git ls-files -ci --exclude-standard` first to find tracked files that should be ignored.
+- Prioritize bug-risk review first, visual polish second.

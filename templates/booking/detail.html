@@ -9,65 +9,65 @@
     <div class="max-w-5xl mx-auto px-4">
 
         <!-- Back link -->
-        <a href="{% url 'store:my_bookings' %}" class="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-mcot-orange transition-colors font-bold uppercase tracking-widest mb-5">
+        <a href="{% url 'store:my_bookings' %}" class="inline-flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 hover:text-mcot-orange transition-colors font-bold uppercase tracking-widest mb-5">
             <i class="fas fa-arrow-left text-[10px]"></i> กลับไปรายการจอง
         </a>
 
         <!-- ==================== -->
         <!-- BOOKING HEADER CARD  -->
         <!-- ==================== -->
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-5">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden mb-5">
             <!-- Top color bar -->
             <div class="h-1 bg-gradient-to-r from-mcot-orange to-orange-400"></div>
             
             <div class="p-5 md:p-6">
                 <!-- Title Row -->
                 <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
-                    <h1 class="text-2xl md:text-3xl font-black text-gray-900 font-display">Booking #{{ booking.id }}</h1>
+                    <h1 class="text-2xl md:text-3xl font-black text-gray-900 dark:text-white font-display">Booking #{{ booking.id }}</h1>
                     {% if booking.status == 'draft' %}
-                    <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-600 font-bold border border-blue-200 text-xs flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span> รอตรวจสอบ
+                    <span class="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 font-bold border border-blue-200 dark:border-blue-800/50 text-xs flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-50 dark:bg-blue-900/200 animate-pulse"></span> รอตรวจสอบ
                     </span>
                     {% elif booking.payment_status == 'paid' %}
-                    <span class="px-3 py-1 rounded-full bg-green-50 text-green-600 font-bold border border-green-200 text-xs flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> ชำระแล้ว
+                    <span class="px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 font-bold border border-green-200 dark:border-green-800/50 text-xs flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-50 dark:bg-green-900/200"></span> ชำระแล้ว
                     </span>
                     {% elif booking.payment_status == 'pending' %}
-                    <span class="px-3 py-1 rounded-full bg-yellow-50 text-yellow-600 font-bold border border-yellow-200 text-xs flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></span> รอตรวจสอบสลิป
+                    <span class="px-3 py-1 rounded-full bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 font-bold border border-yellow-200 dark:border-yellow-800/50 text-xs flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-yellow-50 dark:bg-yellow-900/200 animate-pulse"></span> รอตรวจสอบสลิป
                     </span>
                     {% elif booking.status == 'completed' %}
-                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 font-bold border border-gray-300 text-xs flex items-center gap-1.5">
+                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 dark:text-gray-300 font-bold border border-gray-300 text-xs flex items-center gap-1.5">
                         <i class="fas fa-check-circle text-[10px]"></i> เสร็จสิ้น
                     </span>
                     {% elif booking.status == 'cancelled' %}
-                    <span class="px-3 py-1 rounded-full bg-red-50 text-red-600 font-bold border border-red-200 text-xs flex items-center gap-1.5">
+                    <span class="px-3 py-1 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 font-bold border border-red-200 dark:border-red-800/50 text-xs flex items-center gap-1.5">
                         <i class="fas fa-times-circle text-[10px]"></i> ยกเลิก
                     </span>
                     {% else %}
-                    <span class="px-3 py-1 rounded-full bg-orange-50 text-orange-600 font-bold border border-orange-200 text-xs flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span> รอชำระเงิน
+                    <span class="px-3 py-1 rounded-full bg-orange-50 dark:bg-orange-900/20 text-orange-600 font-bold border border-orange-200 dark:border-orange-800/50 text-xs flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-orange-50 dark:bg-orange-900/200"></span> รอชำระเงิน
                     </span>
                     {% endif %}
                 </div>
 
                 <!-- Info Grid: Date + Project + Period -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div class="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                        <span class="block text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">สร้างเมื่อ</span>
-                        <span class="text-sm font-bold text-gray-900 font-mono">{{ booking.created_at|date:"d/m/Y" }}</span>
+                    <div class="bg-gray-50 dark:bg-slate-900/50 rounded-xl p-3 border border-gray-100 dark:border-slate-700">
+                        <span class="block text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-widest font-bold mb-1">สร้างเมื่อ</span>
+                        <span class="text-sm font-bold text-gray-900 dark:text-white font-mono">{{ booking.created_at|date:"d/m/Y" }}</span>
                     </div>
-                    <div class="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                        <span class="block text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">โปรเจกต์</span>
-                        <span class="text-sm font-bold text-gray-900 truncate block">{{ booking.project_name|default:"-" }}</span>
+                    <div class="bg-gray-50 dark:bg-slate-900/50 rounded-xl p-3 border border-gray-100 dark:border-slate-700">
+                        <span class="block text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-widest font-bold mb-1">โปรเจกต์</span>
+                        <span class="text-sm font-bold text-gray-900 dark:text-white truncate block">{{ booking.project_name|default:"-" }}</span>
                     </div>
-                    <div class="bg-orange-50 rounded-xl p-3 border border-orange-100">
+                    <div class="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-3 border border-orange-100 dark:border-orange-900/50">
                         <span class="block text-[10px] text-mcot-orange uppercase tracking-widest font-bold mb-1">วันรับ-คืน</span>
-                        <span class="text-sm font-bold text-gray-900 font-mono">{{ booking.start_time|date:"d/m" }} — {{ booking.end_time|date:"d/m/y" }}</span>
+                        <span class="text-sm font-bold text-gray-900 dark:text-white font-mono">{{ booking.start_time|date:"d/m" }} — {{ booking.end_time|date:"d/m/y" }}</span>
                     </div>
-                    <div class="bg-orange-50 rounded-xl p-3 border border-orange-100">
+                    <div class="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-3 border border-orange-100 dark:border-orange-900/50">
                         <span class="block text-[10px] text-mcot-orange uppercase tracking-widest font-bold mb-1">ระยะเวลา</span>
-                        <span class="text-sm font-bold text-gray-900 font-mono">{{ booking.rental_days }} วัน</span>
+                        <span class="text-sm font-bold text-gray-900 dark:text-white font-mono">{{ booking.rental_days }} วัน</span>
                     </div>
                 </div>
             </div>
@@ -90,18 +90,18 @@
                 {% endif %}
 
                 <!-- Items Table -->
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                    <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-                        <h2 class="text-xs font-bold text-gray-900 uppercase tracking-widest flex items-center gap-2">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                        <h2 class="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
                             <i class="fas fa-boxes text-mcot-orange text-sm"></i> รายการที่จอง
                         </h2>
-                        <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                        <span class="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">
                             {{ booking.items.count|add:booking.booked_packages.count|add:booking.booked_studios.count }} รายการ
                         </span>
                     </div>
 
                     <!-- Desktop Table Header -->
-                    <div class="hidden md:grid grid-cols-12 gap-2 px-5 py-2.5 bg-gray-50 border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-widest font-bold">
+                    <div class="hidden md:grid grid-cols-12 gap-2 px-5 py-2.5 bg-gray-50 dark:bg-slate-900/50 border-b border-gray-100 dark:border-slate-700 text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-widest font-bold">
                         <div class="col-span-5">รายการ</div>
                         <div class="col-span-2 text-center">ประเภท</div>
                         <div class="col-span-2 text-center">จำนวน</div>
@@ -110,78 +110,78 @@
 
                     <div class="divide-y divide-gray-50">
                         {% for item in booking.items.all %}
-                        <div class="grid grid-cols-12 gap-2 px-5 py-4 items-center hover:bg-gray-50/50 transition-colors">
+                        <div class="grid grid-cols-12 gap-2 px-5 py-4 items-center hover:bg-gray-50 dark:bg-slate-900/50/50 transition-colors">
                             <!-- Name -->
                             <div class="col-span-12 md:col-span-5 flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden shrink-0">
+                                <div class="w-10 h-10 rounded-lg bg-gray-50 dark:bg-slate-900/50 border border-gray-100 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
                                     {% if item.product.image %}
                                     <img src="{{ item.product.image.url }}" class="w-full h-full object-contain p-0.5" alt="">
                                     {% else %}
                                     <i class="fas fa-camera text-gray-300 text-xs"></i>
                                     {% endif %}
                                 </div>
-                                <h4 class="font-bold text-gray-900 text-sm leading-tight truncate">{{ item.product.name }}</h4>
+                                <h4 class="font-bold text-gray-900 dark:text-white text-sm leading-tight truncate">{{ item.product.name }}</h4>
                             </div>
                             <!-- Category -->
                             <div class="hidden md:flex col-span-2 justify-center">
-                                <span class="text-[10px] uppercase tracking-widest text-mcot-orange font-bold bg-orange-50 px-2 py-0.5 rounded-md">{{ item.product.category.name }}</span>
+                                <span class="text-[10px] uppercase tracking-widest text-mcot-orange font-bold bg-orange-50 dark:bg-orange-900/20 px-2 py-0.5 rounded-md">{{ item.product.category.name }}</span>
                             </div>
                             <!-- Quantity -->
                             <div class="col-span-6 md:col-span-2 text-left md:text-center">
-                                <span class="md:hidden text-[10px] text-gray-400 font-bold uppercase mr-1">จำนวน:</span>
-                                <span class="text-gray-900 font-bold font-mono text-sm">{{ item.quantity }}</span>
+                                <span class="md:hidden text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase mr-1">จำนวน:</span>
+                                <span class="text-gray-900 dark:text-white font-bold font-mono text-sm">{{ item.quantity }}</span>
                             </div>
                             <!-- Price -->
                             <div class="col-span-6 md:col-span-3 text-right">
-                                <span class="text-gray-900 font-bold font-mono text-sm">฿{{ item.price_at_booking|intcomma }}</span>
-                                <span class="text-[10px] text-gray-400 ml-0.5">/วัน</span>
+                                <span class="text-gray-900 dark:text-white font-bold font-mono text-sm">฿{{ item.price_at_booking|intcomma }}</span>
+                                <span class="text-[10px] text-gray-400 dark:text-gray-500 ml-0.5">/วัน</span>
                             </div>
                         </div>
                         {% endfor %}
 
                         {% for pkg in booking.booked_packages.all %}
-                        <div class="grid grid-cols-12 gap-2 px-5 py-4 items-center hover:bg-gray-50/50 transition-colors">
+                        <div class="grid grid-cols-12 gap-2 px-5 py-4 items-center hover:bg-gray-50 dark:bg-slate-900/50/50 transition-colors">
                             <div class="col-span-12 md:col-span-5 flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-orange-50 border border-orange-100 flex items-center justify-center shrink-0">
+                                <div class="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/50 flex items-center justify-center shrink-0">
                                     {% if pkg.package.image %}
                                     <img src="{{ pkg.package.image.url }}" class="w-full h-full object-contain p-0.5" alt="">
                                     {% else %}
                                     <i class="fas fa-cube text-orange-400 text-xs"></i>
                                     {% endif %}
                                 </div>
-                                <h4 class="font-bold text-gray-900 text-sm leading-tight truncate">{{ pkg.package.name }}</h4>
+                                <h4 class="font-bold text-gray-900 dark:text-white text-sm leading-tight truncate">{{ pkg.package.name }}</h4>
                             </div>
                             <div class="hidden md:flex col-span-2 justify-center">
                                 <span class="text-[10px] uppercase tracking-widest text-purple-600 font-bold bg-purple-50 px-2 py-0.5 rounded-md">Package</span>
                             </div>
                             <div class="col-span-6 md:col-span-2 text-left md:text-center">
-                                <span class="md:hidden text-[10px] text-gray-400 font-bold uppercase mr-1">จำนวน:</span>
-                                <span class="text-gray-900 font-bold font-mono text-sm">{{ pkg.quantity }}</span>
+                                <span class="md:hidden text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase mr-1">จำนวน:</span>
+                                <span class="text-gray-900 dark:text-white font-bold font-mono text-sm">{{ pkg.quantity }}</span>
                             </div>
                             <div class="col-span-6 md:col-span-3 text-right">
-                                <span class="text-gray-900 font-bold font-mono text-sm">฿{{ pkg.price_at_booking|intcomma }}</span>
-                                <span class="text-[10px] text-gray-400 ml-0.5">/วัน</span>
+                                <span class="text-gray-900 dark:text-white font-bold font-mono text-sm">฿{{ pkg.price_at_booking|intcomma }}</span>
+                                <span class="text-[10px] text-gray-400 dark:text-gray-500 ml-0.5">/วัน</span>
                             </div>
                         </div>
                         {% endfor %}
 
                         {% for studio in booking.booked_studios.all %}
-                        <div class="grid grid-cols-12 gap-2 px-5 py-4 items-center hover:bg-gray-50/50 transition-colors">
+                        <div class="grid grid-cols-12 gap-2 px-5 py-4 items-center hover:bg-gray-50 dark:bg-slate-900/50/50 transition-colors">
                             <div class="col-span-12 md:col-span-5 flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-lg bg-purple-50 border border-purple-100 flex items-center justify-center shrink-0">
                                     <i class="fas fa-door-open text-purple-400 text-xs"></i>
                                 </div>
-                                <h4 class="font-bold text-gray-900 text-sm leading-tight truncate">{{ studio.studio.name }}</h4>
+                                <h4 class="font-bold text-gray-900 dark:text-white text-sm leading-tight truncate">{{ studio.studio.name }}</h4>
                             </div>
                             <div class="hidden md:flex col-span-2 justify-center">
                                 <span class="text-[10px] uppercase tracking-widest text-purple-600 font-bold bg-purple-50 px-2 py-0.5 rounded-md">Studio</span>
                             </div>
                             <div class="col-span-6 md:col-span-2 text-left md:text-center">
-                                <span class="text-gray-900 font-bold font-mono text-sm">1</span>
+                                <span class="text-gray-900 dark:text-white font-bold font-mono text-sm">1</span>
                             </div>
                             <div class="col-span-6 md:col-span-3 text-right">
-                                <span class="text-gray-900 font-bold font-mono text-sm">฿{{ studio.price_at_booking|intcomma }}</span>
-                                <span class="text-[10px] text-gray-400 ml-0.5">/วัน</span>
+                                <span class="text-gray-900 dark:text-white font-bold font-mono text-sm">฿{{ studio.price_at_booking|intcomma }}</span>
+                                <span class="text-[10px] text-gray-400 dark:text-gray-500 ml-0.5">/วัน</span>
                             </div>
                         </div>
                         {% endfor %}
@@ -190,11 +190,11 @@
 
                 <!-- Notes -->
                 {% if booking.note %}
-                <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
-                    <h2 class="text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-200 dark:border-slate-700 shadow-sm">
+                    <h2 class="text-xs font-bold text-gray-400 dark:text-gray-500 mb-3 uppercase tracking-widest flex items-center gap-2">
                         <i class="far fa-sticky-note text-mcot-orange text-sm"></i> หมายเหตุ
                     </h2>
-                    <p class="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{{ booking.note }}</p>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed whitespace-pre-line">{{ booking.note }}</p>
                 </div>
                 {% endif %}
             </div>
@@ -210,46 +210,46 @@
                         <i class="fas fa-file-invoice-dollar"></i> ดาวน์โหลดใบเสนอราคา
                     </a>
                     {% else %}
-                    <div class="hidden lg:flex items-center justify-center gap-2 w-full bg-blue-50 border border-blue-100 text-blue-500 py-3.5 rounded-xl font-bold text-sm cursor-default">
+                    <div class="hidden lg:flex items-center justify-center gap-2 w-full bg-blue-50 dark:bg-blue-900/20 border border-blue-100 text-blue-500 py-3.5 rounded-xl font-bold text-sm cursor-default">
                         <i class="fas fa-hourglass-start animate-pulse"></i> รอจัดส่งใบเสนอราคา
                     </div>
                     {% endif %}
 
                     <!-- Payment Summary -->
-                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                         <div class="p-5 pb-4">
-                            <h2 class="text-xs font-bold text-gray-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                            <h2 class="text-xs font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
                                 <i class="fas fa-receipt text-green-500 text-sm"></i> สรุปยอดเงิน
                             </h2>
                             <div class="space-y-2">
                                 {% if booking.discount_amount > 0 or booking.penalty_amount > 0 %}
                                 <div class="flex justify-between text-sm">
-                                    <span class="text-gray-500">Subtotal</span>
-                                    <span class="text-gray-900 font-mono font-bold">฿{{ booking.calculated_total_price|default:booking.total_price|intcomma }}</span>
+                                    <span class="text-gray-500 dark:text-gray-400 dark:text-gray-500">Subtotal</span>
+                                    <span class="text-gray-900 dark:text-white font-mono font-bold">฿{{ booking.calculated_total_price|default:booking.total_price|intcomma }}</span>
                                 </div>
                                 {% endif %}
                                 {% if booking.discount_amount > 0 %}
-                                <div class="flex justify-between text-xs bg-green-50 px-3 py-2 rounded-lg">
+                                <div class="flex justify-between text-xs bg-green-50 dark:bg-green-900/20 px-3 py-2 rounded-lg">
                                     <span class="text-green-600 font-medium">ส่วนลด</span>
                                     <span class="text-green-600 font-mono font-bold">-฿{{ booking.discount_amount|intcomma }}</span>
                                 </div>
                                 {% endif %}
                                 {% if booking.penalty_amount > 0 %}
-                                <div class="flex justify-between text-xs bg-red-50 px-3 py-2 rounded-lg">
+                                <div class="flex justify-between text-xs bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg">
                                     <span class="text-red-500 font-medium">ค่าปรับ</span>
                                     <span class="text-red-500 font-mono font-bold">+฿{{ booking.penalty_amount|intcomma }}</span>
                                 </div>
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="border-t border-gray-100 px-5 py-4 bg-gray-50">
+                        <div class="border-t border-gray-100 dark:border-slate-700 px-5 py-4 bg-gray-50 dark:bg-slate-900/50">
                             <div class="flex justify-between items-baseline">
-                                <span class="text-gray-700 font-bold text-sm">ยอดสุทธิ</span>
-                                <span class="text-gray-900 font-black text-2xl font-mono">฿{{ booking.total_price|intcomma }}</span>
+                                <span class="text-gray-700 dark:text-gray-200 font-bold text-sm">ยอดสุทธิ</span>
+                                <span class="text-gray-900 dark:text-white font-black text-2xl font-mono">฿{{ booking.total_price|intcomma }}</span>
                             </div>
                         </div>
                         {% if booking.status != 'draft' %}
-                        <div class="bg-orange-50 border-t border-orange-100 px-5 py-3.5">
+                        <div class="bg-orange-50 dark:bg-orange-900/20 border-t border-orange-100 dark:border-orange-900/50 px-5 py-3.5">
                             <div class="flex justify-between items-baseline">
                                 <span class="text-mcot-orange font-bold text-[10px] uppercase tracking-widest">มัดจำ 30%</span>
                                 <span class="text-mcot-orange font-black text-lg font-mono">฿{{ booking.deposit_amount|intcomma }}</span>
@@ -259,14 +259,14 @@
                     </div>
 
                     <!-- Payment Status/Action -->
-                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                         {% if booking.payment_status == 'paid' %}
                         <div class="p-6 text-center">
                             <div class="w-14 h-14 rounded-full bg-green-100 text-green-500 mx-auto flex items-center justify-center mb-3">
                                 <i class="fas fa-check text-xl"></i>
                             </div>
                             <h3 class="text-green-600 font-bold">ชำระมัดจำเรียบร้อย</h3>
-                            <p class="text-gray-400 text-xs mt-1">ขอบคุณที่ใช้บริการ</p>
+                            <p class="text-gray-400 dark:text-gray-500 text-xs mt-1">ขอบคุณที่ใช้บริการ</p>
                         </div>
 
                         {% elif booking.status == 'draft' %}
@@ -275,12 +275,12 @@
                                 <i class="fas fa-hourglass-start text-xl"></i>
                             </div>
                             <h3 class="text-blue-600 font-bold text-sm">รอเจ้าหน้าที่ตรวจสอบ</h3>
-                            <p class="text-gray-400 text-xs mt-1.5 leading-relaxed">ระบบจะแจ้งทางอีเมลเมื่อพร้อม</p>
+                            <p class="text-gray-400 dark:text-gray-500 text-xs mt-1.5 leading-relaxed">ระบบจะแจ้งทางอีเมลเมื่อพร้อม</p>
                         </div>
 
                         {% elif booking.status == 'pending' %}
                             {% if booking.payment_status == 'pending' %}
-                            <div class="p-5 text-center border-b border-gray-100">
+                            <div class="p-5 text-center border-b border-gray-100 dark:border-slate-700">
                                 <div class="w-12 h-12 rounded-full bg-yellow-100 text-yellow-500 mx-auto flex items-center justify-center mb-2">
                                     <i class="fas fa-hourglass-half text-lg"></i>
                                 </div>
@@ -298,34 +298,34 @@
 
                                 {% if not booking.is_expired %}
                                 <!-- Payment Notice -->
-                                <div class="px-5 py-3 border-b border-gray-100 bg-orange-50/50 flex items-center gap-2">
+                                <div class="px-5 py-3 border-b border-gray-100 dark:border-slate-700 bg-orange-50 dark:bg-orange-900/20/50 flex items-center gap-2">
                                     <i class="far fa-clock text-mcot-orange text-sm"></i>
-                                    <span class="text-xs font-bold text-gray-700">กรุณาชำระเงินภายใน <span class="text-mcot-orange">24 ชั่วโมง</span></span>
+                                    <span class="text-xs font-bold text-gray-700 dark:text-gray-200">กรุณาชำระเงินภายใน <span class="text-mcot-orange">24 ชั่วโมง</span></span>
                                 </div>
                                 <!-- QR + Bank in compact layout -->
                                 <div class="p-4">
                                     <div class="flex gap-4 items-start">
                                         <!-- QR -->
                                         <div class="shrink-0 text-center">
-                                            <div class="w-20 h-20 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-center">
+                                            <div class="w-20 h-20 bg-gray-50 dark:bg-slate-900/50 rounded-lg border border-gray-200 dark:border-slate-700 flex items-center justify-center">
                                                 <i class="fas fa-qrcode text-2xl text-gray-300"></i>
                                             </div>
-                                            <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1.5">Scan ชำระ</p>
+                                            <p class="text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest mt-1.5">Scan ชำระ</p>
                                         </div>
                                         <!-- Bank Details -->
                                         <div class="flex-1 min-w-0 space-y-1.5">
                                             <div class="flex items-center gap-1.5 mb-2">
                                                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Krung_Thai_Bank_logo.svg/1024px-Krung_Thai_Bank_logo.svg.png" alt="KTB" class="h-3.5 object-contain">
-                                                <span class="text-xs font-bold text-gray-900">ธ.กรุงไทย</span>
+                                                <span class="text-xs font-bold text-gray-900 dark:text-white">ธ.กรุงไทย</span>
                                             </div>
-                                            <div class="text-[10px] text-gray-400">ชื่อบัญชี</div>
-                                            <div class="text-xs font-bold text-gray-900 -mt-1">บมจ. อสมท</div>
-                                            <div class="flex items-center justify-between bg-gray-50 rounded-lg px-2.5 py-2 border border-gray-100 mt-1">
+                                            <div class="text-[10px] text-gray-400 dark:text-gray-500">ชื่อบัญชี</div>
+                                            <div class="text-xs font-bold text-gray-900 dark:text-white -mt-1">บมจ. อสมท</div>
+                                            <div class="flex items-center justify-between bg-gray-50 dark:bg-slate-900/50 rounded-lg px-2.5 py-2 border border-gray-100 dark:border-slate-700 mt-1">
                                                 <div>
-                                                    <div class="text-[10px] text-gray-400">เลขที่บัญชี</div>
-                                                    <div class="text-sm font-mono font-black text-gray-900 tracking-wider">015-0-00000-0</div>
+                                                    <div class="text-[10px] text-gray-400 dark:text-gray-500">เลขที่บัญชี</div>
+                                                    <div class="text-sm font-mono font-black text-gray-900 dark:text-white tracking-wider">015-0-00000-0</div>
                                                 </div>
-                                                <button type="button" onclick="navigator.clipboard.writeText('0150000000'); Swal.fire({title:'คัดลอก!', icon:'success', timer:1200, showConfirmButton:false})" class="w-7 h-7 rounded-full bg-white hover:bg-orange-50 text-gray-400 hover:text-mcot-orange transition-colors flex items-center justify-center border border-gray-200">
+                                                <button type="button" onclick="navigator.clipboard.writeText('0150000000'); Swal.fire({title:'คัดลอก!', icon:'success', timer:1200, showConfirmButton:false})" class="w-7 h-7 rounded-full bg-white dark:bg-slate-800 hover:bg-orange-50 dark:bg-orange-900/20 text-gray-400 dark:text-gray-500 hover:text-mcot-orange transition-colors flex items-center justify-center border border-gray-200 dark:border-slate-700">
                                                     <i class="far fa-copy text-[10px]"></i>
                                                 </button>
                                             </div>
@@ -338,15 +338,15 @@
                             {% if not booking.is_expired %}
                             <div class="p-5">
                                 <form id="slip-form" class="space-y-3">
-                                    <label class="block text-gray-500 font-bold text-[10px] uppercase tracking-widest">
+                                    <label class="block text-gray-500 dark:text-gray-400 dark:text-gray-500 font-bold text-[10px] uppercase tracking-widest">
                                         {% if booking.payment_status == 'pending' %}อัปโหลดสลิปใหม่{% else %}แนบสลิปโอนเงิน{% endif %}
                                     </label>
-                                    <input type="file" id="slip-input" accept="image/*" class="block w-full text-xs text-gray-700
+                                    <input type="file" id="slip-input" accept="image/*" class="block w-full text-xs text-gray-700 dark:text-gray-200
                                       file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0
                                       file:text-[10px] file:font-bold file:uppercase file:tracking-wider
                                       file:bg-gray-900 file:text-white hover:file:bg-gray-700 
                                       file:cursor-pointer file:transition-colors
-                                      bg-white rounded-lg border border-gray-200"/>
+                                      bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700"/>
                                     <button type="button" onclick="uploadSlip()" id="btn-upload" class="w-full bg-mcot-orange text-white font-bold py-3 rounded-xl hover:bg-orange-600 transition-all uppercase tracking-wider text-xs flex items-center justify-center gap-2">
                                         {% if booking.payment_status == 'pending' %}ส่งหลักฐานใหม่{% else %}แจ้งชำระเงิน{% endif %}
                                         <i class="fas fa-upload"></i>
@@ -358,12 +358,12 @@
                     </div>
 
                     {% if booking.payment_slip %}
-                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                        <div class="px-5 py-3 border-b border-gray-100">
-                            <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">หลักฐานการโอน</h3>
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div class="px-5 py-3 border-b border-gray-100 dark:border-slate-700">
+                            <h3 class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">หลักฐานการโอน</h3>
                         </div>
                         <div class="p-3">
-                            <div class="rounded-xl overflow-hidden border border-gray-100 bg-gray-50 relative group">
+                            <div class="rounded-xl overflow-hidden border border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 relative group">
                                 <img src="{{ booking.payment_slip.url }}" class="w-full object-contain max-h-56" alt="สลิป">
                                 <a href="{{ booking.payment_slip.url }}" target="_blank" class="absolute inset-0 flex items-center justify-center bg-gray-900/30 opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-bold">
                                     <i class="fas fa-search-plus mr-1"></i> ขยาย
@@ -375,21 +375,21 @@
 
                     <!-- Cancel Booking -->
                     {% if booking.status == 'draft' or booking.status == 'pending' %}
-                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                         <button onclick="cancelBooking({{ booking.id }})"
-                                class="w-full px-5 py-4 flex items-center justify-center gap-2 text-sm font-bold text-red-500 hover:text-white hover:bg-red-500 border-0 transition-all">
+                                class="w-full px-5 py-4 flex items-center justify-center gap-2 text-sm font-bold text-red-500 hover:text-white hover:bg-red-50 dark:bg-red-900/200 border-0 transition-all">
                             <i class="fas fa-times-circle"></i> ยกเลิกการจอง
                         </button>
                     </div>
                     {% endif %}
 
                     <!-- Support -->
-                    <div class="bg-gray-50 rounded-xl p-3.5 border border-gray-100 flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-mcot-orange shrink-0">
+                    <div class="bg-gray-50 dark:bg-slate-900/50 rounded-xl p-3.5 border border-gray-100 dark:border-slate-700 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-mcot-orange shrink-0">
                             <i class="fas fa-headset text-xs"></i>
                         </div>
-                        <div class="text-xs text-gray-500">
-                            <span class="text-gray-700 font-bold">ต้องการช่วยเหลือ?</span>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                            <span class="text-gray-700 dark:text-gray-200 font-bold">ต้องการช่วยเหลือ?</span>
                             <a href="tel:022016000" class="text-mcot-orange font-bold hover:underline ml-1">02-201-6000</a>
                         </div>
                     </div>
@@ -410,16 +410,16 @@ async function cancelBooking(bookingId) {
             title: '<strong>ไม่สามารถยกเลิกออนไลน์ได้</strong>',
             icon: 'info',
             html: `
-                <div class="text-sm text-gray-600 leading-relaxed text-left">
+                <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed text-left">
                     <p class="mb-3">เนื่องจากมีการจัดส่งใบเสนอราคาเรียบร้อยแล้ว หากต้องการยกเลิกกรุณาติดต่อเจ้าหน้าที่โดยตรง:</p>
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
+                    <div class="bg-gray-50 dark:bg-slate-900/50 p-4 rounded-xl border border-gray-100 dark:border-slate-700 space-y-2">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-mcot-orange"><i class="fas fa-phone-alt text-xs"></i></div>
-                            <a href="tel:022016000" class="font-bold text-gray-900 hover:text-mcot-orange transition-colors">02-201-6000</a>
+                            <div class="w-8 h-8 rounded-full bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-mcot-orange"><i class="fas fa-phone-alt text-xs"></i></div>
+                            <a href="tel:022016000" class="font-bold text-gray-900 dark:text-white hover:text-mcot-orange transition-colors">02-201-6000</a>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-500"><i class="fas fa-envelope text-xs"></i></div>
-                            <a href="mailto:rental@mcot.net" class="font-bold text-gray-900 hover:text-blue-500 transition-colors">rental@mcot.net</a>
+                            <div class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-500"><i class="fas fa-envelope text-xs"></i></div>
+                            <a href="mailto:rental@mcot.net" class="font-bold text-gray-900 dark:text-white hover:text-blue-500 transition-colors">rental@mcot.net</a>
                         </div>
                     </div>
                 </div>

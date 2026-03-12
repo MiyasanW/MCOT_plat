@@ -5,10 +5,10 @@
 {% block title %}ทำรายการสำเร็จ — MCOT Rental Platform{% endblock %}
 
 {% block content %}
-<div class="bg-gradient-to-br from-green-50 to-white min-h-screen py-16">
+<div class="bg-gradient-to-br from-green-50 to-white dark:from-slate-900 dark:to-slate-800 min-h-screen py-16 transition-colors duration-300">
     <div class="container mx-auto px-4 max-w-3xl">
         
-        <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-green-100">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-green-100 dark:border-slate-700 transition-colors">
             <!-- Header Banner -->
             <div class="bg-blue-600 py-10 px-8 text-center relative overflow-hidden">
                 <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
@@ -24,9 +24,9 @@
 
             <!-- Content Area -->
             <div class="p-8 lg:p-12">
-                <div class="flex flex-col md:flex-row items-center justify-between bg-gray-50 rounded-2xl p-6 border border-gray-100 mb-8">
+                <div class="flex flex-col md:flex-row items-center justify-between bg-gray-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-gray-100 dark:border-slate-700 mb-8 transition-colors">
                     <div class="text-center md:text-left mb-4 md:mb-0">
-                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">สถานะปัจจุบัน</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-bold mb-1 transition-colors">สถานะปัจจุบัน</p>
                         {% if booking.status == 'pending' %}
                         <p class="text-lg font-bold text-green-600 flex items-center gap-2 justify-center md:justify-start">
                             <i class="fas fa-check-circle"></i> ส่งใบเสนอราคาแล้ว — รอการชำระเงิน
@@ -38,13 +38,13 @@
                         {% endif %}
                     </div>
                     <div class="text-center md:text-right">
-                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">ยอดรวม (มัดจำ 30%)</p>
-                        <p class="text-2xl font-extrabold text-gray-900">฿{{ booking.total_price|floatformat:0|intcomma }} <span class="text-sm font-normal text-gray-500">(มัดจำ ฿{{ booking.deposit_amount|floatformat:0|intcomma }})</span></p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-bold mb-1 transition-colors">ยอดรวม (มัดจำ 30%)</p>
+                        <p class="text-2xl font-extrabold text-gray-900 dark:text-white transition-colors">฿{{ booking.total_price|floatformat:0|intcomma }} <span class="text-sm font-normal text-gray-500 dark:text-gray-400 transition-colors">(มัดจำ ฿{{ booking.deposit_amount|floatformat:0|intcomma }})</span></p>
                     </div>
                 </div>
 
-                <div class="prose prose-sm max-w-none text-gray-600 mb-10 px-4 text-center md:text-left bg-blue-50 rounded-2xl p-6 border border-blue-100">
-                    <h3 class="font-bold text-gray-900 mb-3 text-lg"><i class="fas fa-info-circle text-blue-500 mr-2"></i> ขั้นตอนต่อไป:</h3>
+                <div class="prose prose-sm max-w-none text-gray-600 dark:text-gray-300 mb-10 px-4 text-center md:text-left bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 border border-blue-100 dark:border-blue-800/50 transition-colors">
+                    <h3 class="font-bold text-gray-900 dark:text-white mb-3 text-lg transition-colors"><i class="fas fa-info-circle text-blue-500 dark:text-blue-400 mr-2 transition-colors"></i> ขั้นตอนต่อไป:</h3>
                     {% if booking.status == 'pending' %}
                     <ol class="list-decimal pl-5 space-y-3">
                         <li><strong>ใบเสนอราคาถูกส่งไปที่อีเมลของคุณแล้ว</strong> กรุณาตรวจสอบกล่องจดหมาย (และ spam)</li>

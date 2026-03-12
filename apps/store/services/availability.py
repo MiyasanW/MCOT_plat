@@ -144,7 +144,8 @@ class AvailabilityService:
         pkg_items = package.packageitem_set.select_related('product').all()
         
         if not pkg_items:
-            return False, "แพ็คเกจนี้ยังไม่มีสินค้าภายใน ไม่สามารถจองได้"
+            # Treat package as a standalone rentable item when no child products are defined.
+            return True, ""
             
         for pkg_item in pkg_items:
             # จำนวนที่ต้องใช้ = (จำนวนในแพ็คเกจ x จำนวนชุดที่ลูกค้าจอง)

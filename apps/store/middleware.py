@@ -11,9 +11,10 @@ class SplashScreenMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        # Allow static files and media to load normally
-        if request.path.startswith('/static/') or request.path.startswith('/media/') or request.path.startswith('/admin/'):
+        # Only show splash screen on the home page
+        if request.path != '/':
             return self.get_response(request)
+
 
         # Check if the user is explicitly entering the site from the splash screen
         if request.GET.get('enter') == '1':
