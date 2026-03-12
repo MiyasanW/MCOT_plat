@@ -253,8 +253,16 @@ class BookingService:
              raise PermissionError("คุณไม่มีสิทธิ์ยกเลิกการจองนี้")
 
         # Status Check
-        if booking.status not in ('draft', 'pending'):
-             raise ValueError("ไม่สามารถยกเลิกได้ — การจองนี้ได้รับการอนุมัติแล้ว")
+        if user.is_staff:
+            # Staff can cancel draft or pending
+            if booking.status not in ('draft', 'pending'):
+                 raise ValueError("ไม่สามารถยกเลิกได้ — การจองนี้ได้รับการอนุมัติแล้ว")
+        else:
+            # Customer can ONLY cancel draft
+            if booking.status != 'draft':
+                 if booking.status == 'pending':
+                      raise ValueError("ไม่สามารถยกเลิกออนไลน์ได้เนื่องจากมีการจัดส่งใบเสนอราคาแล้ว โปรดติดต่อเจ้าหน้าที่")
+                 raise ValueError("ไม่สามารถยกเลิกได้ในสถานะนี้")
         
         # Update Status
         booking.status = 'cancelled'

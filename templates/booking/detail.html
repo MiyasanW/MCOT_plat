@@ -401,6 +401,36 @@
 
 <script>
 async function cancelBooking(bookingId) {
+    // [NEW] Logic: Check status if pending, show contact info instead of confirming cancellation
+    const currentStatus = "{{ booking.status }}";
+    const isStaff = {% if user.is_staff %}true{% else %}false{% endif %};
+
+    if (currentStatus === 'pending' && !isStaff) {
+        Swal.fire({
+            title: '<strong>ไม่สามารถยกเลิกออนไลน์ได้</strong>',
+            icon: 'info',
+            html: `
+                <div class="text-sm text-gray-600 leading-relaxed text-left">
+                    <p class="mb-3">เนื่องจากมีการจัดส่งใบเสนอราคาเรียบร้อยแล้ว หากต้องการยกเลิกกรุณาติดต่อเจ้าหน้าที่โดยตรง:</p>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-mcot-orange"><i class="fas fa-phone-alt text-xs"></i></div>
+                            <a href="tel:022016000" class="font-bold text-gray-900 hover:text-mcot-orange transition-colors">02-201-6000</a>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-500"><i class="fas fa-envelope text-xs"></i></div>
+                            <a href="mailto:rental@mcot.net" class="font-bold text-gray-900 hover:text-blue-500 transition-colors">rental@mcot.net</a>
+                        </div>
+                    </div>
+                </div>
+            `,
+            showCloseButton: true,
+            confirmButtonText: 'รับทราบ',
+            confirmButtonColor: '#F26522'
+        });
+        return;
+    }
+
     const result = await Swal.fire({
         title: 'ยืนยันการยกเลิก?',
         text: 'คุณต้องการยกเลิกการจอง #' + bookingId + ' ใช่หรือไม่? การยกเลิกไม่สามารถเปลี่ยนกลับได้',
