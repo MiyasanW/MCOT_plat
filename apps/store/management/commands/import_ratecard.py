@@ -4,7 +4,7 @@ import re
 from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from apps.store.models import ProductCategory, Product, StaffPosition, Staff
+from apps.store.models import ProductCategory, Product
 
 class Command(BaseCommand):
     help = 'Populate mockup data from RateCard Equipment.csv (Products, Equipment, Studio, Crew)'
@@ -122,10 +122,5 @@ class Command(BaseCommand):
                                 "turnaround_time": timedelta(hours=4)
                             }
                         )
-
-        # Let's also add the Crew rates mentioned at the bottom
-        sw_pos, _ = StaffPosition.objects.get_or_create(name="กำกับภาพ (SW)", defaults={"base_daily_rate": 3500})
-        Staff.objects.get_or_create(name="ช่างภาพ / ช่างเทคนิค ทั่วไป", defaults={"position": StaffPosition.objects.filter(name__icontains="ช่างภาพ").first(), "phone": "-", "daily_rate": 1500, "is_active": True})
-        Staff.objects.get_or_create(name="ผู้กำกับภาพระบบ (Switcher)", defaults={"position": sw_pos, "phone": "-", "daily_rate": 3500, "is_active": True})
 
         self.stdout.write(self.style.SUCCESS('Successfully imported real data from RateCard Equipment.csv!'))

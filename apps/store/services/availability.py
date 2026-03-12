@@ -114,10 +114,11 @@ class AvailabilityService:
             (bool, Booking/None): (True, None) ถ้าว่าง
                                   (False, ConflictingBooking) ถ้ามีการจองซ้อน
         """
-        # สถานะที่บล็อคทรัพยากร
-        blocking_statuses = ['approved', 'active', 'pending', 'overdue'] 
-        
-        query = Q(status__in=blocking_statuses) & \
+        expiry_time = timezone.now() - timedelta(hours=6)
+        status_filter = Q(status='draft', created_at__gte=expiry_time) | \
+                Q(status__in=['pending', 'approved', 'active', 'overdue'])
+
+        query = status_filter & \
                 Q(start_time__lt=end_time) & \
                 Q(end_time__gt=start_time)
 

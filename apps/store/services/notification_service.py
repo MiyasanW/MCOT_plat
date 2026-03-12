@@ -71,7 +71,8 @@ class NotificationService:
             # แจ้งเตือนบนเว็บ (ให้ลูกค้า)
             msg = f"Booking #{booking.id}: เจ้าหน้าที่สรุปราคาแล้ว กรุณาชำระเงิน"
             link = f"/booking/{booking.id}/"
-            Notification.objects.create(recipient=booking.created_by, message=msg, link=link, notification_type='info')
+            if booking.created_by:
+                Notification.objects.create(recipient=booking.created_by, message=msg, link=link, notification_type='info')
             
             # ส่งอีเมลยอดชำระเงิน
             total_price = booking.calculate_total_price() or 0
@@ -105,7 +106,8 @@ class NotificationService:
             # แจ้งเตือนบนเว็บ (ให้ลูกค้า)
             msg = f"Booking #{booking.id}: ยืนยันการจองเรียบร้อยแล้ว เตรียมรับของได้เลย"
             link = f"/booking/{booking.id}/"
-            Notification.objects.create(recipient=booking.created_by, message=msg, link=link, notification_type='success')
+            if booking.created_by:
+                Notification.objects.create(recipient=booking.created_by, message=msg, link=link, notification_type='success')
             
             # ส่งอีเมลยืนยันผลการจอง
             context = {

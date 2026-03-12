@@ -121,8 +121,8 @@ def booking_summary(request, booking_id):
             if old_record.payment_status != new_record.payment_status:
                 changes.append(f"สถานะการเงิน: '{old_record.get_payment_status_display()}' -> '{new_record.get_payment_status_display()}'")
             if old_record.coordinator != new_record.coordinator:
-                old_c = old_record.coordinator.name if old_record.coordinator else "None"
-                new_c = new_record.coordinator.name if new_record.coordinator else "None"
+                old_c = (old_record.coordinator.get_full_name() or old_record.coordinator.username) if old_record.coordinator else "None"
+                new_c = (new_record.coordinator.get_full_name() or new_record.coordinator.username) if new_record.coordinator else "None"
                 changes.append(f"เปลี่ยนผู้ดูแลจาก '{old_c}' เป็น '{new_c}'")
             if old_record.internal_notes != new_record.internal_notes:
                 changes.append("อัปเดตบันทึกภายใน (Internal Notes)")
@@ -189,10 +189,14 @@ def booking_action_api(request, booking_id):
             booking.save(update_fields=['payment_status'])
             
         elif action == 'mark_active':
+            if booking.status != 'approved':
+                raise ValueError("เปลี่ยนเป็นกำลังใช้งานได้เฉพาะใบจองที่อนุมัติแล้ว")
             booking.status = 'active'
             booking.save(update_fields=['status'])
             
         elif action == 'mark_completed':
+            if booking.status not in ('active', 'overdue'):
+                raise ValueError("ปิดงานได้เฉพาะใบจองที่กำลังใช้งานหรือเกินกำหนด")
             booking.status = 'completed'
             booking.save(update_fields=['status'])
             
@@ -212,7 +216,7 @@ def booking_action_api(request, booking_id):
         elif action == 'save_penalty':
             penalty = Decimal(data.get('amount', 0))
             booking.penalty_amount = penalty
-            booking.calculate_total_price() # Update grand total
+            booking.total_price = booking.calculate_total_price()
             booking.save(update_fields=['penalty_amount', 'total_price'])
             
         elif action == 'assign_equipment':

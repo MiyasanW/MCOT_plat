@@ -163,7 +163,7 @@ class DashboardService:
                 'items_count': b.items_count,
                 'status': b.status,
                 'status_display': b.get_status_display(),
-                'change_url': f"/admin/rentals/booking/{b.id}/change/"
+                'change_url': f"/admin/store/booking/{b.id}/change/"
             })
         return clean_bookings
 

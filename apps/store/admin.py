@@ -360,8 +360,8 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
             if penalty > 0:
                 booking.penalty_amount = penalty
                 # อัปเดตยอดรวมใหม่ (บวกค่าปรับ)
-                booking.calculate_total_price() # Using method wrapper
-                booking.save(update_fields=['penalty_amount'])
+                booking.total_price = booking.calculate_total_price()
+                booking.save(update_fields=['penalty_amount', 'total_price'])
                 count += 1
 
         self.message_user(request, f'⚠️ อัปเดตยอดค่าปรับแล้ว {count} รายการ')
