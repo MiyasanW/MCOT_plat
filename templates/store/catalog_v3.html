@@ -428,27 +428,27 @@
                     <span class="text-sm font-bold text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-800/50 transition-colors">{{ cat_group.list|length }} items</span>
                 </div>
 
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                     {% for item in cat_group.list %}
-                    <div class="catalog-item group bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-500/50 rounded-[1.5rem] p-4 flex flex-col hover:shadow-2xl hover:shadow-blue-500/10 dark:hover:shadow-blue-900/30 transition-all duration-300 relative overflow-hidden" data-name="{{ item.name|lower }}" data-type="equipment">
+                    <div class="catalog-item group bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-500/50 rounded-[1.5rem] p-3 sm:p-4 flex flex-col hover:shadow-2xl hover:shadow-blue-500/10 dark:hover:shadow-blue-900/30 transition-all duration-300 relative overflow-hidden" data-name="{{ item.name|lower }}" data-type="equipment">
                         <!-- Click-through layer (keeps + button clickable) -->
                         <a href="{% url 'store:product_detail' item.id %}" class="absolute inset-0 z-[1]" aria-label="ดูรายละเอียด {{ item.name }}"></a>
                         
                         <!-- Status Badge -->
                         <div class="absolute top-2 right-2 flex gap-1 z-20">
                             {% if item.quantity > 0 %}
-                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 shadow-md flex items-center justify-center text-emerald-500 dark:text-emerald-400 border border-emerald-50 dark:border-slate-600 transition-colors" title="พร้อมเช่า">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white dark:bg-slate-700 shadow-md flex items-center justify-center text-emerald-500 dark:text-emerald-400 border border-emerald-50 dark:border-slate-600 transition-colors" title="พร้อมเช่า">
                                 <i class="fas fa-check-circle text-lg"></i>
                             </div>
                             {% else %}
-                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 shadow-md flex items-center justify-center text-red-500 dark:text-red-400 border border-red-50 dark:border-slate-600 transition-colors" title="หมด">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white dark:bg-slate-700 shadow-md flex items-center justify-center text-red-500 dark:text-red-400 border border-red-50 dark:border-slate-600 transition-colors" title="หมด">
                                 <i class="fas fa-times-circle text-lg"></i>
                             </div>
                             {% endif %}
                         </div>
 
                         <!-- Image Container: Soft Pastel BG -->
-                        <div class="w-full aspect-square rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-slate-700 dark:to-slate-700/50 flex items-center justify-center p-6 mb-4 relative overflow-hidden group-hover:from-blue-100 group-hover:to-indigo-100 dark:group-hover:from-slate-600 dark:group-hover:to-slate-600/80 transition-colors">
+                        <div class="w-full aspect-square rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-slate-700 dark:to-slate-700/50 flex items-center justify-center p-4 sm:p-6 mb-4 relative overflow-hidden group-hover:from-blue-100 group-hover:to-indigo-100 dark:group-hover:from-slate-600 dark:group-hover:to-slate-600/80 transition-colors">
                              <div class="absolute inset-0 bg-blue-400/5 dark:bg-blue-400/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                              {% if item.image %}
                              <img src="{{ item.image.url }}" class="max-w-full max-h-full object-contain filter drop-shadow-lg transform group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-10" alt="{{ item.name }}">
@@ -459,15 +459,15 @@
                         
                         <!-- Info -->
                         <div class="flex flex-col flex-grow relative z-[2]">
-                            <div class="flex items-start justify-between gap-3 mb-2">
+                            <div class="flex items-start justify-between gap-3 mb-2 min-w-0">
                                 <h4 class="text-[15px] sm:text-base font-black text-gray-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 pr-1">
                                     {{ item.name }}
                                 </h4>
                             </div>
                             <p class="text-xs text-gray-400 dark:text-gray-500 mb-3 line-clamp-2 leading-relaxed transition-colors">{{ item.description|striptags|truncatewords:10|default:"อุปกรณ์คุณภาพ พร้อมทีมงานดูแล" }}</p>
                             
-                            <div class="flex items-center gap-2 mb-4">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-gray-300 text-[10px] font-bold border border-gray-100 dark:border-slate-600 transition-colors">
+                            <div class="flex flex-wrap items-center gap-2 mb-4">
+                                <span class="inline-flex max-w-full items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-gray-300 text-[10px] font-bold border border-gray-100 dark:border-slate-600 transition-colors truncate">
                                     <i class="fas fa-tag text-[9px] opacity-70"></i> {{ item.category.name|default:"Others" }}
                                 </span>
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full {% if item.quantity > 0 %}bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800/50{% else %}bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-100 dark:border-red-800/50{% endif %} text-[10px] font-black border transition-colors">
