@@ -17,11 +17,6 @@ def home(request):
     """
     return render(request, 'pages/landing.html')
 
-@ratelimit(key_prefix='about', rate=30, period=60, block=True)
-def about(request):
-    """About Us page"""
-    return render(request, 'pages/corporate/about.html')
-
 def terms(request):
     """
     หน้าเงื่อนไขการใช้งาน (Terms of Service)

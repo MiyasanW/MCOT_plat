@@ -1,9 +1,11 @@
 import json
+import os
 from decimal import Decimal
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.conf import settings
+from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q, Sum, Count
@@ -329,34 +331,30 @@ def download_checklist_pdf(request, booking_id):
 @login_required
 def download_quotation_pdf(request, booking_id):
     """
-    Generate PDF Quotation for Customer
+    Generate and stream a PDF Quotation by overlaying booking data onto
+    the MCOT quotation template (quotation_template.pdf).
     """
     booking = get_object_or_404(Booking, id=booking_id)
 
-    # Permission check: Owner or Staff can download
-    # [NEW] Restriction: Customer cannot download if status is 'draft'
+    # Permission check: draft bookings are not yet ready for customer download
     if booking.created_by == request.user and booking.status == 'draft':
         return redirect('store:booking_detail', booking_id=booking.id)
 
     if booking.created_by != request.user and not (request.user.is_staff or request.user.is_superuser):
         return redirect('store:home')
 
-    items = booking.items.select_related('product', 'equipment').all()
-    packages = booking.booked_packages.select_related('package').all()
-    studios = booking.booked_studios.select_related('studio').all()
-    
-    # Calculate Remaining Balance
-    remaining_balance = booking.total_price - booking.deposit_amount
-    
-    context = {
-        'booking': booking, 
-        'items': items,
-        'packages': packages,
-        'studios': studios,
-        'remaining_balance': remaining_balance
-    }
-    
-    return render(request, 'booking/pdf/quotation.html', context)
+    template_path = os.path.join(
+        settings.BASE_DIR, 'apps', 'store', 'services', 'pdf', 'quotation_template.pdf'
+    )
+
+    from apps.store.services.pdf.quotation_overlay import generate_quotation_pdf
+    pdf_bytes = generate_quotation_pdf(booking, template_path)
+
+    response = HttpResponse(pdf_bytes, content_type='application/pdf')
+    response['Content-Disposition'] = (
+        f'inline; filename="MCOT_Quotation_{booking.id:05d}.pdf"'
+    )
+    return response
 
 
 @login_required

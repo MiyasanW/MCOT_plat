@@ -274,6 +274,16 @@
             localStorage.setItem('mcot_cart', JSON.stringify(cart));
             window.dispatchEvent(new Event('cartUpdated'));
 
+            if (typeof window.mcotTrackEvent === 'function') {
+                window.mcotTrackEvent('start_booking', {
+                    item_id: String(id),
+                    item_name: name,
+                    item_category: 'product',
+                    quantity: qty,
+                    value: Number(price || 0) * Number(qty || 1)
+                });
+            }
+
             const startDate = '{{ selected_start_date }}';
             const endDate = '{{ selected_end_date }}';
             if (startDate && endDate) {

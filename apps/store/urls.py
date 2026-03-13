@@ -10,7 +10,6 @@ urlpatterns = [
     # Pages
     path('', pages.home, name='home'),
     path('go/', pages.redirect_after_login, name='redirect_after_login'),
-    path('about/', pages.about, name='about'),
     path('contact/', pages.contact, name='contact'),
     path('terms/', pages.terms, name='terms'),
     path('register/', RedirectView.as_view(pattern_name='account_signup', permanent=False), name='register'),

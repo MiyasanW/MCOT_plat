@@ -475,6 +475,14 @@ async function uploadSlip() {
         });
         const data = await res.json();
         if (data.success) {
+            if (typeof window.mcotTrackEvent === 'function') {
+                window.mcotTrackEvent('payment_uploaded', {
+                    booking_id: '{{ booking.id }}',
+                    payment_status: '{{ booking.payment_status }}',
+                    deposit_amount: {{ booking.deposit_amount|default:0 }}
+                });
+            }
+
             Swal.fire({ icon:'success', title:'สำเร็จ!', text:'รอตรวจสอบ', timer:2000, showConfirmButton:false })
                 .then(() => location.reload());
         } else {

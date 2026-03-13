@@ -1,4 +1,4 @@
-from .pages import home, about, terms, contact, faq, redirect_after_login
+from .pages import home, terms, contact, faq, redirect_after_login
 from .products import (
     catalog, studio_list, studio_detail,
     package_list, package_detail, service_list, product_detail,

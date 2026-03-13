@@ -5,130 +5,157 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from datetime import datetime
 from django.conf import settings
 from decimal import Decimal
 
-# Register Thai Font
-font_path = os.path.join(settings.BASE_DIR, 'static', 'fonts', 'Sarabun-Regular.ttf')
-if os.path.exists(font_path):
-    pdfmetrics.registerFont(TTFont('Sarabun', font_path))
-font_bold_path = os.path.join(settings.BASE_DIR, 'static', 'fonts', 'Sarabun-Bold.ttf')
-if os.path.exists(font_bold_path):
-    pdfmetrics.registerFont(TTFont('Sarabun-Bold', font_bold_path))
+# ── Thai Font Registration ──────────────────────────────────────────────────
+_font_dir = os.path.join(settings.BASE_DIR, 'static', 'fonts')
+_font_regular = os.path.join(_font_dir, 'Sarabun-Regular.ttf')
+_font_bold    = os.path.join(_font_dir, 'Sarabun-Bold.ttf')
+if os.path.exists(_font_regular):
+    pdfmetrics.registerFont(TTFont('Sarabun', _font_regular))
+if os.path.exists(_font_bold):
+    pdfmetrics.registerFont(TTFont('Sarabun-Bold', _font_bold))
+
+# ── Coordinate helpers ──────────────────────────────────────────────────────
+# Coordinates are calibrated against quotation_template.pdf (595 × 842 pts).
+# pdfplumber measures "top" from the top-left corner.
+# ReportLab measures y from the bottom-left corner.
+# Conversion: RL_y = PAGE_H - pdfplumber_top
+PAGE_H = 842
+TEXT_BASELINE_OFFSET = 8
+
+def _rl(top):
+    """Convert pdfplumber top-from-top to ReportLab y-from-bottom."""
+    return PAGE_H - top
+
+def _text_y(top):
+    """Compensate font baseline so visual top aligns with template top."""
+    return _rl(top + TEXT_BASELINE_OFFSET)
 
 def format_money(amount):
-    """Format decimal/float to comma separated 2 decimal places"""
-    if amount is None: return "0.00"
-    return f"{Decimal(amount):,.2f}"
+    if amount is None:
+        return "0.00"
+    return f"{Decimal(str(amount)):,.2f}"
 
-def generate_overlay(booking, template_path):
+# ── Max rows that fit in the table area (top 308 → 510, ~20 pt/row) ─────────
+MAX_ROWS = 10
+ITEM_TABLE_TOP = 320
+PRICE_VALUE_Y_NUDGE = 0
+UNIT_PRICE_RIGHT_X = 462
+AMOUNT_RIGHT_X = 568
+TOTALS_RIGHT_X = 567
+
+def generate_overlay(booking):
     """
-    Generate overlay PDF containing text data at specific coordinates.
-    The coordinate system in PDF starts from bottom-left (0,0).
-    A4 is 595.27 x 841.89 points.
+    Build a transparent overlay PDF whose text lands exactly on the
+    MCOT quotation template fields.
+
+        Field positions (verified with pdfplumber on quotation_template.pdf):
+            Table row 1    y=_text_y(332), row_h=20
+
+        Important: per user request we write
+            - rented equipment items
+            - prices
+            - totals block (total/discount/remaining/vat/net total)
     """
     packet = io.BytesIO()
     can = canvas.Canvas(packet, pagesize=A4)
-    
-    # We will use Sarabun or default if not found
+
     try:
-        can.setFont("Sarabun", 11)
-        font_name = "Sarabun"
-        font_bold = "Sarabun-Bold"
-    except:
-        can.setFont("Helvetica", 11)
-        font_name = "Helvetica"
-        font_bold = "Helvetica-Bold"
+        can.setFont("Sarabun", 10)
+        fn, fb = "Sarabun", "Sarabun-Bold"
+    except Exception:
+        can.setFont("Helvetica", 10)
+        fn, fb = "Helvetica", "Helvetica-Bold"
 
-    # --- Coordinates Configuration (Points from bottom-left) ---
-    # These coordinates need to be tuned to match the exact PDF template provided
-    
-    # Header Dates & IDs
-    can.drawString(480, 725, booking.created_at.strftime("%d/%m/%Y") if booking.created_at else datetime.now().strftime("%d/%m/%Y"))
-    can.drawString(480, 710, f"E - {booking.id:05d}")
-    can.drawString(480, 680, booking.start_time.strftime("%d %b %Y") if booking.start_time else "-")
+    def normal(size=10):
+        can.setFont(fn, size)
 
-    # Customer Details
-    can.drawString(80, 680, str(booking.customer_name))
-    can.drawString(80, 665, str(booking.project_name or "-"))
-    can.drawString(80, 650, "-") # Address
-    can.drawString(80, 620, str(booking.phone or "-"))
-    
-    # Items (Looping)
-    # Origin of table: Left~30, Top~560, LineHeight~20
-    start_y = 550
-    item_height = 20
-    current_y = start_y
-    
-    items = booking.items.all()
-    for idx, item in enumerate(items):
-        can.drawString(40, current_y, str(idx+1))
-        
-        # Details
-        desc = f"ค่าเช่าอุปกรณ์ {item.product.name} ต่อวัน"
-        if item.equipment:
-            desc += f" (S/N: {item.equipment.serial_number})"
-        can.drawString(90, current_y, desc)
-        
-        # Qty
-        can.drawRightString(350, current_y, str(item.quantity))
-        
-        # Price Per Unit
-        can.drawRightString(460, current_y, format_money(item.price_at_booking))
-        
-        # Total
-        subtotal = item.quantity * item.price_at_booking * (booking.rental_days or 1)
-        can.drawRightString(560, current_y, format_money(subtotal))
-        
-        current_y -= item_height
+    def mask(x, y, w, h):
+        can.setFillColorRGB(1, 1, 1)
+        can.rect(x, y, w, h, fill=1, stroke=0)
+        can.setFillColorRGB(0, 0, 0)
 
-    # Summary Totals (Bottom Right)
-    # Subtotal
-    can.drawRightString(560, 240, format_money(booking.calculated_total or booking.total_price))
-    # Discount
-    can.drawRightString(560, 225, format_money(booking.discount_amount))
-    
-    net_price = booking.total_price * Decimal('100') / Decimal('107')
-    vat = booking.total_price - net_price
-    
-    # Net Price
-    can.drawRightString(560, 210, format_money(net_price))
-    # VAT
-    can.drawRightString(560, 195, format_money(vat))
-    
-    # Grand Total
-    can.setFont(font_bold, 12)
-    can.drawRightString(560, 180, format_money(booking.total_price))
+    normal(10)
 
-    # --- Signatures ---
-    # Optional dynamic injection
-    
+    # ── Item Table ───────────────────────────────────────────────────────────
+    items    = list(booking.items.select_related('product').all())
+    rental_days = booking.rental_days or 1
+
+    rows = []
+    for item in items:
+        desc = f"ค่าเช่า {item.product.name}"
+        rows.append((desc, item.quantity, item.price_at_booking))
+
+    start_y = _text_y(ITEM_TABLE_TOP)
+    row_h   = 20
+
+    for idx, (desc, qty, unit_price) in enumerate(rows[:MAX_ROWS]):
+        y = start_y - idx * row_h
+        subtotal = Decimal(str(qty)) * Decimal(str(unit_price)) * rental_days
+        can.drawString(45, y, str(idx + 1))
+        can.drawString(90, y, desc[:62])
+        can.drawRightString(370, y, str(qty))
+        can.drawRightString(UNIT_PRICE_RIGHT_X, y + PRICE_VALUE_Y_NUDGE, format_money(unit_price))
+        can.drawRightString(AMOUNT_RIGHT_X, y + PRICE_VALUE_Y_NUDGE, format_money(subtotal))
+
+    # ── Totals Block (bottom-right) ─────────────────────────────────────────
+    # Template rows:
+    # 516: TOTAL PRICE, 535: Discount, 552: Remaining, 570: VAT 7%, 588: NET TOTAL
+    total_price = sum(
+        Decimal(str(qty)) * Decimal(str(unit_price)) * rental_days
+        for _, qty, unit_price in rows
+    )
+    discount = Decimal(str(booking.discount_amount or 0))
+    remaining = max(total_price - discount, Decimal("0"))
+    vat = (remaining * Decimal("0.07")).quantize(Decimal("0.01"))
+    net_total = remaining + vat
+
+    y_total = _text_y(516)
+    y_discount = _text_y(535)
+    y_remaining = _text_y(552)
+    y_vat = _text_y(570)
+    y_net = _text_y(588)
+
+    # Clear placeholder values from template before drawing dynamic amounts.
+    for y_pos in (y_total, y_discount, y_remaining, y_vat, y_net):
+        mask(520, y_pos - 2, 48, 13)
+
+    can.drawRightString(TOTALS_RIGHT_X, y_total, format_money(total_price))
+    can.drawRightString(TOTALS_RIGHT_X, y_discount, format_money(discount))
+    can.drawRightString(TOTALS_RIGHT_X, y_remaining, format_money(remaining))
+    can.drawRightString(TOTALS_RIGHT_X, y_vat, format_money(vat))
+    can.drawRightString(TOTALS_RIGHT_X, y_net, format_money(net_total))
+
     can.save()
     packet.seek(0)
     return packet
 
-def merge_pdf_with_template(booking, template_abspath, output_abspath):
+
+def generate_quotation_pdf(booking, template_abspath):
     """
-    Takes the template PDF, generates text overlay, and merges them.
+    Merge the text overlay onto the MCOT quotation template PDF and return
+    the final PDF as bytes.
     """
-    # Create overlay
-    overlay_pdf = generate_overlay(booking, template_abspath)
-    overlay_reader = PdfReader(overlay_pdf)
-    
-    # Read template
+    overlay_reader  = PdfReader(generate_overlay(booking))
     template_reader = PdfReader(template_abspath)
-    template_page = template_reader.pages[0]
-    
-    # Merge overlay onto template
-    overlay_page = overlay_reader.pages[0]
-    template_page.merge_page(overlay_page)
-    
-    # Write output
+
+    page = template_reader.pages[0]
+    page.merge_page(overlay_reader.pages[0])
+
     writer = PdfWriter()
-    writer.add_page(template_page)
-    
-    with open(output_abspath, "wb") as output_file:
-        writer.write(output_file)
-    
+    writer.add_page(page)
+
+    out = io.BytesIO()
+    writer.write(out)
+    out.seek(0)
+    return out.read()
+
+
+# ── Legacy alias (kept for backwards compatibility) ─────────────────────────
+def merge_pdf_with_template(booking, template_abspath, output_abspath):
+    pdf_bytes = generate_quotation_pdf(booking, template_abspath)
+    with open(output_abspath, "wb") as f:
+        f.write(pdf_bytes)
     return output_abspath

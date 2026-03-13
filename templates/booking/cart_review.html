@@ -298,6 +298,15 @@
                     window.location.href = "{% url 'store:cart_dates' %}";
                 }
 
+                if (typeof window.mcotTrackEvent === 'function') {
+                    window.mcotTrackEvent('begin_checkout', {
+                        item_count: this.totalQuantity,
+                        value: this.subtotal || 0,
+                        start_date: this.dates.start || null,
+                        end_date: this.dates.end || null
+                    });
+                }
+
                 this.checkPartnerDiscount();
             },
 
@@ -438,6 +447,16 @@
                     const data = await response.json();
 
                     if (data.success) {
+                        if (typeof window.mcotTrackEvent === 'function') {
+                            window.mcotTrackEvent('booking_submitted', {
+                                booking_id: data.booking_id,
+                                item_count: this.totalQuantity,
+                                value: this.finalTotal,
+                                start_date: this.dates.start || null,
+                                end_date: this.dates.end || null
+                            });
+                        }
+
                         // Clear Cart and Dates
                         localStorage.removeItem('mcot_cart');
                         localStorage.removeItem('mcot_booking_dates');
