@@ -164,8 +164,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # ==============================================================================
 # ADMIN CUSTOMIZATION (Custom CSS Theme)
 # ==============================================================================
-ADMIN_SITE_HEADER = 'MCOT Rental Admin'
-ADMIN_SITE_TITLE = 'MCOT Rental Platform'
+ADMIN_SITE_HEADER = 'MCOT Equipment Service Admin'
+ADMIN_SITE_TITLE = 'MCOT Equipment Service'
 ADMIN_INDEX_TITLE = 'Dashboard'
 
 # --- Summernote ---
@@ -218,8 +218,8 @@ EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'true').lower() in ('true', '1', 'yes')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '').strip()
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '').strip()
-# ชื่อที่แสดงเมื่อลูกค้าได้รับเมล (เช่น "MCOT Rental <noreply@...>")
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', '').strip() or (f'MCOT Rental <{EMAIL_HOST_USER}>' if EMAIL_HOST_USER else 'noreply@mcot.net')
+# ชื่อที่แสดงเมื่อลูกค้าได้รับเมล (เช่น "MCOT Equipment Service <noreply@...>")
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', '').strip() or (f'MCOT Equipment Service <{EMAIL_HOST_USER}>' if EMAIL_HOST_USER else 'noreply@mcot.net')
 
 if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD and 'your-email' not in EMAIL_HOST_USER and 'your-16-char' not in (EMAIL_HOST_PASSWORD or ''):
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

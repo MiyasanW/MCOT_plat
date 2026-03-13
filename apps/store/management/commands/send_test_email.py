@@ -26,8 +26,8 @@ class Command(BaseCommand):
             ))
         try:
             n = send_mail(
-                subject='[MCOT Rental] ทดสอบส่งอีเมล',
-                message='นี่คืออีเมลทดสอบจากระบบ MCOT Rental Platform ถ้าคุณได้รับเมลนี้ แสดงว่าการตั้งค่าส่งอีเมลให้ลูกค้าพร้อมใช้งานแล้ว',
+                subject='[MCOT Equipment Service] ทดสอบส่งอีเมล',
+                message='นี่คืออีเมลทดสอบจากระบบ MCOT Equipment Service ถ้าคุณได้รับเมลนี้ แสดงว่าการตั้งค่าส่งอีเมลให้ลูกค้าพร้อมใช้งานแล้ว',
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[to],
                 fail_silently=False,

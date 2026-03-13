@@ -649,6 +649,6 @@ class NotificationAdmin(ModelAdmin):
 # =============================================================================
 # ADMIN SITE CONFIG
 # =============================================================================
-admin.site.site_header = 'MCOT Rental — ระบบจัดการ'
-admin.site.site_title = 'MCOT Rental Admin'
+admin.site.site_header = 'MCOT Equipment Service — ระบบจัดการ'
+admin.site.site_title = 'MCOT Equipment Service Admin'
 admin.site.index_title = 'หน้าแรก'

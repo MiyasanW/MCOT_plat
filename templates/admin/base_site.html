@@ -1,7 +1,7 @@
 {% extends "admin/base.html" %}
 {% load static i18n %}
 
-{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | MCOT Rental Admin{% endblock %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | MCOT Equipment Service Admin{% endblock %}
 
 {% block extrastyle %}{{ block.super }}
 <!-- Google Fonts: Inter & Sarabun -->
@@ -16,7 +16,7 @@
 <a href="{% url 'admin:index' %}" class="mcot-brand">
     <img src="{% static 'images/logo.png' %}" alt="MCOT" class="mcot-logo">
     <div class="mcot-brand-text">
-        <span class="mcot-brand-title">MCOT Rental</span>
+        <span class="mcot-brand-title">MCOT Equipment Service</span>
         <span class="mcot-brand-subtitle">Admin Panel</span>
     </div>
 </a>

@@ -1,10 +1,10 @@
-# AI Context: MCOT Rental Platform (Updated)
+# AI Context: MCOT Equipment Service (Updated)
 
 This file is a practical handoff note for the next AI pass.
 
 ## Project Snapshot
 
-- Name: MCOT Rental Platform
+- Name: MCOT Equipment Service
 - Stack: Django 4.2, Python 3.9, django-allauth, Tailwind via CDN, Alpine.js
 - Main domain: equipment/studio/package booking, quotation flow, payment confirmation
 - Cart source of truth: localStorage key `mcot_cart`

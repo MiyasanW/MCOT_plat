@@ -34,7 +34,7 @@ class Command(BaseCommand):
         site_id = getattr(settings, 'SITE_ID', 1)
         site = Site.objects.get(id=site_id)
         site.domain = domain
-        site.name = site.name or f'MCOT Rental ({domain})'
+        site.name = site.name or f'MCOT Equipment Service ({domain})'
         site.save()
         self.stdout.write(self.style.SUCCESS(f'ตั้งค่า Site (id={site_id}) เป็น domain: {domain} แล้ว'))
         self.stdout.write('ลิงก์ในอีเมล (รีเซ็ตรหัสผ่าน ฯลฯ) จะชี้ไปที่นี้')

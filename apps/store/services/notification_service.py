@@ -159,7 +159,7 @@ class NotificationService:
             plain_message = strip_tags(html_message)
             
             send_mail(
-                subject=f"[MCOT Rental] {subject} #{booking.id}",
+                subject=f"[MCOT Equipment Service] {subject} #{booking.id}",
                 message=plain_message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[booking.customer_email],
@@ -205,10 +205,10 @@ class NotificationService:
                 pdf_buffer.close()
             
             # 3. Compose email
-            subject = f"[MCOT Rental] ใบเสนอราคา (Quotation) #{booking.id}"
+            subject = f"[MCOT Equipment Service] ใบเสนอราคา (Quotation) #{booking.id}"
             body = (
                 f"เรียน {booking.customer_name},\n\n"
-                f"ขอบคุณที่สนใจใช้บริการเช่าอุปกรณ์ MCOT Rental\n"
+                f"ขอบคุณที่สนใจใช้บริการ MCOT Equipment Service\n"
                 f"แนบใบเสนอราคาสำหรับการจอง #{booking.id} มาพร้อมนี้\n\n"
                 f"รายละเอียดโดยสรุป:\n"
                 f"- โปรเจกต์: {booking.project_name or '-'}\n"
@@ -218,7 +218,7 @@ class NotificationService:
                 f"กรุณาตรวจสอบรายละเอียดในไฟล์แนบ\n"
                 f"หากมีข้อสงสัยสามารถตอบกลับอีเมลนี้ หรือโทร 02-201-6000\n\n"
                 f"ขอแสดงความนับถือ,\n"
-                f"MCOT Rental Platform\n"
+                f"MCOT Equipment Service\n"
             )
             
             email = EmailMessage(

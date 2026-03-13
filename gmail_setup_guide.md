@@ -1,4 +1,4 @@
-# การตั้งค่า Gmail SMTP สำหรับ MCOT Rental Platform
+# การตั้งค่า Gmail SMTP สำหรับ MCOT Equipment Service
 
 ระบบใช้ Gmail SMTP สำหรับส่งอีเมล (ใบเสนอราคา, แจ้งเตือนการจอง ฯลฯ) ต้องใช้ **App Password** ไม่ใช้รหัสผ่านล็อกอินปกติ
 
@@ -13,7 +13,7 @@
 
 3. **สร้าง App Password**  
    - ในหน้า Security ค้นหา **"App passwords"** (รหัสผ่านสำหรับแอป)  
-   - ด้านล่างเลือกแอป: **Mail** และอุปกรณ์: **Other** แล้วตั้งชื่อ เช่น `MCOT Rental`  
+   - ด้านล่างเลือกแอป: **Mail** และอุปกรณ์: **Other** แล้วตั้งชื่อ เช่น `MCOT Equipment Service`  
    - กด **Create** จะได้รหัส 16 ตัว (รูปแบบ `xxxx xxxx xxxx xxxx`)  
    - **Copy รหัสนี้** (ลบช่องว่างก็ได้) ไว้ใส่ใน `.env`
 
@@ -32,7 +32,7 @@ EMAIL_HOST_PASSWORD=xxxxyyyyzzzzwwww
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USE_TLS=True
-DEFAULT_FROM_EMAIL=MCOT Rental <your-email@gmail.com>
+DEFAULT_FROM_EMAIL=MCOT Equipment Service <your-email@gmail.com>
 ```
 
 - แทน `your-email@gmail.com` ด้วยอีเมลจริง  
