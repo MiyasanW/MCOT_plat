@@ -193,3 +193,73 @@ python3 manage.py test apps.store.tests
 - templates/: พฤติกรรมจริงของหน้าเว็บฝั่งผู้ใช้งาน
 
 เอกสารฉบับนี้ตั้งใจให้เป็นแหล่งอ้างอิงเชิงปฏิบัติสำหรับทีมพัฒนา หากมีการเปลี่ยน business rule หรือ flow การจอง ให้ปรับเอกสารนี้พร้อมกับการเปลี่ยนโค้ดทุกครั้ง
+
+---
+
+## 13) Runbook (Deploy / Rollback / Incident)
+
+ส่วนนี้เป็นขั้นตอนปฏิบัติการแบบสั้นสำหรับทีมที่ดูแล production
+
+### 13.1 Pre-Deploy Checklist
+
+1. ตรวจ branch และ commit ที่จะขึ้นระบบ
+2. รันตรวจพื้นฐานในเครื่องพัฒนา
+
+```bash
+python3 manage.py check
+python3 manage.py test apps.store.tests_cancellation apps.store.tests_state_transitions
+```
+
+3. ตรวจว่าไฟล์ที่ไม่ควร track ไม่ติดขึ้น git status
+4. ยืนยันค่า environment สำคัญในเซิร์ฟเวอร์ โดยเฉพาะ `DATABASE_URL`, `SECRET_KEY`, `ALLOWED_HOSTS`
+
+### 13.2 Post-Deploy Smoke Test
+
+หลัง deploy ให้ทดสอบทันทีด้วยสคริปต์
+
+```bash
+BASE_URL=https://mcotequipmentservices.mcot.net ./scripts/smoke_test.sh
+```
+
+เกณฑ์ผ่านเบื้องต้น:
+1. หน้า Home, Catalog, Login ตอบกลับ 200/301/302
+2. หน้า `my-bookings` redirect ไป login ได้ปกติเมื่อยังไม่ล็อกอิน
+
+### 13.3 Rollback แบบเร็ว
+
+กรณี deploy แล้วมีปัญหา ให้ rollback ด้วยวิธีที่คาดเดาได้
+
+```bash
+git log --oneline -n 5
+git checkout <last_known_good_commit>
+python3 manage.py migrate --noinput
+python3 manage.py collectstatic --noinput
+sudo systemctl restart gunicorn
+```
+
+จากนั้นรัน smoke test ซ้ำอีกรอบ
+
+### 13.4 Monitoring ขั้นต่ำบน VPS
+
+มีสคริปต์ตรวจสุขภาพระบบ
+
+```bash
+./scripts/health_check_vps.sh
+```
+
+สิ่งที่ตรวจ:
+1. service (`gunicorn`) active
+2. HTTP ตอบกลับจากโดเมนหลัก
+3. disk usage ไม่เกิน threshold
+
+ตัวอย่างตั้ง cron ทุก 5 นาที:
+
+```bash
+*/5 * * * * /home/ubuntu/MCOT_Rental_Platform/scripts/health_check_vps.sh >> /var/log/mcot-health.log 2>&1
+```
+
+### 13.5 Known Ops Pitfall
+
+1. หลีกเลี่ยงใช้ key ซ้ำซ้อน (`DATABASE_URL` กับ `DATABASES_URL`) ใน production
+2. ให้ใช้ `DATABASE_URL` เพียงตัวเดียวเป็นมาตรฐาน
+3. หากเจอ working tree สกปรกระหว่าง deploy ให้ stash ก่อน pull แล้ว cleanup หลัง deploy ทุกครั้ง
