@@ -263,3 +263,25 @@ sudo systemctl restart gunicorn
 1. หลีกเลี่ยงใช้ key ซ้ำซ้อน (`DATABASE_URL` กับ `DATABASES_URL`) ใน production
 2. ให้ใช้ `DATABASE_URL` เพียงตัวเดียวเป็นมาตรฐาน
 3. หากเจอ working tree สกปรกระหว่าง deploy ให้ stash ก่อน pull แล้ว cleanup หลัง deploy ทุกครั้ง
+
+### 13.6 Database Backup อัตโนมัติ
+
+มีสคริปต์ backup PostgreSQL ในโปรเจกต์:
+
+```bash
+./scripts/db_backup.sh
+```
+
+พฤติกรรมของสคริปต์:
+1. อ่าน `DATABASE_URL` จาก environment หรือ `.env`
+2. ทำ `pg_dump` แล้วบีบอัดเป็น `.sql.gz`
+3. เก็บไฟล์ไว้ที่ `backups/postgres/`
+4. ลบไฟล์ที่เก่าเกินค่า retention (ค่าเริ่มต้น 14 วัน)
+
+ตัวอย่างตั้ง cron รันทุกวันเวลา 02:30:
+
+```bash
+30 2 * * * /home/ubuntu/MCOT_Rental_Platform/scripts/db_backup.sh >> /var/log/mcot-db-backup.log 2>&1
+```
+
+แนะนำให้ตรวจ log และขนาดไฟล์ backup อย่างน้อยสัปดาห์ละ 1 ครั้ง
