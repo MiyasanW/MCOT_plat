@@ -285,3 +285,32 @@ sudo systemctl restart gunicorn
 ```
 
 แนะนำให้ตรวจ log และขนาดไฟล์ backup อย่างน้อยสัปดาห์ละ 1 ครั้ง
+
+### 13.7 Database Restore (ฉุกเฉิน/กู้คืนข้อมูล)
+
+มีสคริปต์ restore ในโปรเจกต์:
+
+```bash
+./scripts/db_restore.sh <backup_file.sql.gz>
+```
+
+คุณสมบัติด้านความปลอดภัย:
+1. บังคับยืนยันด้วย `CONFIRM_RESTORE=YES`
+2. รองรับ dry run ด้วย `DRY_RUN=1`
+3. ค่าเริ่มต้นจะทำ backup ก่อน restore อีกครั้ง (`AUTO_BACKUP_BEFORE_RESTORE=1`)
+
+ตัวอย่าง dry run:
+
+```bash
+CONFIRM_RESTORE=YES DRY_RUN=1 ./scripts/db_restore.sh backups/postgres/<file>.sql.gz
+```
+
+ตัวอย่าง restore จริง:
+
+```bash
+CONFIRM_RESTORE=YES ./scripts/db_restore.sh backups/postgres/<file>.sql.gz
+```
+
+คำเตือน:
+1. ใช้ restore เฉพาะเมื่อจำเป็นและผ่านการอนุมัติจากผู้รับผิดชอบ
+2. ควรหยุดรับทราฟฟิกชั่วคราวก่อน restore เพื่อลดความเสี่ยงข้อมูลไม่สอดคล้อง

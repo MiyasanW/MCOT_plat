@@ -40,7 +40,13 @@ git status --short
 ./scripts/db_backup.sh
 ```
 
-3. Ensure enough disk space for backup and static files.
+3. Validate restore command path (dry run) before release.
+
+```bash
+CONFIRM_RESTORE=YES DRY_RUN=1 ./scripts/db_restore.sh backups/postgres/<file>.sql.gz
+```
+
+4. Ensure enough disk space for backup and static files.
 
 ## 4) Deploy Steps
 
@@ -70,6 +76,12 @@ BASE_URL=https://mcotequipmentservices.mcot.net ./scripts/smoke_test.sh
 2. Re-run migrate/collectstatic.
 3. Restart service.
 4. Re-run smoke test.
+
+If rollback needs data restore:
+
+```bash
+CONFIRM_RESTORE=YES ./scripts/db_restore.sh backups/postgres/<file>.sql.gz
+```
 
 ## 7) Sign-Off
 
