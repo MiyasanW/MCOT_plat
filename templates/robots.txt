@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+Allow: /catalog/
+Allow: /studios/
+Allow: /packages/
+Allow: /services/
+Allow: /contact/
+Allow: /terms/
+
+Disallow: /admin/
+Disallow: /staff/
+Disallow: /cart/
+Disallow: /my-bookings/
+Disallow: /booking/
+Disallow: /api/
+Disallow: /accounts/
+Disallow: /go/
+Disallow: /summernote/
+
+Sitemap: https://mcotequipmentservices.mcot.net/sitemap.xml

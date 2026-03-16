@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django.contrib.sites',  # Required by allauth
+    'django.contrib.sitemaps',
 
     # --- Third Party ---
     'import_export',

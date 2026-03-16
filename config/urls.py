@@ -17,17 +17,29 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from django.urls import path, include
+from django.views.generic import TemplateView
 from .admin_site import MCOTAdminSite
+from apps.store.sitemaps import StaticViewSitemap, ProductSitemap, StudioSitemap, PackageSitemap
 
 # Swap the class of the default admin.site so both
 # dashboard and sidebar use our custom ordering.
 admin.site.__class__ = MCOTAdminSite
+
+sitemaps = {
+    'static': StaticViewSitemap,
+    'products': ProductSitemap,
+    'studios': StudioSitemap,
+    'packages': PackageSitemap,
+}
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),  # Login/Signup + Google (ต้องอยู่ก่อน auth)
     path('accounts/', include('django.contrib.auth.urls')),  # password_reset, password_change ฯลฯ
     path('summernote/', include('django_summernote.urls')),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     path('', include('apps.store.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

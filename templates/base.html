@@ -25,6 +25,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MCOT Equipment Service{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}บริการเช่าอุปกรณ์การผลิตระดับ Broadcast จาก อสมท — กล้อง เลนส์ ระบบแสง เสียง สตูดิโอ และรถ OB 4K พร้อมทีมงานมืออาชีพ{% endblock %}">
+    <meta name="robots" content="{% block meta_robots %}index, follow{% endblock %}">
+    <link rel="canonical" href="https://mcotequipmentservices.mcot.net{% block canonical_path %}{{ request.path }}{% endblock %}">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="MCOT Equipment Service">
+    <meta property="og:title" content="{% block og_title %}{% block title2 %}MCOT Equipment Service{% endblock %}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}บริการเช่าอุปกรณ์การผลิตระดับ Broadcast จาก อสมท — กล้อง เลนส์ ระบบแสง เสียง สตูดิโอ และรถ OB 4K พร้อมทีมงานมืออาชีพ{% endblock %}">
+    <meta property="og:url" content="https://mcotequipmentservices.mcot.net{{ request.path }}">
+    <meta property="og:image" content="{% block og_image %}https://mcotequipmentservices.mcot.net{% load static %}{% static 'images/og-default.jpg' %}{% endblock %}">
 
     <!-- Google Fonts: Inter & Sarabun -->
     <link
