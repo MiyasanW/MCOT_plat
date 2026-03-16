@@ -31,6 +31,7 @@ for h in _for_dev:
 ALLOWED_HOSTS = _allowed
 
 CSRF_TRUSTED_ORIGINS = [
+    'https://mcotequipmentservices.mcot.net',
     'https://*.serveo.net',
     'https://*.serveousercontent.com',
     'https://*.ngrok.io',

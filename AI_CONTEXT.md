@@ -62,6 +62,13 @@ This file is a practical handoff note for the next AI pass.
 - `python3 manage.py check`
 - `python3 manage.py test apps.store.tests_auth -v 1`
 
+## Deployment to VPS (How-to)
+
+- Deployment is typically handled via `bash deploy_to_vps.sh` from the project root.
+- **Process**: The script commits local code, pushes it to the `v2` branch, and establishes an SSH session (`43.173.251.244` on port `8022`) to pull the code, install requirements, migrate, and collect static files automatically on the VPS.
+- **Manual Actions**: If the background server needs a restart, you may need to SSH into the VPS and restart the `nohup python3 manage.py runserver 0.0.0.0:8000 &` process or system daemon manually, since the script only handles code sync and migrations.
+- Do not run the deployment blindly; always check stability locally with tests and mock DB.
+
 ## Notes for Next AI Pass
 
 - Assume there may be many modified files in a dirty worktree; never reset unrelated user work.
