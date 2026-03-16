@@ -17,13 +17,16 @@ STORE_MODEL_ORDER = [
     'Product',            # 📦 สินค้า
     'ProductionVehicle',  # 🚗 ยานพาหนะ
     'Studio',             # 🎬 สตูดิโอ
-    'Staff',              # 👤 พนักงาน
     'Equipment',          # 🔧 อุปกรณ์รายชิ้น
     'Package',            # 📦 แพ็คเกจ
-    'ProductCategory',    # ⚙ หมวดหมู่
-    'StaffPosition',      # ⚙ ตำแหน่ง
-    'IssueReport',        # 🔔 Issue reports
-    'Notification',       # 🔔 Notifications
+    'ServiceOffer',       # 🎥 บริการ
+    'ProductCategory',    # ⚙ หมวดหมู่สินค้า
+    'ServiceCategory',    # ⚙ หมวดหมู่บริการ
+    'PromotionCode',      # 🏷 โค้ดส่วนลด
+    'Profile',            # 👤 โปรไฟล์ผู้ใช้
+    'IssueReport',        # 🔔 รายงานปัญหา
+    'Notification',       # 🔔 การแจ้งเตือน
+    'SplashConfig',       # 🖥 Splash Screen
 ]
 
 

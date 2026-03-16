@@ -200,6 +200,10 @@ class GroupAdmin(ModelAdmin):
 
 from django_summernote.admin import SummernoteModelAdmin
 
+# Slug ที่ใช้แยก ยานพาหนะ ออกจากสินค้าทั่วไป
+VEHICLE_CATEGORY_SLUG = 'vehicle'
+
+
 @admin.register(Product)
 class ProductAdmin(SummernoteModelAdmin, ImportExportModelAdmin):
     list_display = ['name', 'category', 'price', 'quantity', 'is_active']
@@ -207,15 +211,19 @@ class ProductAdmin(SummernoteModelAdmin, ImportExportModelAdmin):
     list_filter = ['category', 'is_active']
     summernote_fields = ('description',)
 
+    def get_queryset(self, request):
+        """ซ่อนสินค้าที่อยู่ในหมวด 'ยานพาหนะ' — ให้จัดการผ่านหน้า Vehicles แทน"""
+        return super().get_queryset(request).exclude(category__slug=VEHICLE_CATEGORY_SLUG)
+
     def has_view_permission(self, request, obj=None):
         return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
 
     def has_change_permission(self, request, obj=None):
         return request.user.is_superuser or is_web_admin(request.user)
-    
+
     def has_add_permission(self, request):
         return request.user.is_superuser or is_web_admin(request.user)
-    
+
     def has_delete_permission(self, request, obj=None):
         return request.user.is_superuser or is_web_admin(request.user)
 
@@ -224,16 +232,31 @@ class ProductAdmin(SummernoteModelAdmin, ImportExportModelAdmin):
 class ProductionVehicleAdmin(ModelAdmin):
     list_display = ['name', 'price', 'quantity', 'is_active']
     search_fields = ['name']
+    list_filter = ['is_active']
+
+    def get_queryset(self, request):
+        """แสดงเฉพาะสินค้าในหมวด 'ยานพาหนะ'"""
+        return super().get_queryset(request).filter(category__slug=VEHICLE_CATEGORY_SLUG)
+
+    def save_model(self, request, obj, form, change):
+        """Auto-assign หมวด 'ยานพาหนะ' เมื่อเพิ่มยานพาหนะใหม่"""
+        from apps.store.models import ProductCategory
+        vehicle_cat, _ = ProductCategory.objects.get_or_create(
+            slug=VEHICLE_CATEGORY_SLUG,
+            defaults={'name': 'ยานพาหนะ'},
+        )
+        obj.category = vehicle_cat
+        super().save_model(request, obj, form, change)
 
     def has_view_permission(self, request, obj=None):
         return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)
 
     def has_change_permission(self, request, obj=None):
         return request.user.is_superuser or is_web_admin(request.user)
-    
+
     def has_add_permission(self, request):
         return request.user.is_superuser or is_web_admin(request.user)
-    
+
     def has_delete_permission(self, request, obj=None):
         return request.user.is_superuser or is_web_admin(request.user)
 
@@ -281,9 +304,16 @@ class EquipmentAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
 
 @admin.register(Studio)
 class StudioAdmin(ModelAdmin):
-    list_display = ['name', 'daily_rate', 'usage_count', 'last_used']
+    list_display = ['name', 'daily_rate', 'usage_count', 'last_used', 'image_thumb']
     search_fields = ['name']
     inlines = [StudioHistoryInline]
+    readonly_fields = ['image_thumb']
+
+    @admin.display(description='รูปภาพ')
+    def image_thumb(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="height:60px;border-radius:4px;">', obj.image.url)
+        return "-"
 
     @admin.display(description='ใช้งาน (ครั้ง)')
     def usage_count(self, obj):

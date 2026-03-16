@@ -1,36 +1,20 @@
 {% extends "admin/base_site.html" %}
 {% load i18n static log %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static "admin/css/dashboard.css" %}">{% endblock %}
-
 {% block coltype %}colMS{% endblock %}
 
 {% block bodyclass %}{{ block.super }} dashboard{% endblock %}
 
 {% block nav-breadcrumbs %}{% endblock %}
 
-{# nav-sidebar block is NOT overridden here, so it inherits from base.html and shows the sidebar #}
-
 {% block content %}
 <div id="content-main">
-  <!-- Dashboard & Reports (รายงานหลัก) -->
-  <div class="module" style="margin-bottom: 20px;">
-    <h2>📊 {% trans "Dashboard & Reports" %}</h2>
-    <div style="padding: 15px;">
-        <p class="mb-4">{% trans "ภาพรวมการจองและรายงานใบจอง (กรองช่วงวันที่, Export CSV)." %}</p>
-        <a href="{% url 'store:staff_dashboard' %}" class="button" style="margin-right: 8px;">{% trans "Dashboard" %}</a>
-        <a href="{% url 'store:staff_reports' %}" class="button">{% trans "รายงานใบจอง" %}</a>
-    </div>
-  </div>
-
-  <!-- Equipment Management -->
-  <div class="module" style="margin-bottom: 20px;">
-    <h2>⚡ {% trans "Equipment Management" %}</h2>
-    <div style="padding: 15px;">
-        <p class="mb-4">{% trans "Tools for tracking and managing equipment history." %}</p>
-        <a href="{% url 'store:equipment_history_search' %}" class="button">
-        🔍 {% trans "Search Equipment History" %}
-        </a>
+    <div class="module mcot-admin-module">
+        <h2>{% trans "Quick Links" %}</h2>
+        <div class="mcot-admin-links">
+                <a href="{% url 'store:staff_dashboard' %}" class="button">{% trans "Dashboard" %}</a>
+                <a href="{% url 'store:staff_reports' %}" class="button">{% trans "รายงานใบจอง" %}</a>
+                <a href="{% url 'store:equipment_history_search' %}" class="button">{% trans "ประวัติอุปกรณ์" %}</a>
     </div>
   </div>
 

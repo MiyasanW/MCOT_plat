@@ -59,6 +59,7 @@ class Profile(models.Model):
     partner_discount_percent = models.IntegerField(default=10, verbose_name="เปอร์เซ็นต์ส่วนลดพาร์ทเนอร์")
     
     def __str__(self): return f"Profile of {self.user.username}"
+    class Meta: verbose_name_plural = "โปรไฟล์ผู้ใช้ (Profiles)"
 
 # Profile auto-creation via signals is removed to prevent IntegrityError with Admin inlines.
 # Profile creation is now explicitly handled in UserAdmin (via ProfileInline) and UserRegisterForm.
@@ -139,6 +140,7 @@ class IssueReport(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
+    class Meta: verbose_name_plural = "รายงานปัญหา (Issue Reports)"
 
 class Equipment(models.Model):
     """อุปกรณ์รายชิ้น (Physical Asset) - รองรับ Barcode/QR"""
@@ -157,6 +159,7 @@ class Equipment(models.Model):
 class Studio(models.Model):
     name = models.CharField(max_length=200, verbose_name="ชื่อสตูดิโอ")
     description = models.TextField(verbose_name="รายละเอียด", blank=True, null=True)
+    image = models.ImageField(upload_to='studios/', null=True, blank=True, verbose_name="รูปภาพสตูดิโอ")
     daily_rate = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="ราคาเช่าต่อวัน")
     turnaround_time = models.DurationField(default=timedelta(hours=2), verbose_name="เวลาทำความสะอาด (Buffer Time)")
     
@@ -387,3 +390,4 @@ class Notification(models.Model):
     is_read = models.BooleanField(default=False)
     notification_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='info')
     created_at = models.DateTimeField(auto_now_add=True)
+    class Meta: verbose_name_plural = "การแจ้งเตือน (Notifications)"
