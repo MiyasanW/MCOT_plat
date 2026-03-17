@@ -1,6 +1,5 @@
 from django.utils import timezone
 from django.db.models import Sum, Q
-from django.core.cache import cache
 from datetime import timedelta
 
 # Import models inside functions to avoid circular imports if strictly necessary, 
@@ -30,27 +29,11 @@ class AvailabilityService:
         if not start_time or not end_time:
             return 0
 
-        # Query หาการจองที่ทับซ้อนกับช่วงเวลาที่เลือก
-        # สถานะที่ถือว่า 'ตัดสต็อก':
-        # - draft (จองชั่วคราว - ตัดสต็อกเพื่อกันคนแย่ง)
-        # - quotation_sent (ส่งใบเสนอราคา)
-        # - pending_deposit (รอจ่ายมัดจำ)
-        # - approved (ยืนยันแล้ว)
-        # - active (กำลังเช่าอยู่)
-        # (ส่วน completed/cancelled จะคืนสต็อกแล้ว ไม่นับรวม)
-        
-        # เงื่อนไขการหมดอายุของ Draft (Passive Expiry):
-        # - Draft จะหมดอายุและคืนสต็อกอัตโนมัติถ้าผ่านไป 6 ชั่วโมง
-        # - สถานะอื่น (Approved/Active) จะไม่หมดอายุที่นี่
-        
+        # Draft ตัดสต็อกเฉพาะช่วงยังไม่หมดอายุ; สถานะอื่นใช้ค่าคงที่กลางจาก Booking model.
         expiry_time = timezone.now() - timedelta(hours=6)
-        
-        # การจองที่นำมาคิดคำนวณ:
-        # 1. เป็นสถานะ 'draft' และสร้างหลัง expiry_time (Draft ใหม่ๆ)
-        # 2. เป็นสถานะอื่นๆ ที่ไม่ใช่ draft (Confirmed/Active etc.)
-        
+
         status_filter = Q(booking__status='draft', booking__created_at__gte=expiry_time) | \
-                        Q(booking__status__in=['pending', 'approved', 'active', 'overdue'])
+                Q(booking__status__in=Booking.STOCK_BLOCKING_STATUSES)
         
         # สูตรหาการทับซ้อนของช่วงเวลา (Overlap Logic):
         # จองเริ่ม < เวลาที่เช็คจบ AND จองจบ > เวลาที่เช็คเริ่ม
@@ -116,7 +99,7 @@ class AvailabilityService:
         """
         expiry_time = timezone.now() - timedelta(hours=6)
         status_filter = Q(status='draft', created_at__gte=expiry_time) | \
-                Q(status__in=['pending', 'approved', 'active', 'overdue'])
+            Q(status__in=Booking.STOCK_BLOCKING_STATUSES)
 
         query = status_filter & \
                 Q(start_time__lt=end_time) & \

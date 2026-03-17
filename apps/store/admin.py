@@ -562,7 +562,7 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
         # updated = queryset.filter(status__in=['draft', 'pending']).update(status='approved')
         # loop to trigger notifications
         count = 0
-        for booking in queryset.filter(status__in=['draft', 'pending']):
+        for booking in queryset.filter(status__in=Booking.STAFF_CANCELLABLE_STATUSES):
             booking.status = 'approved'
             booking.save()
             NotificationService.send_notification(booking, 'approved')
@@ -595,13 +595,13 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
 
     @admin.action(description='▶ เริ่มใช้งาน (Active)')
     def action_mark_active(self, request, queryset):
-        updated = queryset.filter(status='approved').update(status='active')
+        updated = queryset.filter(status__in=Booking.STAFF_ACTIVATABLE_STATUSES).update(status='active')
         self.message_user(request, f'▶ เปิดใช้งานแล้ว {updated} รายการ')
 
     @admin.action(description='✔ คืนของครบ (Completed)')
     def action_mark_completed(self, request, queryset):
         # We can complete from active or overdue
-        updated = queryset.filter(status__in=['active', 'overdue']).update(status='completed')
+        updated = queryset.filter(status__in=Booking.COMPLETABLE_STATUSES).update(status='completed')
         self.message_user(request, f'✔ คืนของครบแล้ว {updated} รายการ')
 
     @admin.action(description='⚠️ เกินกำหนด (Overdue)')

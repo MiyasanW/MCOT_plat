@@ -180,8 +180,10 @@ def booking_action_api(request, booking_id):
             booking.save(update_fields=['status', 'expires_at'])
             
         elif action == 'confirm_payment':
-            if booking.payment_status not in ('unpaid', 'pending'):
+            if booking.payment_status not in Booking.PAYMENT_CONFIRMABLE_STATUSES:
                 raise ValueError("ยืนยันรับเงินได้เฉพาะใบจองที่ยังไม่ชำระหรือรอตรวจสอบ")
+            if booking.status not in Booking.STAFF_CANCELLABLE_STATUSES:
+                raise ValueError("ยืนยันรับเงินได้เฉพาะใบจองที่รอดำเนินการ")
             booking.payment_status = 'paid'
             booking.expires_at = None
             booking.save(update_fields=['payment_status', 'expires_at'])
@@ -189,22 +191,22 @@ def booking_action_api(request, booking_id):
 
         elif action == 'skip_deposit':
             # ข้ามขั้นตอนมัดจำ (บางรายไม่เก็บค่ามัดจำ)
-            if booking.status not in ('draft', 'pending'):
+            if booking.status not in Booking.STAFF_CANCELLABLE_STATUSES:
                 raise ValueError("ใช้ได้เฉพาะใบจองที่รอตรวจสอบหรือรอดำเนินการ")
             booking.payment_status = 'waived'
             booking.expires_at = None
             booking.save(update_fields=['payment_status', 'expires_at'])
             
         elif action == 'mark_active':
-            if booking.status == 'pending' and booking.payment_status not in ('paid', 'waived'):
+            if booking.status == 'pending' and booking.payment_status not in Booking.PAYMENT_SETTLED_STATUSES:
                 raise ValueError("ต้องยืนยันการชำระเงินหรือข้ามมัดจำก่อนปล่อยของ")
-            if booking.status not in ('pending', 'approved'):
+            if booking.status not in Booking.STAFF_ACTIVATABLE_STATUSES:
                 raise ValueError("เปลี่ยนเป็นกำลังใช้งานได้เฉพาะใบจองที่พร้อมปล่อยของเท่านั้น")
             booking.status = 'active'
             booking.save(update_fields=['status'])
             
         elif action == 'mark_completed':
-            if booking.status not in ('active', 'overdue'):
+            if booking.status not in Booking.COMPLETABLE_STATUSES:
                 raise ValueError("ปิดงานได้เฉพาะใบจองที่กำลังใช้งานหรือเกินกำหนด")
             booking.status = 'completed'
             booking.save(update_fields=['status'])

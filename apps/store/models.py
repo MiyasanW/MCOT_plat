@@ -218,6 +218,13 @@ class Booking(models.Model):
         ('completed', 'คืนของครบ (Completed)'),
         ('cancelled', 'ยกเลิก (Cancelled)'),
     ]
+    # Shared flow constants to keep views/services/admin rules aligned.
+    STOCK_BLOCKING_STATUSES = ('pending', 'approved', 'active', 'overdue')
+    STAFF_ACTIVATABLE_STATUSES = ('pending', 'approved')
+    COMPLETABLE_STATUSES = ('active', 'overdue')
+    STAFF_CANCELLABLE_STATUSES = ('draft', 'pending')
+    PAYMENT_SETTLED_STATUSES = ('paid', 'waived')
+    PAYMENT_CONFIRMABLE_STATUSES = ('unpaid', 'pending')
     
     # Customer Info
     customer_name = models.CharField(max_length=200, verbose_name="ชื่อลูกค้า") # E.g. Contact Person
@@ -269,7 +276,7 @@ class Booking(models.Model):
 
     @property
     def is_expired(self):
-        if self.status in ['pending', 'draft'] and self.payment_status == 'unpaid' and self.expires_at:
+        if self.status in Booking.STAFF_CANCELLABLE_STATUSES and self.payment_status == 'unpaid' and self.expires_at:
             return timezone.now() > self.expires_at
         return False
     
