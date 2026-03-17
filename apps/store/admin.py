@@ -1,14 +1,19 @@
 from django.contrib import admin
+from django import forms
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User, Group
 from django.contrib.admin import ModelAdmin
 from simple_history.admin import SimpleHistoryAdmin
 from import_export.admin import ImportExportModelAdmin
 from django.utils.html import format_html
+from django.utils.html import escape, strip_tags
 from django.urls import reverse
+import re
+from html import unescape
 from .models import (
     Product, ProductionVehicle, Equipment, Studio, Booking, Package,
     IssueReport, Notification, ProductCategory,
+    PackageItem,
     BookingItem, BookingStudio, BookingStaff, BookingPackage,
     BookingServiceOffer, ServiceCategory, ServiceOffer,
     Profile, PromotionCode, SplashConfig
@@ -174,6 +179,10 @@ class UserAdmin(BaseUserAdmin):
     def has_module_permission(self, request):
         return request.user.is_superuser or is_web_admin(request.user)
 
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        Profile.objects.get_or_create(user=obj)
+
 @admin.register(PromotionCode)
 class PromotionCodeAdmin(ModelAdmin):
     list_display = ['code', 'discount_percent', 'discount_amount', 'valid_from', 'valid_to', 'is_active']
@@ -198,18 +207,110 @@ class GroupAdmin(ModelAdmin):
 # RESOURCE MODELS — Product, Studio, Equipment, Vehicle
 # =============================================================================
 
-from django_summernote.admin import SummernoteModelAdmin
-
 # Slug ที่ใช้แยก ยานพาหนะ ออกจากสินค้าทั่วไป
 VEHICLE_CATEGORY_SLUG = 'vehicle'
 
 
+def normalize_description_input(value):
+    """Allow plain text input in admin and convert it into simple HTML blocks."""
+    if not value:
+        return value
+
+    text = value.strip()
+    if not text:
+        return ""
+
+    # If admin already pasted HTML, keep it as-is.
+    if re.search(r'</?[a-zA-Z][^>]*>', text):
+        return value
+
+    lines = [line.rstrip() for line in text.splitlines()]
+    parts = []
+    in_list = False
+
+    for raw in lines:
+        line = raw.strip()
+        if not line:
+            if in_list:
+                parts.append('</ul>')
+                in_list = False
+            continue
+
+        if line.startswith('- ') or line.startswith('* '):
+            if not in_list:
+                parts.append('<ul>')
+                in_list = True
+            parts.append(f'<li>{escape(line[2:].strip())}</li>')
+        else:
+            if in_list:
+                parts.append('</ul>')
+                in_list = False
+            parts.append(f'<p>{escape(line)}</p>')
+
+    if in_list:
+        parts.append('</ul>')
+
+    return ''.join(parts)
+
+
+def description_html_to_plain_text(value):
+    """Convert stored HTML description into plain text for easier editing in admin."""
+    if not value:
+        return value
+
+    text = value.strip()
+    if not text:
+        return ""
+
+    if not re.search(r'</?[a-zA-Z][^>]*>', text):
+        return value
+
+    text = re.sub(r'<\s*br\s*/?\s*>', '\n', text, flags=re.IGNORECASE)
+    text = re.sub(r'<\s*/\s*p\s*>', '\n\n', text, flags=re.IGNORECASE)
+    text = re.sub(r'<\s*p[^>]*\s*>', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'<\s*li[^>]*\s*>', '- ', text, flags=re.IGNORECASE)
+    text = re.sub(r'<\s*/\s*li\s*>', '\n', text, flags=re.IGNORECASE)
+    text = re.sub(r'<\s*/?\s*(ul|ol)[^>]*\s*>', '\n', text, flags=re.IGNORECASE)
+    text = strip_tags(text)
+    text = unescape(text)
+    text = re.sub(r'\n{3,}', '\n\n', text)
+    return text.strip()
+
+
+class PlainDescriptionAdminForm(forms.ModelForm):
+    """Admin form that always shows description as plain text with simple guidance."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'description' in self.fields:
+            self.fields['description'].widget = forms.Textarea(attrs={
+                'rows': 6,
+                'placeholder': 'พิมพ์รายละเอียดปกติได้เลย (ไม่ต้องใส่ HTML)\nใช้ - ขึ้นต้นบรรทัดเพื่อทำรายการย่อยอัตโนมัติ'
+            })
+            current = self.initial.get('description')
+            if current is None and getattr(self.instance, 'pk', None):
+                current = self.instance.description
+            self.initial['description'] = description_html_to_plain_text(current)
+
+
+class ProductAdminForm(PlainDescriptionAdminForm):
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+
+class ProductionVehicleAdminForm(PlainDescriptionAdminForm):
+    class Meta:
+        model = ProductionVehicle
+        fields = '__all__'
+
+
 @admin.register(Product)
-class ProductAdmin(SummernoteModelAdmin, ImportExportModelAdmin):
+class ProductAdmin(ImportExportModelAdmin):
+    form = ProductAdminForm
     list_display = ['name', 'category', 'price', 'quantity', 'is_active']
     search_fields = ['name']
     list_filter = ['category', 'is_active']
-    summernote_fields = ('description',)
+    exclude = ('turnaround_time',)
 
     def get_queryset(self, request):
         """ซ่อนสินค้าที่อยู่ในหมวด 'ยานพาหนะ' — ให้จัดการผ่านหน้า Vehicles แทน"""
@@ -227,12 +328,18 @@ class ProductAdmin(SummernoteModelAdmin, ImportExportModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return request.user.is_superuser or is_web_admin(request.user)
 
+    def save_model(self, request, obj, form, change):
+        obj.description = normalize_description_input(form.cleaned_data.get('description'))
+        super().save_model(request, obj, form, change)
+
 
 @admin.register(ProductionVehicle)
 class ProductionVehicleAdmin(ModelAdmin):
+    form = ProductionVehicleAdminForm
     list_display = ['name', 'price', 'quantity', 'is_active']
     search_fields = ['name']
     list_filter = ['is_active']
+    exclude = ('turnaround_time',)
 
     def get_queryset(self, request):
         """แสดงเฉพาะสินค้าในหมวด 'ยานพาหนะ'"""
@@ -246,6 +353,7 @@ class ProductionVehicleAdmin(ModelAdmin):
             defaults={'name': 'ยานพาหนะ'},
         )
         obj.category = vehicle_cat
+        obj.description = normalize_description_input(form.cleaned_data.get('description'))
         super().save_model(request, obj, form, change)
 
     def has_view_permission(self, request, obj=None):
@@ -354,6 +462,28 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
     list_filter = ['status', 'payment_status', 'created_at']
     date_hierarchy = 'start_time'
     autocomplete_fields = ['coordinator']
+    list_per_page = 25
+    save_on_top = True
+
+    def get_list_display(self, request):
+        """Staff เห็นคอลัมน์หลักที่อ่านง่ายก่อน ลดความแน่นของข้อมูล"""
+        if request.user.is_superuser or is_web_admin(request.user):
+            return self.list_display
+        return [
+            'id',
+            'customer_name',
+            'project_name',
+            'status_badge',
+            'payment_status',
+            'start_time',
+            'end_time',
+            'booking_summary_link',
+        ]
+
+    def get_list_filter(self, request):
+        if request.user.is_superuser or is_web_admin(request.user):
+            return self.list_filter
+        return ['status', 'payment_status']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "coordinator":
@@ -641,9 +771,22 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
 # =============================================================================
 @admin.register(Package)
 class PackageAdmin(ModelAdmin):
-    list_display = ['name', 'price', 'is_highlight', 'is_active']
+    class PackageItemInline(admin.TabularInline):
+        model = PackageItem
+        extra = 1
+        autocomplete_fields = ['product']
+        fields = ['product', 'quantity']
+
+    list_display = ['name', 'price', 'item_count', 'is_highlight', 'is_active']
     list_filter = ['is_highlight', 'is_active']
-    search_fields = ['name']
+    search_fields = ['name', 'short_description', 'description']
+    inlines = [PackageItemInline]
+    list_per_page = 25
+    save_on_top = True
+
+    @admin.display(description='จำนวนรายการย่อย')
+    def item_count(self, obj):
+        return obj.packageitem_set.count()
 
     def has_view_permission(self, request, obj=None):
         return request.user.is_superuser or is_web_admin(request.user) or is_staff_role(request.user)

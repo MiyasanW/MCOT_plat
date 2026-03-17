@@ -3,8 +3,23 @@
 
 {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | MCOT Equipment Service Admin{% endblock %}
 
+{% block dark-mode-vars %}{% endblock %}
+
 {% block extrastyle %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% static 'css/admin_mcot.css' %}?v={% now 'U' %}">
+{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+<script>
+    (function () {
+        document.documentElement.setAttribute('data-theme', 'light');
+        try {
+            localStorage.setItem('theme', 'light');
+        } catch (e) {
+            // Ignore storage errors in private mode.
+        }
+    })();
+</script>
 {% endblock %}
 
 {% block branding %}

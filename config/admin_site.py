@@ -29,6 +29,14 @@ STORE_MODEL_ORDER = [
     'SplashConfig',       # 🖥 Splash Screen
 ]
 
+# Friendlier Thai labels for allauth social account section in admin sidebar.
+SOCIALACCOUNT_APP_LABEL = 'บัญชีโซเชียล'
+SOCIALACCOUNT_MODEL_LABELS = {
+    'SocialApp': 'แอปโซเชียล',
+    'SocialAccount': 'บัญชีที่เชื่อมต่อ',
+    'SocialToken': 'โทเค็นการเชื่อมต่อ',
+}
+
 
 class MCOTAdminSite(_OriginalAdminSite):
     """Override get_app_list to control ordering."""
@@ -56,5 +64,13 @@ class MCOTAdminSite(_OriginalAdminSite):
                     except ValueError:
                         return len(STORE_MODEL_ORDER)
                 app['models'].sort(key=model_sort_key)
+
+            if app['app_label'] == 'socialaccount':
+                app['name'] = SOCIALACCOUNT_APP_LABEL
+                for model in app['models']:
+                    object_name = model.get('object_name', '')
+                    translated_name = SOCIALACCOUNT_MODEL_LABELS.get(object_name)
+                    if translated_name:
+                        model['name'] = translated_name
 
         return app_list

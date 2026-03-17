@@ -123,7 +123,7 @@
                 <a href="{% url 'store:cart' %}" class="px-6 py-3 text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">ย้อนกลับ</a>
                 
                 <button @click="proceedToReview()" 
-                        :disabled="!isReadyToProceed"
+                        :disabled="isChecking"
                         class="bg-mcot-orange hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md group disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
                     ดำเนินการต่อ <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1" x-show="!isChecking"></i>
                     <i class="fas fa-spinner fa-spin" x-show="isChecking"></i>
@@ -260,7 +260,26 @@
             },
 
             proceedToReview() {
-                if (!this.isReadyToProceed) return;
+                if (!this.startDate || !this.endDate) {
+                    this.validationStatus.show = true;
+                    this.validationStatus.isValid = false;
+                    this.validationStatus.title = "กรุณาเลือกวันที่ที่ต้องการเช่า";
+                    this.validationStatus.message = "โปรดระบุวันเริ่มเช่าและวันสิ้นสุดเช่าก่อนดำเนินการต่อ";
+                    this.validationStatus.conflicts = [];
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'กรุณาเลือกวันที่ที่ต้องการเช่า',
+                        text: 'โปรดระบุวันเริ่มเช่าและวันสิ้นสุดเช่าก่อนดำเนินการต่อ',
+                        confirmButtonColor: '#F26522'
+                    });
+                    return;
+                }
+
+                if (!this.isReadyToProceed) {
+                    this.checkAvailability();
+                    return;
+                }
                 
                 // Save valid dates to localStorage
                 localStorage.setItem('mcot_booking_dates', JSON.stringify({

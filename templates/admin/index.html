@@ -1,7 +1,7 @@
 {% extends "admin/base_site.html" %}
 {% load i18n static log %}
 
-{% block coltype %}colMS{% endblock %}
+{% block coltype %}colM{% endblock %}
 
 {% block bodyclass %}{{ block.super }} dashboard{% endblock %}
 
@@ -9,46 +9,122 @@
 
 {% block content %}
 <div id="content-main">
-    <div class="module mcot-admin-module">
-        <h2>{% trans "Quick Links" %}</h2>
-        <div class="mcot-admin-links">
-                <a href="{% url 'store:staff_dashboard' %}" class="button">{% trans "Dashboard" %}</a>
-                <a href="{% url 'store:staff_reports' %}" class="button">{% trans "รายงานใบจอง" %}</a>
-                <a href="{% url 'store:equipment_history_search' %}" class="button">{% trans "ประวัติอุปกรณ์" %}</a>
-    </div>
-  </div>
+    <section class="mcot-admin-hero" aria-label="Admin Quick Start">
+        <div class="mcot-admin-hero-text">
+            <h1>{% trans "ศูนย์จัดการงานประจำวัน" %}</h1>
+            <p>{% trans "เริ่มจากเมนูสำคัญด้านล่าง แล้วค่อยจัดการข้อมูลเชิงลึกในแต่ละหมวด" %}</p>
+        </div>
+        <div class="mcot-admin-hero-badge">
+            <strong>{% trans "MCOT" %}</strong>
+            <span>{% trans "Equipment Service" %}</span>
+        </div>
+    </section>
 
-  {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
-</div>
-{% endblock %}
+    <section class="module mcot-admin-module mcot-admin-module-actions" aria-label="Quick Actions">
+        <h2>{% trans "เมนูลัดที่ใช้บ่อย" %}</h2>
+        <div class="mcot-admin-cards">
+            <a href="{% url 'admin:store_booking_changelist' %}" class="mcot-admin-card">
+                <h3>{% trans "รายการจอง" %}</h3>
+                <p>{% trans "เปิดหน้าจัดการใบจองทั้งหมดและตรวจสอบสถานะล่าสุด" %}</p>
+            </a>
+            <a href="{% url 'admin:store_notification_changelist' %}" class="mcot-admin-card">
+                <h3>{% trans "การแจ้งเตือน" %}</h3>
+                <p>{% trans "ดูการแจ้งเตือนใหม่และติดตามงานที่ต้องดำเนินการ" %}</p>
+            </a>
+            <a href="{% url 'admin:store_issuereport_changelist' %}" class="mcot-admin-card">
+                <h3>{% trans "รายงานปัญหา" %}</h3>
+                <p>{% trans "ตรวจสอบปัญหาที่ผู้ใช้งานแจ้งเข้ามาและอัปเดตความคืบหน้า" %}</p>
+            </a>
+            <a href="{% url 'admin:store_booking_add' %}" class="mcot-admin-card">
+                <h3>{% trans "สร้างรายการจองใหม่" %}</h3>
+                <p>{% trans "เพิ่มใบจองแบบเร่งด่วนเมื่อมีลูกค้าติดต่อเข้ามา" %}</p>
+            </a>
+            <a href="{% url 'store:staff_dashboard' %}" class="mcot-admin-card">
+                <h3>{% trans "ภาพรวมงานวันนี้" %}</h3>
+                <p>{% trans "ดูสถานะงานจองที่ต้องติดตามทันที" %}</p>
+            </a>
+            <a href="{% url 'store:staff_reports' %}" class="mcot-admin-card">
+                <h3>{% trans "รายงานใบจอง" %}</h3>
+                <p>{% trans "เปิดดูรายงานและข้อมูลเอกสารที่ใช้ประจำ" %}</p>
+            </a>
+            <a href="{% url 'store:equipment_history_search' %}" class="mcot-admin-card">
+                <h3>{% trans "ประวัติอุปกรณ์" %}</h3>
+                <p>{% trans "ค้นหาการใช้งานย้อนหลังของอุปกรณ์แต่ละชิ้น" %}</p>
+            </a>
+        </div>
+    </section>
 
-{% block sidebar %}
-<div id="content-related">
-    <div class="module" id="recent-actions-module">
-        <h2>{% translate 'Recent actions' %}</h2>
-        <h3>{% translate 'My actions' %}</h3>
-            {% get_admin_log 10 as admin_log for_user user %}
-            {% if not admin_log %}
-            <p>{% translate 'None available' %}</p>
-            {% else %}
-            <ul class="actionlist">
+    <section class="module mcot-admin-module mcot-admin-module-guide" aria-label="Usage Tips">
+        <h2>{% trans "ลำดับการทำงานแนะนำ" %}</h2>
+        <ol class="mcot-admin-steps">
+            <li>{% trans "ตรวจสอบสถานะใบจองใหม่จากหน้าภาพรวม" %}</li>
+            <li>{% trans "เปิดรายการจองเพื่อยืนยันรายละเอียดและแนบเอกสาร" %}</li>
+            <li>{% trans "ติดตามประวัติอุปกรณ์เมื่อมีคืนของหรือปัญหา" %}</li>
+        </ol>
+    </section>
+
+    <section class="mcot-admin-apps" aria-label="Application Modules">
+        {% if app_list %}
+        <div class="mcot-dashboard-app-grid">
+            {% for app in app_list %}
+            <section class="mcot-dashboard-app-card" aria-labelledby="mcot-dashboard-app-{{ app.app_label }}">
+                <header class="mcot-dashboard-app-card-header">
+                    {% if app.app_url %}
+                    <h3 id="mcot-dashboard-app-{{ app.app_label }}"><a href="{{ app.app_url }}">{{ app.name }}</a></h3>
+                    {% else %}
+                    <h3 id="mcot-dashboard-app-{{ app.app_label }}">{{ app.name }}</h3>
+                    {% endif %}
+                </header>
+                <ul class="mcot-dashboard-model-list">
+                    {% for model in app.models %}
+                    <li class="mcot-dashboard-model-row">
+                        <span class="mcot-dashboard-model-name">{{ model.name }}</span>
+                        <span class="mcot-dashboard-model-actions">
+                            {% if model.add_url %}
+                            <a href="{{ model.add_url }}" class="mcot-dashboard-action mcot-dashboard-action-add">{% trans "เพิ่ม" %}</a>
+                            {% endif %}
+                            {% if model.admin_url %}
+                            <a href="{{ model.admin_url }}" class="mcot-dashboard-action mcot-dashboard-action-manage">{% if model.view_only %}{% trans "ดู" %}{% else %}{% trans "จัดการ" %}{% endif %}</a>
+                            {% endif %}
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </section>
+
+    <section class="module mcot-admin-module mcot-admin-module-recent" aria-label="Recent Actions">
+        <h2>{% translate 'กิจกรรมล่าสุดของฉัน' %}</h2>
+        {% get_admin_log 10 as admin_log for_user user %}
+        {% if not admin_log %}
+        <p class="mcot-admin-empty">{% translate 'ยังไม่มีกิจกรรมล่าสุด' %}</p>
+        {% else %}
+        <ul class="mcot-recent-list">
             {% for entry in admin_log %}
-            <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
-                {% if entry.is_deletion or not entry.get_admin_url %}
+            <li class="mcot-recent-item {% if entry.is_addition %}mcot-recent-add{% endif %}{% if entry.is_change %}mcot-recent-change{% endif %}{% if entry.is_deletion %}mcot-recent-delete{% endif %}">
+                <div class="mcot-recent-main">
+                    {% if entry.is_deletion or not entry.get_admin_url %}
                     {{ entry.object_repr }}
-                {% else %}
+                    {% else %}
                     <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
-                {% endif %}
-                <br>
-                {% if entry.content_type %}
-                    <span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
-                {% else %}
-                    <span class="mini quiet">{% translate 'Unknown content' %}</span>
-                {% endif %}
+                    {% endif %}
+                </div>
+                <div class="mcot-recent-meta">
+                    {% if entry.content_type %}
+                    {% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}
+                    {% else %}
+                    {% translate 'Unknown content' %}
+                    {% endif %}
+                </div>
             </li>
             {% endfor %}
-            </ul>
-            {% endif %}
-    </div>
+        </ul>
+        {% endif %}
+    </section>
 </div>
 {% endblock %}
+
+{% block sidebar %}{% endblock %}

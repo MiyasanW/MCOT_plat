@@ -1,0 +1,20 @@
+{% load i18n %}
+<button class="sticky toggle-nav-sidebar" id="toggle-nav-sidebar" aria-label="{% translate 'Toggle navigation' %}"></button>
+<nav class="sticky" id="nav-sidebar" aria-label="{% translate 'Sidebar' %}">
+  <input type="search" id="nav-filter"
+         placeholder="{% translate 'Start typing to filter…' %}"
+         aria-label="{% translate 'Filter navigation items' %}">
+
+  <div class="app-dashboard-shortcut module">
+    <a href="{% url 'admin:index' %}" class="mcot-sidebar-dashboard-btn" title="{% translate 'Dashboard' %}">
+      <span class="mcot-sidebar-dashboard-icon" aria-hidden="true">&#8962;</span>
+      <span class="mcot-sidebar-dashboard-text">
+        <strong>{% translate 'หน้า Dashboard หลัก' %}</strong>
+        <small>{% translate 'กลับไปหน้าสรุปงานและเมนูลัดประจำวัน' %}</small>
+      </span>
+      <span class="mcot-sidebar-dashboard-arrow" aria-hidden="true">&#8250;</span>
+    </a>
+  </div>
+
+  {% include 'admin/app_list.html' with app_list=available_apps show_changelinks=False %}
+</nav>

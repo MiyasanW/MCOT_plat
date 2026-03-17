@@ -64,8 +64,11 @@ def equipment_history_detail(request, equipment_id):
 
     equipment = get_object_or_404(Equipment, id=equipment_id)
     
-    # ดึงประวัติจาก BookingItem โดยเรียงจากล่าสุดไปเก่าสุด
-    history_items = BookingItem.objects.filter(equipment=equipment).select_related('booking').order_by('-booking__start_time')
+    # ดึงประวัติจาก BookingItem โดยดูจาก product ของอุปกรณ์นี้
+    # (equipment FK อาจไม่ได้ assign ทุกครั้ง จึง fallback ไปดูจาก product แทน)
+    history_items = BookingItem.objects.filter(
+        product=equipment.product
+    ).select_related('booking', 'equipment').order_by('-booking__start_time')
 
     context = {
         'equipment': equipment,
@@ -191,8 +194,10 @@ def booking_action_api(request, booking_id):
             booking.save(update_fields=['payment_status'])
             
         elif action == 'mark_active':
-            if booking.status != 'approved':
-                raise ValueError("เปลี่ยนเป็นกำลังใช้งานได้เฉพาะใบจองที่อนุมัติแล้ว")
+            if booking.status == 'pending' and booking.payment_status not in ('paid', 'waived'):
+                raise ValueError("ต้องยืนยันการชำระเงินหรือข้ามมัดจำก่อนปล่อยของ")
+            if booking.status not in ('pending', 'approved'):
+                raise ValueError("เปลี่ยนเป็นกำลังใช้งานได้เฉพาะใบจองที่รออนุมัติ/อนุมัติแล้วเท่านั้น")
             booking.status = 'active'
             booking.save(update_fields=['status'])
             
