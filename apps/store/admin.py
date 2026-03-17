@@ -693,6 +693,9 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
             actions.pop('action_approve', None)
             actions.pop('action_cancel', None)
             actions.pop('action_confirm_payment', None)
+            actions.pop('action_request_payment', None)
+            actions.pop('action_mark_overdue', None)
+            actions.pop('action_calculate_penalty', None)
         return actions
 
     # --- Fieldsets (จัดกลุ่ม) ---

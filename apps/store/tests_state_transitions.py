@@ -44,11 +44,28 @@ class BookingStateTransitionTests(TestCase):
             content_type="application/json",
         )
 
-    def test_mark_active_requires_approved(self):
+    def test_mark_active_requires_paid_or_waived_when_pending(self):
         response = self.post_action("mark_active")
         self.assertEqual(response.status_code, 400)
         self.booking.refresh_from_db()
         self.assertEqual(self.booking.status, "draft")
+
+    def test_confirm_payment_accepts_unpaid_and_then_mark_active(self):
+        self.booking.status = "pending"
+        self.booking.payment_status = "unpaid"
+        self.booking.save(update_fields=["status", "payment_status"])
+
+        response_confirm = self.post_action("confirm_payment")
+        self.assertEqual(response_confirm.status_code, 200)
+
+        self.booking.refresh_from_db()
+        self.assertEqual(self.booking.payment_status, "paid")
+
+        response_active = self.post_action("mark_active")
+        self.assertEqual(response_active.status_code, 200)
+
+        self.booking.refresh_from_db()
+        self.assertEqual(self.booking.status, "active")
 
     def test_mark_completed_requires_active_or_overdue(self):
         self.booking.status = "approved"
