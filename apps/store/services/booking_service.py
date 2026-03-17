@@ -267,7 +267,7 @@ class BookingService:
         # Status Check
         if user.is_staff:
             # Staff can cancel draft or pending
-            if booking.status not in Booking.STAFF_CANCELLABLE_STATUSES:
+            if not booking.can_staff_cancel():
                  raise ValueError("ไม่สามารถยกเลิกได้ — การจองนี้ได้รับการอนุมัติแล้ว")
         else:
             # Customer can ONLY cancel draft

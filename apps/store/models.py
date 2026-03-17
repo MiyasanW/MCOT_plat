@@ -279,6 +279,27 @@ class Booking(models.Model):
         if self.status in Booking.STAFF_CANCELLABLE_STATUSES and self.payment_status == 'unpaid' and self.expires_at:
             return timezone.now() > self.expires_at
         return False
+
+    # Flow helper methods: single source of truth for transition checks.
+    def can_staff_cancel(self):
+        return self.status in Booking.STAFF_CANCELLABLE_STATUSES
+
+    def can_confirm_payment(self):
+        return (
+            self.status in Booking.STAFF_CANCELLABLE_STATUSES
+            and self.payment_status in Booking.PAYMENT_CONFIRMABLE_STATUSES
+        )
+
+    def can_skip_deposit(self):
+        return self.status in Booking.STAFF_CANCELLABLE_STATUSES
+
+    def can_mark_active(self):
+        if self.status == 'pending':
+            return self.payment_status in Booking.PAYMENT_SETTLED_STATUSES
+        return self.status in Booking.STAFF_ACTIVATABLE_STATUSES
+
+    def can_mark_completed(self):
+        return self.status in Booking.COMPLETABLE_STATUSES
     
     # Relationships (Using Through Models for Price Snapshot)
     products = models.ManyToManyField(Product, through='BookingItem', blank=True)
