@@ -7,6 +7,7 @@ from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from django.utils import timezone
 from django.http import JsonResponse
+from django.core.cache import cache
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
 
@@ -183,6 +184,30 @@ def create_booking_api(request):
     try:
         payload = json.loads(request.body)
         cart_items = payload.get('items', [])
+        request_id = (payload.get('request_id') or '').strip()
+
+        lock_key = None
+        result_key = None
+        if request_id:
+            result_key = f"booking_create_result:{request.user.id}:{request_id}"
+            lock_key = f"booking_create_lock:{request.user.id}:{request_id}"
+
+            existing_booking_id = cache.get(result_key)
+            if existing_booking_id:
+                return JsonResponse({
+                    "success": True,
+                    "booking_id": existing_booking_id,
+                    "message": "Booking already created",
+                    "idempotent": True,
+                })
+
+            if not cache.add(lock_key, 1, timeout=30):
+                # Another request with same idempotency key is in-flight.
+                return JsonResponse({
+                    "success": False,
+                    "message": "กำลังดำเนินการสร้างใบจองอยู่ กรุณารอสักครู่",
+                    "processing": True,
+                }, status=409)
         
         phone = payload.get('customer_phone') or payload.get('phone')
         if phone and not re.match(r'^[0-9\-\+\s\(\)]+$', phone):
@@ -207,8 +232,8 @@ def create_booking_api(request):
             end_date = datetime.strptime(payload.get('end')[:10], "%Y-%m-%d").date()
             
             # Combine to full datetimes (covering the whole start day to the end of the end day)
-            booking_data['start_time'] = datetime.combine(start_date, datetime.min.time())
-            booking_data['end_time'] = datetime.combine(end_date, datetime.max.time())
+            booking_data['start_time'] = timezone.make_aware(datetime.combine(start_date, datetime.min.time()))
+            booking_data['end_time'] = timezone.make_aware(datetime.combine(end_date, datetime.max.time()))
         except Exception as e:
             return JsonResponse({"success": False, "message": "Invalid Date Format"}, status=400)
             
@@ -219,17 +244,23 @@ def create_booking_api(request):
                 user=request.user
             )
 
+            if result_key:
+                cache.set(result_key, booking.id, timeout=600)
+
             return JsonResponse({
-                "success": True, 
+                "success": True,
                 "booking_id": booking.id,
                 "message": "Booking Created Successfully"
             })
-            
+
         except ValueError as e:
             return JsonResponse({"success": False, "message": str(e)}, status=400)
         except Exception as e:
             # Service might raise other exceptions for DB errors
             return JsonResponse({"success": False, "message": f"System Error: {str(e)}"}, status=500)
+        finally:
+            if lock_key:
+                cache.delete(lock_key)
 
     except json.JSONDecodeError:
         return JsonResponse({"success": False, "message": "Invalid JSON"}, status=400)

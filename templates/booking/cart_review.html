@@ -283,8 +283,11 @@
             promoMessage: '',
             
             isSubmitting: false,
+            checkoutRequestId: '',
 
             init() {
+                this.ensureCheckoutRequestId();
+
                 const storedCart = localStorage.getItem('mcot_cart');
                 if (storedCart) {
                     this.cartItems = JSON.parse(storedCart);
@@ -308,6 +311,16 @@
                 }
 
                 this.checkPartnerDiscount();
+            },
+
+            ensureCheckoutRequestId() {
+                const key = 'mcot_checkout_request_id';
+                let requestId = sessionStorage.getItem(key);
+                if (!requestId) {
+                    requestId = `req_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+                    sessionStorage.setItem(key, requestId);
+                }
+                this.checkoutRequestId = requestId;
             },
 
             calculateTotals() {
@@ -425,6 +438,7 @@
                         type: item.type || 'product',
                         quantity: parseInt(item.quantity)
                     })),
+                    request_id: this.checkoutRequestId,
                     start: this.dates.start,
                     end: this.dates.end,
                     customer_name: this.customerName,
@@ -460,11 +474,21 @@
                         // Clear Cart and Dates
                         localStorage.removeItem('mcot_cart');
                         localStorage.removeItem('mcot_booking_dates');
+                        sessionStorage.removeItem('mcot_checkout_request_id');
                         window.dispatchEvent(new Event('cartUpdated'));
 
                         // Proceed to Step 4 (Checkout Success)
                         window.location.href = `/cart/checkout/${data.booking_id}/`;
                     } else {
+                        if (response.status === 409 && data.processing) {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'ระบบกำลังดำเนินการ',
+                                text: 'คำขอเดิมกำลังสร้างใบจองอยู่ กรุณารอสักครู่แล้วลองอีกครั้ง',
+                                confirmButtonColor: '#1f2937'
+                            });
+                            return;
+                        }
                         Swal.fire({
                             icon: 'error',
                             title: 'เกิดข้อผิดพลาด',

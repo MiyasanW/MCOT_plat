@@ -202,3 +202,28 @@ class BookingFlowTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()['success'])
+
+    def test_create_booking_idempotent_request_id(self):
+        self.client.login(username=self.username, password=self.password)
+
+        start_date = (date.today() + timedelta(days=1)).strftime("%Y-%m-%d")
+        end_date = (date.today() + timedelta(days=2)).strftime("%Y-%m-%d")
+
+        payload = {
+            "items": [{"id": self.product.id, "quantity": 1, "type": "product"}],
+            "start": start_date,
+            "end": end_date,
+            "phone": "0812345678",
+            "request_id": "checkout-req-12345",
+        }
+
+        url = reverse('store:api_create_booking')
+        response1 = self.client.post(url, data=json.dumps(payload), content_type='application/json')
+        response2 = self.client.post(url, data=json.dumps(payload), content_type='application/json')
+
+        self.assertEqual(response1.status_code, 200)
+        self.assertEqual(response2.status_code, 200)
+        self.assertTrue(response1.json()['success'])
+        self.assertTrue(response2.json()['success'])
+        self.assertEqual(response1.json()['booking_id'], response2.json()['booking_id'])
+        self.assertEqual(Booking.objects.count(), 1)

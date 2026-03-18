@@ -66,7 +66,7 @@
         <!-- Timeline Section -->
         <h2 class="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
             <span class="w-1 h-8 bg-mcot-orange rounded-full block"></span>
-            Usage Timeline
+            ประวัติเฉพาะเครื่องนี้ (Serial/Asset นี้)
         </h2>
 
         <div class="relative border-l-2 border-gray-200 ml-4 space-y-12 pb-12">
@@ -135,6 +135,46 @@
             {% endfor %}
 
         </div>
+
+        <!-- Related Product History (Secondary Context) -->
+        {% if related_history_items %}
+        <h3 class="text-xl font-bold text-gray-900 mt-12 mb-5 flex items-center gap-2">
+            <span class="w-1 h-6 bg-gray-300 rounded-full block"></span>
+            ประวัติสินค้าเดียวกัน (เครื่องอื่นหรือยังไม่ระบุเครื่อง)
+        </h3>
+        <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                    <thead>
+                        <tr class="text-left text-gray-500 border-b border-gray-200">
+                            <th class="py-2 pr-4">Booking</th>
+                            <th class="py-2 pr-4">ช่วงวันใช้งาน</th>
+                            <th class="py-2 pr-4">ลูกค้า</th>
+                            <th class="py-2 pr-4">อุปกรณ์ที่ผูก</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in related_history_items %}
+                        <tr class="border-b border-gray-100">
+                            <td class="py-2 pr-4">
+                                <a href="{% url 'admin:store_booking_change' item.booking.id %}" class="text-mcot-orange font-bold hover:underline">#{{ item.booking.id }}</a>
+                            </td>
+                            <td class="py-2 pr-4 text-gray-700">{{ item.booking.start_time|date:"d M Y" }} - {{ item.booking.end_time|date:"d M Y" }}</td>
+                            <td class="py-2 pr-4 text-gray-700">{{ item.booking.customer_name }}</td>
+                            <td class="py-2 pr-4">
+                                {% if item.equipment %}
+                                    <span class="text-xs font-mono bg-gray-100 px-2 py-1 rounded border border-gray-200">{{ item.equipment.asset_tag|default:item.equipment.serial_number }}</span>
+                                {% else %}
+                                    <span class="text-xs text-gray-500 italic">ยังไม่ระบุเครื่อง</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
 
     </div>
 </div>
