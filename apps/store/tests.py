@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.cache import cache
 from apps.store.models import Product, ProductCategory, Booking
 from apps.store.services.availability import AvailabilityService
 from datetime import timedelta, date
@@ -227,3 +228,46 @@ class BookingFlowTests(TestCase):
         self.assertTrue(response2.json()['success'])
         self.assertEqual(response1.json()['booking_id'], response2.json()['booking_id'])
         self.assertEqual(Booking.objects.count(), 1)
+
+    def test_booking_create_status_returns_created_booking(self):
+        self.client.login(username=self.username, password=self.password)
+
+        start_date = (date.today() + timedelta(days=1)).strftime("%Y-%m-%d")
+        end_date = (date.today() + timedelta(days=2)).strftime("%Y-%m-%d")
+        request_id = "checkout-status-created-1"
+
+        payload = {
+            "items": [{"id": self.product.id, "quantity": 1, "type": "product"}],
+            "start": start_date,
+            "end": end_date,
+            "phone": "0812345678",
+            "request_id": request_id,
+        }
+
+        create_url = reverse('store:api_create_booking')
+        create_response = self.client.post(create_url, data=json.dumps(payload), content_type='application/json')
+        self.assertEqual(create_response.status_code, 200)
+        booking_id = create_response.json()['booking_id']
+
+        status_url = reverse('store:api_booking_create_status')
+        status_response = self.client.get(status_url, {'request_id': request_id})
+        self.assertEqual(status_response.status_code, 200)
+        self.assertTrue(status_response.json()['success'])
+        self.assertTrue(status_response.json()['created'])
+        self.assertEqual(status_response.json()['booking_id'], booking_id)
+
+    def test_booking_create_status_returns_processing_when_lock_exists(self):
+        self.client.login(username=self.username, password=self.password)
+
+        request_id = "checkout-status-processing-1"
+        lock_key = f"booking_create_lock:{self.user.id}:{request_id}"
+        cache.set(lock_key, 1, timeout=30)
+        try:
+            status_url = reverse('store:api_booking_create_status')
+            status_response = self.client.get(status_url, {'request_id': request_id})
+            self.assertEqual(status_response.status_code, 200)
+            self.assertTrue(status_response.json()['success'])
+            self.assertFalse(status_response.json()['created'])
+            self.assertTrue(status_response.json()['processing'])
+        finally:
+            cache.delete(lock_key)

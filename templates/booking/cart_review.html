@@ -284,9 +284,11 @@
             
             isSubmitting: false,
             checkoutRequestId: '',
+            hasSubmittedCheckout: false,
 
             init() {
                 this.ensureCheckoutRequestId();
+                this.hasSubmittedCheckout = sessionStorage.getItem('mcot_checkout_submitted') === '1';
 
                 const storedCart = localStorage.getItem('mcot_cart');
                 if (storedCart) {
@@ -311,6 +313,10 @@
                 }
 
                 this.checkPartnerDiscount();
+
+                if (this.hasSubmittedCheckout) {
+                    this.recoverCheckoutStatus();
+                }
             },
 
             ensureCheckoutRequestId() {
@@ -321,6 +327,43 @@
                     sessionStorage.setItem(key, requestId);
                 }
                 this.checkoutRequestId = requestId;
+            },
+
+            clearCheckoutSessionMarkers() {
+                sessionStorage.removeItem('mcot_checkout_request_id');
+                sessionStorage.removeItem('mcot_checkout_submitted');
+                this.checkoutRequestId = '';
+                this.hasSubmittedCheckout = false;
+            },
+
+            async recoverCheckoutStatus() {
+                if (!this.checkoutRequestId) return;
+                try {
+                    const url = new URL("{% url 'store:api_booking_create_status' %}", window.location.origin);
+                    url.searchParams.set('request_id', this.checkoutRequestId);
+                    const response = await fetch(url.toString(), { method: 'GET' });
+                    const data = await response.json();
+
+                    if (response.ok && data.success && data.created && data.booking_id) {
+                        localStorage.removeItem('mcot_cart');
+                        localStorage.removeItem('mcot_booking_dates');
+                        this.clearCheckoutSessionMarkers();
+                        window.dispatchEvent(new Event('cartUpdated'));
+                        window.location.href = `/cart/checkout/${data.booking_id}/`;
+                        return;
+                    }
+
+                    if (response.ok && data.success && data.processing) {
+                        // Keep marker so user can refresh/check again; do not spam alerts.
+                        return;
+                    }
+
+                    // No server state found; user can submit again safely.
+                    sessionStorage.removeItem('mcot_checkout_submitted');
+                    this.hasSubmittedCheckout = false;
+                } catch (e) {
+                    // Silent recovery failure; user can still submit manually.
+                }
             },
 
             calculateTotals() {
@@ -420,6 +463,8 @@
             },
 
             async submitBooking() {
+                if (this.isSubmitting) return;
+
                 if (!this.customerName || !this.customerPhone) {
                     Swal.fire({
                         icon: 'warning',
@@ -431,6 +476,8 @@
                 }
 
                 this.isSubmitting = true;
+                sessionStorage.setItem('mcot_checkout_submitted', '1');
+                this.hasSubmittedCheckout = true;
 
                 const payload = {
                     items: this.cartItems.map(item => ({
@@ -474,7 +521,7 @@
                         // Clear Cart and Dates
                         localStorage.removeItem('mcot_cart');
                         localStorage.removeItem('mcot_booking_dates');
-                        sessionStorage.removeItem('mcot_checkout_request_id');
+                        this.clearCheckoutSessionMarkers();
                         window.dispatchEvent(new Event('cartUpdated'));
 
                         // Proceed to Step 4 (Checkout Success)
@@ -489,6 +536,8 @@
                             });
                             return;
                         }
+                        sessionStorage.removeItem('mcot_checkout_submitted');
+                        this.hasSubmittedCheckout = false;
                         Swal.fire({
                             icon: 'error',
                             title: 'เกิดข้อผิดพลาด',
@@ -498,6 +547,7 @@
                     }
                 } catch (error) {
                     console.error('Error creating booking:', error);
+                    await this.recoverCheckoutStatus();
                     Swal.fire({
                         icon: 'error',
                         title: 'ข้อผิดพลาดระบบ',

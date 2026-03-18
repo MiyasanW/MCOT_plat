@@ -267,6 +267,42 @@ def create_booking_api(request):
     except Exception as e:
         return JsonResponse({"success": False, "message": f"Server Error: {str(e)}"}, status=500)
 
+
+@login_required
+@require_GET
+def booking_create_status_api(request):
+    """Check create-booking request status by idempotency request_id for refresh recovery."""
+    request_id = (request.GET.get('request_id') or '').strip()
+    if not request_id:
+        return JsonResponse({"success": False, "message": "Missing request_id"}, status=400)
+
+    result_key = f"booking_create_result:{request.user.id}:{request_id}"
+    lock_key = f"booking_create_lock:{request.user.id}:{request_id}"
+
+    booking_id = cache.get(result_key)
+    if booking_id:
+        booking_exists = Booking.objects.filter(id=booking_id, created_by=request.user).exists()
+        if booking_exists:
+            return JsonResponse({
+                "success": True,
+                "created": True,
+                "booking_id": booking_id,
+            })
+        cache.delete(result_key)
+
+    if cache.get(lock_key):
+        return JsonResponse({
+            "success": True,
+            "created": False,
+            "processing": True,
+        })
+
+    return JsonResponse({
+        "success": True,
+        "created": False,
+        "processing": False,
+    })
+
 @login_required
 @require_POST
 def cancel_booking_api(request, booking_id):

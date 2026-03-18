@@ -6,7 +6,7 @@ from .products import (
 from .booking import (
     cart, cart_dates, cart_review, cart_checkout,
     check_availability_api, check_cart_availability_api,
-    check_promo_api, create_booking_api, cancel_booking_api,
+    check_promo_api, create_booking_api, booking_create_status_api, cancel_booking_api,
     upload_slip_api,
 )
 from .user import my_bookings, register, booking_detail, complete_profile

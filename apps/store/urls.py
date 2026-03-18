@@ -43,6 +43,7 @@ urlpatterns = [
     path('api/check-cart/', booking.check_cart_availability_api, name='api_check_cart_availability'),
     path('api/check-promo/', booking.check_promo_api, name='api_check_promo'),
     path('api/booking/create/', booking.create_booking_api, name='api_create_booking'),
+    path('api/booking/create/status/', booking.booking_create_status_api, name='api_booking_create_status'),
     path('api/booking/<int:booking_id>/cancel/', booking.cancel_booking_api, name='api_cancel_booking'),
     path('api/calendar/events/', calendar.calendar_events_api, name='api_calendar_events'),
     path('api/calendar/staff/', calendar.staff_list_api, name='api_staff_list'),
