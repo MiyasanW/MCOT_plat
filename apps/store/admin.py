@@ -598,12 +598,17 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
     @admin.action(description='▶ เริ่มใช้งาน (Active)')
     def action_mark_active(self, request, queryset):
         updated = 0
+        blocked = 0
         for booking in queryset:
-            if booking.can_mark_active():
+            if booking.can_mark_active() and booking.has_complete_equipment_assignment():
                 booking.status = 'active'
                 booking.save(update_fields=['status'])
                 updated += 1
+            elif booking.can_mark_active():
+                blocked += 1
         self.message_user(request, f'▶ เปิดใช้งานแล้ว {updated} รายการ')
+        if blocked:
+            self.message_user(request, f'⚠️ ข้าม {blocked} รายการ: ยังไม่ได้ assign Serial/Asset ครบ', level='warning')
 
     @admin.action(description='✔ คืนของครบ (Completed)')
     def action_mark_completed(self, request, queryset):

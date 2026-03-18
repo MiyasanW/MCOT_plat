@@ -63,16 +63,23 @@ def equipment_history_detail(request, equipment_id):
         return redirect('store:home')
 
     equipment = get_object_or_404(Equipment, id=equipment_id)
-    
-    # ดึงประวัติจาก BookingItem โดยดูจาก product ของอุปกรณ์นี้
-    # (equipment FK อาจไม่ได้ assign ทุกครั้ง จึง fallback ไปดูจาก product แทน)
+
+    # Timeline หลัก: แสดงเฉพาะประวัติของอุปกรณ์ชิ้นนี้ (Serial/Asset นี้เท่านั้น)
     history_items = BookingItem.objects.filter(
+        equipment=equipment
+    ).select_related('booking', 'equipment').order_by('-booking__start_time')
+
+    # Timeline รอง: ประวัติของสินค้า model เดียวกัน (เครื่องอื่นหรือยังไม่ผูกเครื่อง)
+    related_history_items = BookingItem.objects.filter(
         product=equipment.product
+    ).exclude(
+        equipment=equipment
     ).select_related('booking', 'equipment').order_by('-booking__start_time')
 
     context = {
         'equipment': equipment,
-        'history_items': history_items
+        'history_items': history_items,
+        'related_history_items': related_history_items,
     }
     return render(request, 'inventory/history_detail.html', context)
 
@@ -200,6 +207,13 @@ def booking_action_api(request, booking_id):
                 if booking.status == 'pending' and booking.payment_status not in Booking.PAYMENT_SETTLED_STATUSES:
                     raise ValueError("ต้องยืนยันการชำระเงินหรือข้ามมัดจำก่อนปล่อยของ")
                 raise ValueError("เปลี่ยนเป็นกำลังใช้งานได้เฉพาะใบจองที่พร้อมปล่อยของเท่านั้น")
+            if not booking.has_complete_equipment_assignment():
+                missing_items = booking.unassigned_equipment_items().select_related('product')[:5]
+                missing_names = ', '.join(item.product.name for item in missing_items)
+                more_count = booking.unassigned_equipment_items().count() - len(missing_items)
+                if more_count > 0:
+                    missing_names = f"{missing_names} และอีก {more_count} รายการ"
+                raise ValueError(f"ต้อง assign Serial/Asset ให้ครบก่อนปล่อยของ: {missing_names}")
             booking.status = 'active'
             booking.save(update_fields=['status'])
             

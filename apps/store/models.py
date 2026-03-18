@@ -298,6 +298,14 @@ class Booking(models.Model):
             return self.payment_status in Booking.PAYMENT_SETTLED_STATUSES
         return self.status in Booking.STAFF_ACTIVATABLE_STATUSES
 
+    def unassigned_equipment_items(self):
+        """Booking items that still do not have a specific equipment (serial/asset) assigned."""
+        return self.items.filter(equipment__isnull=True)
+
+    def has_complete_equipment_assignment(self):
+        """True when all booking items are assigned to specific equipment rows."""
+        return not self.unassigned_equipment_items().exists()
+
     def can_mark_completed(self):
         return self.status in Booking.COMPLETABLE_STATUSES
     

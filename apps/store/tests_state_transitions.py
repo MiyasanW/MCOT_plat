@@ -6,7 +6,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from apps.store.models import Booking
+from apps.store.models import Booking, BookingItem, Product, ProductCategory
 
 
 class BookingStateTransitionTests(TestCase):
@@ -91,3 +91,19 @@ class BookingStateTransitionTests(TestCase):
 
         self.booking.refresh_from_db()
         self.assertEqual(self.booking.status, "completed")
+
+    def test_mark_active_requires_equipment_assignment(self):
+        category = ProductCategory.objects.create(name="กล้อง", slug="camera-test")
+        product = Product.objects.create(name="Test Camera", category=category, price=1000, quantity=1)
+        BookingItem.objects.create(booking=self.booking, product=product, quantity=1, price_at_booking=1000)
+
+        self.booking.status = "pending"
+        self.booking.payment_status = "paid"
+        self.booking.save(update_fields=["status", "payment_status"])
+
+        response = self.post_action("mark_active")
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("assign Serial/Asset", response.json().get("message", ""))
+
+        self.booking.refresh_from_db()
+        self.assertEqual(self.booking.status, "pending")
