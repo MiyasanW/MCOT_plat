@@ -232,13 +232,25 @@
                         </div>
                     </div>
 
+                    <!-- Submission Status Banner -->
+                    <div x-show="hasSubmittedCheckout" x-cloak class="mb-4 rounded-xl border border-amber-300/50 bg-amber-500/10 px-4 py-3 text-amber-100">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-circle-notch fa-spin mt-0.5" x-show="isSubmitting || isRecoveryChecking || isRecoveryProcessing" style="display:none;"></i>
+                            <i class="fas fa-check-circle mt-0.5 text-green-300" x-show="!isSubmitting && !isRecoveryChecking && !isRecoveryProcessing" style="display:none;"></i>
+                            <div>
+                                <p class="text-sm font-bold" x-text="checkoutStatusTitle"></p>
+                                <p class="text-xs text-amber-200/90 mt-1" x-text="checkoutStatusHint"></p>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Submit Button -->
                     <button @click="submitBooking()" 
-                            :disabled="isSubmitting || cartItems.length === 0"
+                            :disabled="isSubmitting || isRecoveryProcessing || cartItems.length === 0"
                             class="w-full bg-gradient-to-r from-mcot-orange to-orange-600 hover:from-orange-500 hover:to-orange-700 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-[0_0_20px_rgba(242,101,34,0.3)] hover:shadow-[0_0_30px_rgba(242,101,34,0.5)] flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed text-lg">
                         <i class="fas fa-check-circle transition-transform group-hover:scale-110" x-show="!isSubmitting"></i>
                         <i class="fas fa-spinner fa-spin" x-show="isSubmitting" style="display: none;"></i>
-                        <span x-text="isSubmitting ? 'กำลังดำเนินการ...' : 'ยืนยันการทำรายการ'"></span>
+                        <span x-text="isSubmitting ? 'กำลังดำเนินการ...' : (isRecoveryProcessing ? 'กำลังตรวจสอบคำขอเดิม...' : 'ยืนยันการทำรายการ')"></span>
                     </button>
                     
                     <p class="text-center text-xs text-gray-500 mt-4 leading-relaxed">
@@ -285,6 +297,9 @@
             isSubmitting: false,
             checkoutRequestId: '',
             hasSubmittedCheckout: false,
+            isRecoveryChecking: false,
+            isRecoveryProcessing: false,
+            recoveryTimer: null,
 
             init() {
                 this.ensureCheckoutRequestId();
@@ -330,14 +345,33 @@
             },
 
             clearCheckoutSessionMarkers() {
+                this.stopRecoveryPolling();
                 sessionStorage.removeItem('mcot_checkout_request_id');
                 sessionStorage.removeItem('mcot_checkout_submitted');
                 this.checkoutRequestId = '';
                 this.hasSubmittedCheckout = false;
+                this.isRecoveryProcessing = false;
+                this.isRecoveryChecking = false;
+            },
+
+            stopRecoveryPolling() {
+                if (this.recoveryTimer) {
+                    clearTimeout(this.recoveryTimer);
+                    this.recoveryTimer = null;
+                }
+            },
+
+            queueRecoveryPolling() {
+                this.stopRecoveryPolling();
+                if (!this.hasSubmittedCheckout) return;
+                this.recoveryTimer = setTimeout(() => {
+                    this.recoverCheckoutStatus();
+                }, 2500);
             },
 
             async recoverCheckoutStatus() {
                 if (!this.checkoutRequestId) return;
+                this.isRecoveryChecking = true;
                 try {
                     const url = new URL("{% url 'store:api_booking_create_status' %}", window.location.origin);
                     url.searchParams.set('request_id', this.checkoutRequestId);
@@ -355,14 +389,21 @@
 
                     if (response.ok && data.success && data.processing) {
                         // Keep marker so user can refresh/check again; do not spam alerts.
+                        this.hasSubmittedCheckout = true;
+                        this.isRecoveryProcessing = true;
+                        this.queueRecoveryPolling();
                         return;
                     }
 
                     // No server state found; user can submit again safely.
+                    this.stopRecoveryPolling();
                     sessionStorage.removeItem('mcot_checkout_submitted');
                     this.hasSubmittedCheckout = false;
+                    this.isRecoveryProcessing = false;
                 } catch (e) {
                     // Silent recovery failure; user can still submit manually.
+                } finally {
+                    this.isRecoveryChecking = false;
                 }
             },
 
@@ -454,6 +495,18 @@
                 return (this.subtotal - this.discount) + this.vatAmount;
             },
 
+            get checkoutStatusTitle() {
+                if (this.isSubmitting) return 'กำลังส่งคำขอของคุณ';
+                if (this.isRecoveryChecking || this.isRecoveryProcessing) return 'กำลังตรวจสอบสถานะใบจอง';
+                return 'พร้อมทำรายการต่อ';
+            },
+
+            get checkoutStatusHint() {
+                if (this.isSubmitting) return 'กรุณารอสักครู่ ระบบกำลังบันทึกรายการให้คุณ';
+                if (this.isRecoveryChecking || this.isRecoveryProcessing) return 'ระบบกำลังตามคำขอเดิมให้อัตโนมัติ โปรดอย่ากดปุ่มซ้ำ';
+                return 'หากยังไม่สำเร็จ คุณสามารถกดยืนยันอีกครั้งได้';
+            },
+
             formatDate(dateStr) {
                 if (!dateStr) return 'ไม่ได้ระบุ';
                 const d = new Date(dateStr);
@@ -478,6 +531,8 @@
                 this.isSubmitting = true;
                 sessionStorage.setItem('mcot_checkout_submitted', '1');
                 this.hasSubmittedCheckout = true;
+                this.isRecoveryProcessing = false;
+                this.stopRecoveryPolling();
 
                 const payload = {
                     items: this.cartItems.map(item => ({
@@ -528,6 +583,8 @@
                         window.location.href = `/cart/checkout/${data.booking_id}/`;
                     } else {
                         if (response.status === 409 && data.processing) {
+                            this.isRecoveryProcessing = true;
+                            this.queueRecoveryPolling();
                             Swal.fire({
                                 icon: 'info',
                                 title: 'ระบบกำลังดำเนินการ',
@@ -536,8 +593,10 @@
                             });
                             return;
                         }
+                        this.stopRecoveryPolling();
                         sessionStorage.removeItem('mcot_checkout_submitted');
                         this.hasSubmittedCheckout = false;
+                        this.isRecoveryProcessing = false;
                         Swal.fire({
                             icon: 'error',
                             title: 'เกิดข้อผิดพลาด',
