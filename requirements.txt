@@ -15,6 +15,7 @@ django-crispy-forms==2.1  # Better Forms
 crispy-bootstrap5==2024.2
 python-dotenv==1.0.1  # Environment Variables
 xhtml2pdf==0.2.16
+PyPDF2==3.0.1  # Quotation PDF overlay merge
 django-simple-history==3.7.0  # Track model changes
 django-allauth==65.14.3  # Social Login (Google)
 psycopg2-binary==2.9.10  # PostgreSQL adapter
