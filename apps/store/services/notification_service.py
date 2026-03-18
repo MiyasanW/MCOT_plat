@@ -58,6 +58,15 @@ class NotificationService:
                     link=f"/staff/booking/{booking.id}/summary/",
                     notification_type='info'
                 )
+
+            # In-App Notification (For Customer)
+            if booking.created_by:
+                Notification.objects.create(
+                    recipient=booking.created_by,
+                    message=f"✅ ได้รับคำสั่งจอง #{booking.id} แล้ว ทีมงานจะตรวจสอบและติดต่อกลับเร็วที่สุด",
+                    link=f"/my-bookings/",
+                    notification_type='success'
+                )
             
             # ส่งอีเมลยืนยันการรับเรื่อง (Received)
             context = {
