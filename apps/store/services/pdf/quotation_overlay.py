@@ -46,6 +46,13 @@ UNIT_PRICE_RIGHT_X = 462
 AMOUNT_RIGHT_X = 568
 TOTALS_RIGHT_X = 567
 
+# Header block (customer identity) near top section of quotation template.
+HEADER_LABEL_X = 45
+HEADER_VALUE_X = 120
+HEADER_CUSTOMER_TOP = 166
+HEADER_PROJECT_TOP = 184
+HEADER_PHONE_TOP = 202
+
 def generate_overlay(booking):
     """
     Build a transparent overlay PDF whose text lands exactly on the
@@ -78,6 +85,21 @@ def generate_overlay(booking):
         can.setFillColorRGB(0, 0, 0)
 
     normal(10)
+
+    # ── Header: Customer identity ───────────────────────────────────────────
+    customer_name = (booking.customer_name or "-").strip() or "-"
+    project_name = (booking.project_name or "-").strip() or "-"
+    phone = (booking.phone or "-").strip() or "-"
+
+    can.setFont(fb, 10)
+    can.drawString(HEADER_LABEL_X, _text_y(HEADER_CUSTOMER_TOP), "ชื่อลูกค้า")
+    can.drawString(HEADER_LABEL_X, _text_y(HEADER_PROJECT_TOP), "ชื่องาน")
+    can.drawString(HEADER_LABEL_X, _text_y(HEADER_PHONE_TOP), "โทร")
+
+    normal(10)
+    can.drawString(HEADER_VALUE_X, _text_y(HEADER_CUSTOMER_TOP), customer_name[:70])
+    can.drawString(HEADER_VALUE_X, _text_y(HEADER_PROJECT_TOP), project_name[:70])
+    can.drawString(HEADER_VALUE_X, _text_y(HEADER_PHONE_TOP), phone[:30])
 
     # ── Item Table ───────────────────────────────────────────────────────────
     items    = list(booking.items.select_related('product').all())
