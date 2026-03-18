@@ -51,7 +51,9 @@ calibrate_pdf.py
 test_pdf_render.py
 calibration_test.pdf
 deploy_to_vps.sh
+client_secret_*.json
 
 # Office temp files
 ~$*
 /logs/
+backups/migration/
