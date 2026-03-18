@@ -357,8 +357,13 @@ def download_quotation_pdf(request, booking_id):
     """
     booking = get_object_or_404(Booking, id=booking_id)
 
-    # Permission check: draft bookings are not yet ready for customer download
-    if booking.created_by == request.user and booking.status == 'draft':
+    # Restrict draft quotation download for customers only.
+    # Staff/superusers can still preview/download from admin workflow.
+    if (
+        booking.created_by == request.user
+        and booking.status == 'draft'
+        and not (request.user.is_staff or request.user.is_superuser)
+    ):
         return redirect('store:booking_detail', booking_id=booking.id)
 
     if booking.created_by != request.user and not (request.user.is_staff or request.user.is_superuser):
