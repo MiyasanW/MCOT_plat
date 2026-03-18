@@ -58,6 +58,7 @@ echo ""
 
 ssh -i $SSH_KEY -t -p $VPS_PORT $VPS_USER@$VPS_IP << 'REMOTE_COMMANDS'
 set -e
+set -o pipefail
 
 echo "✅ Connected to VPS!"
 echo ""
@@ -125,24 +126,65 @@ BACKUP_DIR="$PROJECT_PATH/backups/postgres"
 mkdir -p "$BACKUP_DIR"
 BACKUP_FILE="$BACKUP_DIR/backup_$(date +%Y%m%d_%H%M%S).sql.gz"
 
-# Extract PostgreSQL credentials from DATABASE_URL
-# Format: postgresql://user:password@host:port/dbname
-DB_URL=$(grep "^DATABASE_URL=" .env | cut -d'=' -f2-)
-if [ -z "$DB_URL" ]; then
-    echo "⚠️ Could not parse DATABASE_URL"
+# Parse DATABASE_URL robustly (supports postgres:// and postgresql://)
+PARSED_DB=$(python3 - << 'PY'
+from urllib.parse import urlparse, unquote
+
+db_url = ""
+with open('.env', 'r', encoding='utf-8') as f:
+    for line in f:
+        if line.startswith('DATABASE_URL='):
+            db_url = line.split('=', 1)[1].strip()
+            break
+
+if not db_url:
+    raise SystemExit(1)
+
+if db_url.startswith('postgres://'):
+    db_url = 'postgresql://' + db_url[len('postgres://'):]
+
+parsed = urlparse(db_url)
+if parsed.scheme not in ('postgresql', 'postgres'):
+    raise SystemExit(2)
+
+user = unquote(parsed.username or '')
+password = unquote(parsed.password or '')
+host = parsed.hostname or '127.0.0.1'
+port = parsed.port or 5432
+dbname = (parsed.path or '').lstrip('/')
+
+if not user or not dbname:
+    raise SystemExit(3)
+
+print(user)
+print(password)
+print(host)
+print(port)
+print(dbname)
+PY
+)
+
+if [ -z "$PARSED_DB" ]; then
+    echo "❌ Could not parse DATABASE_URL from .env"
     exit 1
 fi
 
-# Simple extraction (works for postgresql:// URLs)
-DB_USER=$(echo "$DB_URL" | sed -E 's|postgresql://([^:]+):.*|\1|')
-DB_HOST=$(echo "$DB_URL" | sed -E 's|.*@([^:]+):.*|\1|')
-DB_PORT=$(echo "$DB_URL" | sed -E 's|.*:([0-9]+)/.*|\1|')
-DB_NAME=$(echo "$DB_URL" | sed -E 's|.*/([^?]+).*|\1|')
+mapfile -t DB_PARTS <<< "$PARSED_DB"
+DB_USER="${DB_PARTS[0]}"
+DB_PASSWORD="${DB_PARTS[1]}"
+DB_HOST="${DB_PARTS[2]}"
+DB_PORT="${DB_PARTS[3]}"
+DB_NAME="${DB_PARTS[4]}"
 
-if pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" | gzip > "$BACKUP_FILE" 2>/dev/null; then
+export PGPASSWORD="$DB_PASSWORD"
+pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" | gzip > "$BACKUP_FILE"
+unset PGPASSWORD
+
+if [ -s "$BACKUP_FILE" ]; then
     echo "✅ Database backed up to: $BACKUP_FILE"
 else
-    echo "⚠️ Database backup failed (continuing anyway)"
+    echo "❌ Database backup failed: empty backup file"
+    exit 1
 fi
 echo ""
 
@@ -154,7 +196,7 @@ echo ""
 
 # Collect static files
 echo "📁 Collecting static files..."
-python3 manage.py collectstatic --noinput -q
+python3 manage.py collectstatic --noinput
 echo "✅ Static files collected"
 echo ""
 
