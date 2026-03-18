@@ -271,3 +271,36 @@ class BookingFlowTests(TestCase):
             self.assertTrue(status_response.json()['processing'])
         finally:
             cache.delete(lock_key)
+
+    def test_offline_recovery_on_refresh_returns_existing_booking(self):
+        """Test offline recovery: after successful booking, refresh should return the same booking"""
+        self.client.login(username=self.username, password=self.password)
+
+        start_date = (date.today() + timedelta(days=1)).strftime("%Y-%m-%d")
+        end_date = (date.today() + timedelta(days=2)).strftime("%Y-%m-%d")
+        request_id = "offline-recovery-test"
+
+        payload = {
+            "items": [{"id": self.product.id, "quantity": 1, "type": "product"}],
+            "start": start_date,
+            "end": end_date,
+            "phone": "0812345678",
+            "request_id": request_id,
+        }
+
+        # Step 1: Create booking successfully
+        create_url = reverse('store:api_create_booking')
+        create_response = self.client.post(create_url, data=json.dumps(payload), content_type='application/json')
+        self.assertEqual(create_response.status_code, 200)
+        booking_id_1 = create_response.json()['booking_id']
+
+        # Step 2: Simulate page refresh - call status endpoint to recover state
+        status_url = reverse('store:api_booking_create_status')
+        status_response = self.client.get(status_url, {'request_id': request_id})
+        self.assertEqual(status_response.status_code, 200)
+        self.assertTrue(status_response.json()['created'])
+        booking_id_2 = status_response.json()['booking_id']
+
+        # Step 3: Verify same booking is returned (no duplicate)
+        self.assertEqual(booking_id_1, booking_id_2)
+        self.assertEqual(Booking.objects.count(), 1)
