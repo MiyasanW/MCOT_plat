@@ -1,0 +1,12 @@
+[ERROR] 2026-03-18 10:32:42 apps.store.views.booking create_booking_api:284 — [CREATE_BOOKING] Service error: 'Booking' object has no attribute 'total_amount'
+Traceback (most recent call last):
+  File "/Users/thanandorn/Desktop/MCOT_Rental_Platform/apps/store/views/booking.py", line 268, in create_booking_api
+    logger.info(f"[CREATE_BOOKING] Success: Booking {booking.id} created for user {request.user.id} | Items: {len(cart_items)} | Amount: ฿{booking.total_amount}")
+AttributeError: 'Booking' object has no attribute 'total_amount'
+[ERROR] 2026-03-18 10:32:42 django.request log_response:246 — Internal Server Error: /api/booking/create/
+[ERROR] 2026-03-18 10:32:48 apps.store.views.booking create_booking_api:284 — [CREATE_BOOKING] Service error: 'Booking' object has no attribute 'total_amount'
+Traceback (most recent call last):
+  File "/Users/thanandorn/Desktop/MCOT_Rental_Platform/apps/store/views/booking.py", line 268, in create_booking_api
+    logger.info(f"[CREATE_BOOKING] Success: Booking {booking.id} created for user {request.user.id} | Items: {len(cart_items)} | Amount: ฿{booking.total_amount}")
+AttributeError: 'Booking' object has no attribute 'total_amount'
+[ERROR] 2026-03-18 10:32:48 django.request log_response:246 — Internal Server Error: /api/booking/create/

@@ -1,5 +1,6 @@
 import json
 import re
+import logging
 from datetime import datetime, timedelta
 from decimal import Decimal
 
@@ -14,6 +15,8 @@ from django.contrib.auth.decorators import login_required
 from apps.store.models import Product, Studio, Package, Booking, BookingItem, PromotionCode, Profile
 from apps.store.services.availability import AvailabilityService
 from apps.store.services.booking_service import BookingService
+
+logger = logging.getLogger(__name__)
 
 def cart(request):
     """
@@ -54,6 +57,7 @@ def check_promo_api(request):
     try:
         subtotal = Decimal(subtotal_str)
         if subtotal <= 0:
+            logger.warning(f"[CHECK_PROMO] Invalid subtotal: {subtotal}")
             return JsonResponse({"valid": False, "message": "ยอดรวมต้องมากกว่า 0"})
             
         discount = Decimal('0.00')
@@ -67,6 +71,7 @@ def check_promo_api(request):
                 p_discount = subtotal * (Decimal(request.user.profile.partner_discount_percent) / Decimal('100.0'))
                 discount += p_discount
                 messages.append(f"ส่วนลดพาร์ทเนอร์ {request.user.profile.partner_discount_percent}%")
+                logger.debug(f"[CHECK_PROMO] Partner discount applied: {p_discount}")
 
         # 2. เช็ค Promo Code
         code_valid = False
@@ -85,7 +90,9 @@ def check_promo_api(request):
                     messages.append(f"โปรโมชั่นลด ฿{promo.discount_amount:,.2f}")
                 
                 discount += promo_discount
+                logger.info(f"[CHECK_PROMO] Promo code valid: {promo_code} | Discount: ฿{promo_discount}")
             except PromotionCode.DoesNotExist:
+                logger.warning(f"[CHECK_PROMO] Invalid/expired promo code: {promo_code}")
                 return JsonResponse({"valid": False, "message": "โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว"})
 
         partner_amount = float(discount - promo_discount)
@@ -103,9 +110,11 @@ def check_promo_api(request):
             "is_partner": is_partner
         })
 
-    except ValueError:
+    except ValueError as e:
+        logger.error(f"[CHECK_PROMO] ValueError: {str(e)}")
         return JsonResponse({"valid": False, "message": "ข้อมูลไม่ถูกต้อง"}, status=400)
     except Exception as e:
+        logger.error(f"[CHECK_PROMO] Unexpected error: {str(e)}", exc_info=True)
         return JsonResponse({"valid": False, "message": str(e)}, status=500)
 
 @require_GET
@@ -119,6 +128,7 @@ def check_availability_api(request):
     end_date_str = request.GET.get('end')     # คาดหวัง format "YYYY-MM-DD"
     
     if not (product_id and start_date_str and end_date_str):
+        logger.warning(f"[CHECK_AVAIL] Missing params: product_id={product_id}, start={start_date_str}, end={end_date_str}")
         return JsonResponse({"available": False, "message": "Missing parameters (product_id, start, end)"}, status=400)
     
     try:
@@ -139,15 +149,19 @@ def check_availability_api(request):
         # 2. เช็คว่าพอให้จองไหม (Boolean Logic)
         is_available, status_message = AvailabilityService.check_availability(target_product, start_datetime, end_datetime)
         
+        logger.debug(f"[CHECK_AVAIL] Product: {product_id} ({target_product.name}) | Dates: {start_date} to {end_date} | Available: {is_available} | Remaining: {remaining_stock}")
+        
         return JsonResponse({
             "available": is_available,
             "message": status_message,
             "remaining": remaining_stock,
             "product_name": target_product.name
         })
-    except ValueError:
+    except ValueError as e:
+        logger.error(f"[CHECK_AVAIL] Date parse error: {str(e)} | Start: {start_date_str} | End: {end_date_str}")
         return JsonResponse({"available": False, "message": "Invalid Date Format. Use YYYY-MM-DD"}, status=400)
     except Exception as e:
+        logger.error(f"[CHECK_AVAIL] Error: {str(e)}", exc_info=True)
         return JsonResponse({"available": False, "message": f"Server Error: {str(e)}"}, status=500)
 
 @require_POST
@@ -186,6 +200,9 @@ def create_booking_api(request):
         cart_items = payload.get('items', [])
         request_id = (payload.get('request_id') or '').strip()
 
+        logger.info(f"[CREATE_BOOKING] User: {request.user.id} ({request.user.username}) | Request ID: {request_id}")
+        logger.debug(f"[CREATE_BOOKING] Cart items: {len(cart_items)} items | Start: {payload.get('start')} | End: {payload.get('end')}")
+
         lock_key = None
         result_key = None
         if request_id:
@@ -194,6 +211,7 @@ def create_booking_api(request):
 
             existing_booking_id = cache.get(result_key)
             if existing_booking_id:
+                logger.info(f"[CREATE_BOOKING] Idempotent hit: booking {existing_booking_id} already created for request {request_id}")
                 return JsonResponse({
                     "success": True,
                     "booking_id": existing_booking_id,
@@ -203,6 +221,7 @@ def create_booking_api(request):
 
             if not cache.add(lock_key, 1, timeout=30):
                 # Another request with same idempotency key is in-flight.
+                logger.warning(f"[CREATE_BOOKING] Lock exists: request {request_id} is already processing")
                 return JsonResponse({
                     "success": False,
                     "message": "กำลังดำเนินการสร้างใบจองอยู่ กรุณารอสักครู่",
@@ -211,6 +230,7 @@ def create_booking_api(request):
         
         phone = payload.get('customer_phone') or payload.get('phone')
         if phone and not re.match(r'^[0-9\-\+\s\(\)]+$', phone):
+            logger.warning(f"[CREATE_BOOKING] Invalid phone: {phone}")
             return JsonResponse({"success": False, "message": "เบอร์โทรศัพท์ไม่ถูกต้อง กรุณากรอกเฉพาะตัวเลข"}, status=400)
             
         # Prepare Data
@@ -235,6 +255,7 @@ def create_booking_api(request):
             booking_data['start_time'] = timezone.make_aware(datetime.combine(start_date, datetime.min.time()))
             booking_data['end_time'] = timezone.make_aware(datetime.combine(end_date, datetime.max.time()))
         except Exception as e:
+            logger.error(f"[CREATE_BOOKING] Date parse error: {str(e)} | Start: {payload.get('start')} | End: {payload.get('end')}")
             return JsonResponse({"success": False, "message": "Invalid Date Format"}, status=400)
             
         try:
@@ -243,6 +264,8 @@ def create_booking_api(request):
                 booking_data=booking_data,
                 user=request.user
             )
+
+            logger.info(f"[CREATE_BOOKING] Success: Booking {booking.id} created for user {request.user.id} | Items: {len(cart_items)} | Amount: ฿{booking.total_price}")
 
             if result_key:
                 cache.set(result_key, booking.id, timeout=600)
@@ -254,17 +277,21 @@ def create_booking_api(request):
             })
 
         except ValueError as e:
+            logger.warning(f"[CREATE_BOOKING] Validation error: {str(e)}")
             return JsonResponse({"success": False, "message": str(e)}, status=400)
         except Exception as e:
             # Service might raise other exceptions for DB errors
+            logger.error(f"[CREATE_BOOKING] Service error: {str(e)}", exc_info=True)
             return JsonResponse({"success": False, "message": f"System Error: {str(e)}"}, status=500)
         finally:
             if lock_key:
                 cache.delete(lock_key)
 
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        logger.error(f"[CREATE_BOOKING] JSON decode error: {str(e)}")
         return JsonResponse({"success": False, "message": "Invalid JSON"}, status=400)
     except Exception as e:
+        logger.error(f"[CREATE_BOOKING] Unexpected error: {str(e)}", exc_info=True)
         return JsonResponse({"success": False, "message": f"Server Error: {str(e)}"}, status=500)
 
 
@@ -274,6 +301,7 @@ def booking_create_status_api(request):
     """Check create-booking request status by idempotency request_id for refresh recovery."""
     request_id = (request.GET.get('request_id') or '').strip()
     if not request_id:
+        logger.warning(f"[BOOKING_STATUS] Missing request_id for user {request.user.id}")
         return JsonResponse({"success": False, "message": "Missing request_id"}, status=400)
 
     result_key = f"booking_create_result:{request.user.id}:{request_id}"
@@ -283,6 +311,7 @@ def booking_create_status_api(request):
     if booking_id:
         booking_exists = Booking.objects.filter(id=booking_id, created_by=request.user).exists()
         if booking_exists:
+            logger.info(f"[BOOKING_STATUS] Status: CREATED | User: {request.user.id} | Request: {request_id} | Booking: {booking_id}")
             return JsonResponse({
                 "success": True,
                 "created": True,
@@ -291,12 +320,14 @@ def booking_create_status_api(request):
         cache.delete(result_key)
 
     if cache.get(lock_key):
+        logger.debug(f"[BOOKING_STATUS] Status: PROCESSING | User: {request.user.id} | Request: {request_id}")
         return JsonResponse({
             "success": True,
             "created": False,
             "processing": True,
         })
 
+    logger.debug(f"[BOOKING_STATUS] Status: NO_STATE | User: {request.user.id} | Request: {request_id}")
     return JsonResponse({
         "success": True,
         "created": False,

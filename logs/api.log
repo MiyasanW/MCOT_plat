@@ -1,0 +1,36 @@
+[INFO] 2026-03-18 10:32:42 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: 
+[ERROR] 2026-03-18 10:32:42 apps.store.views.booking create_booking_api:284 — [CREATE_BOOKING] Service error: 'Booking' object has no attribute 'total_amount'
+Traceback (most recent call last):
+  File "/Users/thanandorn/Desktop/MCOT_Rental_Platform/apps/store/views/booking.py", line 268, in create_booking_api
+    logger.info(f"[CREATE_BOOKING] Success: Booking {booking.id} created for user {request.user.id} | Items: {len(cart_items)} | Amount: ฿{booking.total_amount}")
+AttributeError: 'Booking' object has no attribute 'total_amount'
+[INFO] 2026-03-18 10:32:48 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: 
+[ERROR] 2026-03-18 10:32:48 apps.store.views.booking create_booking_api:284 — [CREATE_BOOKING] Service error: 'Booking' object has no attribute 'total_amount'
+Traceback (most recent call last):
+  File "/Users/thanandorn/Desktop/MCOT_Rental_Platform/apps/store/views/booking.py", line 268, in create_booking_api
+    logger.info(f"[CREATE_BOOKING] Success: Booking {booking.id} created for user {request.user.id} | Items: {len(cart_items)} | Amount: ฿{booking.total_amount}")
+AttributeError: 'Booking' object has no attribute 'total_amount'
+[INFO] 2026-03-18 10:33:04 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: 
+[INFO] 2026-03-18 10:33:04 apps.store.views.booking create_booking_api:268 — [CREATE_BOOKING] Success: Booking 1 created for user 1 | Items: 1 | Amount: ฿2000.00
+[INFO] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: checkout-status-created-1
+[INFO] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:268 — [CREATE_BOOKING] Success: Booking 1 created for user 1 | Items: 1 | Amount: ฿2000.00
+[INFO] 2026-03-18 10:33:10 apps.store.views.booking booking_create_status_api:314 — [BOOKING_STATUS] Status: CREATED | User: 1 | Request: checkout-status-created-1 | Booking: 1
+[INFO] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: checkout-req-12345
+[INFO] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:268 — [CREATE_BOOKING] Success: Booking 1 created for user 1 | Items: 1 | Amount: ฿2000.00
+[INFO] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: checkout-req-12345
+[INFO] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:214 — [CREATE_BOOKING] Idempotent hit: booking 1 already created for request checkout-req-12345
+[INFO] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: 
+[WARNING] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:280 — [CREATE_BOOKING] Validation error: Conflict: ไม่พบสินค้าที่เลือก (ID: 999999) ข้อมูลตะกร้าอาจไม่อัปเดต กรุณาลบรายการแล้วเลือกใหม่
+[INFO] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: 
+[INFO] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:268 — [CREATE_BOOKING] Success: Booking 1 created for user 1 | Items: 1 | Amount: ฿2000.00
+[INFO] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: 
+[INFO] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:268 — [CREATE_BOOKING] Success: Booking 1 created for user 1 | Items: 1 | Amount: ฿10000.00
+[INFO] 2026-03-18 10:33:12 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: offline-recovery-test
+[INFO] 2026-03-18 10:33:12 apps.store.views.booking create_booking_api:268 — [CREATE_BOOKING] Success: Booking 1 created for user 1 | Items: 1 | Amount: ฿2000.00
+[INFO] 2026-03-18 10:33:12 apps.store.views.booking booking_create_status_api:314 — [BOOKING_STATUS] Status: CREATED | User: 1 | Request: offline-recovery-test | Booking: 1
+[INFO] 2026-03-18 10:33:12 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: 
+[WARNING] 2026-03-18 10:33:12 apps.store.views.booking create_booking_api:280 — [CREATE_BOOKING] Validation error: Missing required field: customer_phone
+[INFO] 2026-03-18 10:33:17 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (tester) | Request ID: 
+[INFO] 2026-03-18 10:33:17 apps.store.views.booking create_booking_api:268 — [CREATE_BOOKING] Success: Booking 1 created for user 1 | Items: 1 | Amount: ฿2000.00
+[INFO] 2026-03-18 10:33:17 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (tester) | Request ID: 
+[WARNING] 2026-03-18 10:33:17 apps.store.views.booking create_booking_api:280 — [CREATE_BOOKING] Validation error: Conflict: สินค้า 'Limited Camera' ไม่พอสำหรับการจองในช่วงเวลานี้ (เหลือ 0 ชิ้น)

@@ -262,3 +262,122 @@ SOCIALACCOUNT_PROVIDERS = {
         'OAUTH_PKCE_ENABLED': True,
     }
 }
+
+# ==============================================================================
+# LOGGING CONFIGURATION (Debugging & Troubleshooting)
+# ==============================================================================
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{levelname}] {asctime} {name} {funcName}:{lineno} — {message}',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+            'style': '{',
+        },
+        'simple': {
+            'format': '[{levelname}] {asctime} {name} — {message}',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs' / 'app.log',
+            'maxBytes': 5 * 1024 * 1024,  # 5MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'error_file': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs' / 'error.log',
+            'maxBytes': 5 * 1024 * 1024,  # 5MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'api_file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs' / 'api.log',
+            'maxBytes': 10 * 1024 * 1024,  # 10MB for API logs (more verbose)
+            'backupCount': 10,
+            'formatter': 'verbose',
+        },
+        'django_db': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs' / 'db.log',
+            'maxBytes': 5 * 1024 * 1024,
+            'backupCount': 3,
+            'formatter': 'verbose',
+            'filters': ['require_debug_true'],  # Only in DEBUG mode
+        },
+    },
+    'loggers': {
+        # Django framework logs
+        'django': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['django_db'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        
+        # App-level loggers
+        'apps.store': {
+            'handlers': ['console', 'file', 'error_file', 'api_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'apps.store.views': {
+            'handlers': ['console', 'file', 'error_file', 'api_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'apps.store.services': {
+            'handlers': ['console', 'file', 'error_file', 'api_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'apps.store.models': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        
+        # Allauth logs
+        'allauth': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+# Create logs directory if it doesn't exist
+_logs_dir = BASE_DIR / 'logs'
+_logs_dir.mkdir(parents=True, exist_ok=True)

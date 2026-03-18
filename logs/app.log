@@ -1,0 +1,76 @@
+[INFO] 2026-03-18 10:30:34 django.utils.autoreload run_with_reloader:667 — Watching for file changes with StatReloader
+[INFO] 2026-03-18 10:30:43 django.server log_message:212 — "GET /api/notifications/ HTTP/1.1" 200 7933
+[INFO] 2026-03-18 10:31:08 django.utils.autoreload trigger_reload:265 — /Users/thanandorn/Desktop/MCOT_Rental_Platform/apps/store/views/booking.py changed, reloading.
+[INFO] 2026-03-18 10:31:09 django.utils.autoreload run_with_reloader:667 — Watching for file changes with StatReloader
+[INFO] 2026-03-18 10:31:23 django.server log_message:212 — "GET /api/notifications/ HTTP/1.1" 200 7933
+[INFO] 2026-03-18 10:31:24 django.utils.autoreload trigger_reload:265 — /Users/thanandorn/Desktop/MCOT_Rental_Platform/apps/store/views/booking.py changed, reloading.
+[INFO] 2026-03-18 10:31:25 django.utils.autoreload run_with_reloader:667 — Watching for file changes with StatReloader
+[INFO] 2026-03-18 10:31:45 django.utils.autoreload trigger_reload:265 — /Users/thanandorn/Desktop/MCOT_Rental_Platform/apps/store/views/booking.py changed, reloading.
+[INFO] 2026-03-18 10:31:45 django.utils.autoreload run_with_reloader:667 — Watching for file changes with StatReloader
+[INFO] 2026-03-18 10:31:58 django.utils.autoreload trigger_reload:265 — /Users/thanandorn/Desktop/MCOT_Rental_Platform/apps/store/views/booking.py changed, reloading.
+[INFO] 2026-03-18 10:31:58 django.utils.autoreload run_with_reloader:667 — Watching for file changes with StatReloader
+[INFO] 2026-03-18 10:32:03 django.server log_message:212 — "GET /api/notifications/ HTTP/1.1" 200 7933
+[INFO] 2026-03-18 10:32:23 django.utils.autoreload trigger_reload:265 — /Users/thanandorn/Desktop/MCOT_Rental_Platform/apps/store/views/booking.py changed, reloading.
+[INFO] 2026-03-18 10:32:24 django.utils.autoreload run_with_reloader:667 — Watching for file changes with StatReloader
+[INFO] 2026-03-18 10:32:42 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: 
+[DEBUG] 2026-03-18 10:32:42 apps.store.views.booking create_booking_api:204 — [CREATE_BOOKING] Cart items: 1 items | Start: 2026-03-19 | End: 2026-03-20
+[ERROR] 2026-03-18 10:32:42 apps.store.views.booking create_booking_api:284 — [CREATE_BOOKING] Service error: 'Booking' object has no attribute 'total_amount'
+Traceback (most recent call last):
+  File "/Users/thanandorn/Desktop/MCOT_Rental_Platform/apps/store/views/booking.py", line 268, in create_booking_api
+    logger.info(f"[CREATE_BOOKING] Success: Booking {booking.id} created for user {request.user.id} | Items: {len(cart_items)} | Amount: ฿{booking.total_amount}")
+AttributeError: 'Booking' object has no attribute 'total_amount'
+[ERROR] 2026-03-18 10:32:42 django.request log_response:246 — Internal Server Error: /api/booking/create/
+[INFO] 2026-03-18 10:32:43 django.server log_message:212 — "GET /api/notifications/ HTTP/1.1" 200 7933
+[INFO] 2026-03-18 10:32:48 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: 
+[DEBUG] 2026-03-18 10:32:48 apps.store.views.booking create_booking_api:204 — [CREATE_BOOKING] Cart items: 1 items | Start: 2026-03-19 | End: 2026-03-20
+[ERROR] 2026-03-18 10:32:48 apps.store.views.booking create_booking_api:284 — [CREATE_BOOKING] Service error: 'Booking' object has no attribute 'total_amount'
+Traceback (most recent call last):
+  File "/Users/thanandorn/Desktop/MCOT_Rental_Platform/apps/store/views/booking.py", line 268, in create_booking_api
+    logger.info(f"[CREATE_BOOKING] Success: Booking {booking.id} created for user {request.user.id} | Items: {len(cart_items)} | Amount: ฿{booking.total_amount}")
+AttributeError: 'Booking' object has no attribute 'total_amount'
+[ERROR] 2026-03-18 10:32:48 django.request log_response:246 — Internal Server Error: /api/booking/create/
+[INFO] 2026-03-18 10:33:00 django.utils.autoreload trigger_reload:265 — /Users/thanandorn/Desktop/MCOT_Rental_Platform/apps/store/views/booking.py changed, reloading.
+[INFO] 2026-03-18 10:33:00 django.utils.autoreload run_with_reloader:667 — Watching for file changes with StatReloader
+[INFO] 2026-03-18 10:33:04 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: 
+[DEBUG] 2026-03-18 10:33:04 apps.store.views.booking create_booking_api:204 — [CREATE_BOOKING] Cart items: 1 items | Start: 2026-03-19 | End: 2026-03-20
+[INFO] 2026-03-18 10:33:04 apps.store.views.booking create_booking_api:268 — [CREATE_BOOKING] Success: Booking 1 created for user 1 | Items: 1 | Amount: ฿2000.00
+[INFO] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: checkout-status-created-1
+[DEBUG] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:204 — [CREATE_BOOKING] Cart items: 1 items | Start: 2026-03-19 | End: 2026-03-20
+[INFO] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:268 — [CREATE_BOOKING] Success: Booking 1 created for user 1 | Items: 1 | Amount: ฿2000.00
+[INFO] 2026-03-18 10:33:10 apps.store.views.booking booking_create_status_api:314 — [BOOKING_STATUS] Status: CREATED | User: 1 | Request: checkout-status-created-1 | Booking: 1
+[DEBUG] 2026-03-18 10:33:10 apps.store.views.booking booking_create_status_api:323 — [BOOKING_STATUS] Status: PROCESSING | User: 1 | Request: checkout-status-processing-1
+[INFO] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: checkout-req-12345
+[DEBUG] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:204 — [CREATE_BOOKING] Cart items: 1 items | Start: 2026-03-19 | End: 2026-03-20
+[INFO] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:268 — [CREATE_BOOKING] Success: Booking 1 created for user 1 | Items: 1 | Amount: ฿2000.00
+[INFO] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: checkout-req-12345
+[DEBUG] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:204 — [CREATE_BOOKING] Cart items: 1 items | Start: 2026-03-19 | End: 2026-03-20
+[INFO] 2026-03-18 10:33:10 apps.store.views.booking create_booking_api:214 — [CREATE_BOOKING] Idempotent hit: booking 1 already created for request checkout-req-12345
+[INFO] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: 
+[DEBUG] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:204 — [CREATE_BOOKING] Cart items: 1 items | Start: 2026-03-19 | End: 2026-03-20
+[WARNING] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:280 — [CREATE_BOOKING] Validation error: Conflict: ไม่พบสินค้าที่เลือก (ID: 999999) ข้อมูลตะกร้าอาจไม่อัปเดต กรุณาลบรายการแล้วเลือกใหม่
+[WARNING] 2026-03-18 10:33:11 django.request log_response:246 — Bad Request: /api/booking/create/
+[INFO] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: 
+[DEBUG] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:204 — [CREATE_BOOKING] Cart items: 1 items | Start: 2026-03-19 | End: 2026-03-20
+[INFO] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:268 — [CREATE_BOOKING] Success: Booking 1 created for user 1 | Items: 1 | Amount: ฿2000.00
+[INFO] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: 
+[DEBUG] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:204 — [CREATE_BOOKING] Cart items: 1 items | Start: 2026-03-19 | End: 2026-03-20
+[INFO] 2026-03-18 10:33:11 apps.store.views.booking create_booking_api:268 — [CREATE_BOOKING] Success: Booking 1 created for user 1 | Items: 1 | Amount: ฿10000.00
+[INFO] 2026-03-18 10:33:12 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: offline-recovery-test
+[DEBUG] 2026-03-18 10:33:12 apps.store.views.booking create_booking_api:204 — [CREATE_BOOKING] Cart items: 1 items | Start: 2026-03-19 | End: 2026-03-20
+[INFO] 2026-03-18 10:33:12 apps.store.views.booking create_booking_api:268 — [CREATE_BOOKING] Success: Booking 1 created for user 1 | Items: 1 | Amount: ฿2000.00
+[INFO] 2026-03-18 10:33:12 apps.store.views.booking booking_create_status_api:314 — [BOOKING_STATUS] Status: CREATED | User: 1 | Request: offline-recovery-test | Booking: 1
+[INFO] 2026-03-18 10:33:12 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (test_booker) | Request ID: 
+[DEBUG] 2026-03-18 10:33:12 apps.store.views.booking create_booking_api:204 — [CREATE_BOOKING] Cart items: 1 items | Start: 2024-02-10 | End: 2024-02-09
+[WARNING] 2026-03-18 10:33:12 apps.store.views.booking create_booking_api:280 — [CREATE_BOOKING] Validation error: Missing required field: customer_phone
+[WARNING] 2026-03-18 10:33:12 django.request log_response:246 — Bad Request: /api/booking/create/
+[WARNING] 2026-03-18 10:33:15 django.request log_response:246 — Bad Request: /api/staff/booking/1/action/
+[WARNING] 2026-03-18 10:33:16 django.request log_response:246 — Bad Request: /api/staff/booking/1/action/
+[WARNING] 2026-03-18 10:33:16 django.request log_response:246 — Bad Request: /api/staff/booking/1/action/
+[INFO] 2026-03-18 10:33:17 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (tester) | Request ID: 
+[DEBUG] 2026-03-18 10:33:17 apps.store.views.booking create_booking_api:204 — [CREATE_BOOKING] Cart items: 1 items | Start: 2024-03-01 | End: 2024-03-02
+[INFO] 2026-03-18 10:33:17 apps.store.views.booking create_booking_api:268 — [CREATE_BOOKING] Success: Booking 1 created for user 1 | Items: 1 | Amount: ฿2000.00
+[INFO] 2026-03-18 10:33:17 apps.store.views.booking create_booking_api:203 — [CREATE_BOOKING] User: 1 (tester) | Request ID: 
+[DEBUG] 2026-03-18 10:33:17 apps.store.views.booking create_booking_api:204 — [CREATE_BOOKING] Cart items: 1 items | Start: 2024-03-01 | End: 2024-03-02
+[WARNING] 2026-03-18 10:33:17 apps.store.views.booking create_booking_api:280 — [CREATE_BOOKING] Validation error: Conflict: สินค้า 'Limited Camera' ไม่พอสำหรับการจองในช่วงเวลานี้ (เหลือ 0 ชิ้น)
+[WARNING] 2026-03-18 10:33:17 django.request log_response:246 — Bad Request: /api/booking/create/
+[INFO] 2026-03-18 10:33:23 django.server log_message:212 — "GET /api/notifications/ HTTP/1.1" 200 7933
