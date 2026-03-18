@@ -54,3 +54,4 @@ deploy_to_vps.sh
 
 # Office temp files
 ~$*
+/logs/
