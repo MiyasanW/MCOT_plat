@@ -57,3 +57,12 @@ client_secret_*.json
 ~$*
 /logs/
 backups/migration/
+
+# Thesis/report artifacts (keep local, do not commit)
+/docs/project_assets/
+/PROJECT.md
+/project_report.docx
+/project_report.md
+/USER_MANUAL.docx
+/USER_MANUAL.md
+/โครงงาน*.docx
