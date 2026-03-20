@@ -232,6 +232,11 @@
                         </div>
                     </div>
 
+                    <div class="mb-6 bg-amber-50/10 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-200 text-xs leading-relaxed">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        หลังเจ้าหน้าที่ตรวจสอบและส่งใบเสนอราคา จะมีการเรียกเก็บมัดจำ {{ deposit_percent|floatformat:-2 }}% ของยอดรวมเพื่อยืนยันการจอง
+                    </div>
+
                     <!-- Submission Status Banner -->
                     <div x-show="hasSubmittedCheckout" x-cloak class="mb-4 rounded-xl border border-amber-300/50 bg-amber-500/10 px-4 py-3 text-amber-100">
                         <div class="flex items-start gap-3">

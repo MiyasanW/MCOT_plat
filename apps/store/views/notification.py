@@ -3,6 +3,7 @@ import re
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_GET
+from django.utils import timezone
 from apps.store.models import Notification
 
 @login_required
@@ -28,7 +29,7 @@ def get_notifications_api(request):
             'link': link,
             'is_read': notif.is_read,
             'type': notif.notification_type,
-            'created_at': notif.created_at.strftime("%d/%m %H:%M")
+            'created_at': timezone.localtime(notif.created_at).strftime("%d/%m %H:%M")
         })
         
     return JsonResponse({

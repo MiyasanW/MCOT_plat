@@ -12,7 +12,7 @@ from django.db.models import Q, Sum, Count
 from django.db.models.functions import TruncMonth
 from django.views.decorators.http import require_POST
 
-from apps.store.models import Equipment, Product, Booking, BookingItem
+from apps.store.models import Equipment, Product, Booking, BookingItem, BookingConfig
 from apps.store.services.notification_service import NotificationService
 from apps.store.services.pricing_service import PricingService
 from apps.store.services.dashboard_service import DashboardService
@@ -155,6 +155,7 @@ def booking_summary(request, booking_id):
         'studios': studios,
         'preview_penalty': current_penalty,
         'history_logs': history_logs,
+        'global_deposit_percent': PricingService.get_deposit_percentage(),
     }
     return render(request, 'staff/booking_summary.html', context)
 
@@ -241,6 +242,32 @@ def booking_action_api(request, booking_id):
             booking.penalty_amount = penalty
             booking.total_price = booking.calculate_total_price()
             booking.save(update_fields=['penalty_amount', 'total_price'])
+
+        elif action == 'update_deposit_percent':
+            raw_percent = data.get('percent')
+            if raw_percent is None:
+                raise ValueError("กรุณาระบุเปอร์เซ็นต์มัดจำ")
+
+            try:
+                percent = Decimal(str(raw_percent))
+            except Exception:
+                raise ValueError("เปอร์เซ็นต์มัดจำไม่ถูกต้อง")
+
+            if percent < Decimal('0') or percent > Decimal('100'):
+                raise ValueError("เปอร์เซ็นต์มัดจำต้องอยู่ระหว่าง 0 ถึง 100")
+
+            cfg = BookingConfig.objects.order_by('id').first()
+            if cfg is None:
+                cfg = BookingConfig.objects.create(deposit_percent=percent)
+            else:
+                cfg.deposit_percent = percent
+                cfg.save(update_fields=['deposit_percent'])
+
+            totals = PricingService.calculate_booking_total(booking)
+            booking.total_price = totals['grand_total']
+            booking.discount_amount = totals['discount']
+            booking.deposit_amount = PricingService.calculate_deposit(totals['grand_total'])
+            booking.save(update_fields=['total_price', 'discount_amount', 'deposit_amount'])
             
         elif action == 'assign_equipment':
             item_id = data.get('item_id')

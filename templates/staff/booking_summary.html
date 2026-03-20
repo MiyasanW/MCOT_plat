@@ -59,7 +59,7 @@
             </div>
             <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/70 p-3">
                 <p class="text-[10px] uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400">มัดจำ</p>
-                <p class="text-sm font-black text-mcot-orange mt-1">฿{{ booking.deposit_amount|intcomma }}</p>
+                <p class="text-sm font-black text-mcot-orange mt-1">฿{{ booking.deposit_amount|intcomma }} <span class="text-xs text-slate-400 dark:text-slate-500">({{ global_deposit_percent|floatformat:-2 }}% · global)</span></p>
             </div>
         </div>
         </div>
@@ -207,8 +207,19 @@
                             <span class="text-xl font-black text-slate-900 dark:text-white font-display">฿{{ booking.total_price|intcomma }}</span>
                         </div>
                         <div class="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-500/20 dark:to-amber-500/10 rounded-xl p-4 border border-orange-200/70 dark:border-orange-400/30 text-center shadow-sm">
-                            <span class="text-[10px] text-orange-500 dark:text-orange-300 font-bold uppercase tracking-widest block mb-1">มัดจำ 30%</span>
-                            <span class="text-xl font-black text-mcot-orange dark:text-orange-300 font-display">฿{{ booking.deposit_amount|intcomma }}</span>
+                            <span class="text-[10px] text-orange-500 dark:text-orange-300 font-bold uppercase tracking-widest block mb-1">มัดจำ (ปรับได้)</span>
+                            <div class="flex items-center justify-center gap-1 mt-1">
+                                <button onclick="nudgeDepositPercent(-1)" class="px-2 py-1 bg-orange-100 dark:bg-orange-500/20 hover:bg-orange-200 dark:hover:bg-orange-500/30 text-orange-600 dark:text-orange-300 font-bold rounded-lg text-xs transition-colors border border-orange-200 dark:border-orange-400/40 shadow-sm" title="ลดลง 1%">-1</button>
+                                <input type="number" id="deposit-percent-input" value="{{ global_deposit_percent|floatformat:2 }}"
+                                    min="0" max="100" step="0.01"
+                                    class="w-20 bg-white dark:bg-slate-900 border border-orange-200 dark:border-orange-400/40 rounded-lg px-2 py-1 text-center text-orange-600 dark:text-orange-300 font-bold focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none text-sm shadow-inner">
+                                <span class="text-orange-500 dark:text-orange-300 font-bold">%</span>
+                                <button onclick="nudgeDepositPercent(1)" class="px-2 py-1 bg-orange-100 dark:bg-orange-500/20 hover:bg-orange-200 dark:hover:bg-orange-500/30 text-orange-600 dark:text-orange-300 font-bold rounded-lg text-xs transition-colors border border-orange-200 dark:border-orange-400/40 shadow-sm" title="เพิ่มขึ้น 1%">+1</button>
+                                <button onclick="saveDepositPercent()" class="px-2 py-1 bg-orange-100 dark:bg-orange-500/20 hover:bg-orange-200 dark:hover:bg-orange-500/30 text-orange-600 dark:text-orange-300 font-bold rounded-lg text-xs transition-colors border border-orange-200 dark:border-orange-400/40 shadow-sm">
+                                    <i class="fas fa-save"></i>
+                                </button>
+                            </div>
+                            <span class="text-xl font-black text-mcot-orange dark:text-orange-300 font-display block mt-2">฿{{ booking.deposit_amount|intcomma }}</span>
                         </div>
                         <!-- Penalty -->
                         <div class="bg-gradient-to-br from-rose-50 to-red-50 dark:from-rose-500/20 dark:to-red-500/10 rounded-xl p-4 border border-rose-200/70 dark:border-rose-400/30 text-center shadow-sm">
@@ -473,6 +484,18 @@
     function savePenalty() {
         const amount = document.getElementById('penalty-input').value;
         sendCommand('save_penalty', { amount: amount });
+    }
+
+    function saveDepositPercent() {
+        const percent = document.getElementById('deposit-percent-input').value;
+        sendCommand('update_deposit_percent', { percent: percent });
+    }
+
+    function nudgeDepositPercent(step) {
+        const input = document.getElementById('deposit-percent-input');
+        const current = parseFloat(input.value || '0');
+        const next = Math.min(100, Math.max(0, current + step));
+        input.value = next.toFixed(2);
     }
 
     function openUpdateDatesModal() {

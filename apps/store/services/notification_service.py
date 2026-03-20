@@ -1,12 +1,12 @@
 import io
 import logging
-from decimal import Decimal
 
 from django.conf import settings
 from django.core.mail import send_mail, EmailMessage
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from apps.store.models import Notification
+from apps.store.services.pricing_service import PricingService
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ class NotificationService:
             
             # ส่งอีเมลยอดชำระเงิน
             total_price = booking.calculate_total_price() or 0
-            deposit_amount = total_price * Decimal('0.3') # มัดจำ 30%
+            deposit_amount = PricingService.calculate_deposit(total_price)
             context = {
                 'booking': booking,
                 'deposit_amount': f"{deposit_amount:,.2f}",
@@ -215,6 +215,7 @@ class NotificationService:
             
             # 3. Compose email
             subject = f"[MCOT Equipment Service] ใบเสนอราคา (Quotation) #{booking.id}"
+            deposit_pct = PricingService.get_deposit_percentage()
             body = (
                 f"เรียน {booking.customer_name},\n\n"
                 f"ขอบคุณที่สนใจใช้บริการ MCOT Equipment Service\n"
@@ -223,7 +224,7 @@ class NotificationService:
                 f"- โปรเจกต์: {booking.project_name or '-'}\n"
                 f"- ระยะเวลาเช่า: {booking.start_time.strftime('%d/%m/%Y')} - {booking.end_time.strftime('%d/%m/%Y')}\n"
                 f"- ยอดรวม: ฿{booking.total_price:,.2f}\n"
-                f"- ยอดมัดจำ (30%): ฿{booking.deposit_amount:,.2f}\n\n"
+                f"- ยอดมัดจำ ({deposit_pct}%): ฿{booking.deposit_amount:,.2f}\n\n"
                 f"กรุณาตรวจสอบรายละเอียดในไฟล์แนบ\n"
                 f"หากมีข้อสงสัยสามารถตอบกลับอีเมลนี้ หรือโทร 02-201-6000\n\n"
                 f"ขอแสดงความนับถือ,\n"

@@ -125,6 +125,7 @@ class ProductCategoryAdmin(ModelAdmin):
 @admin.register(SplashConfig)
 class SplashConfigAdmin(ModelAdmin):
     list_display = ['__str__', 'is_active', 'title']
+    fields = ['is_active', 'title', 'message', 'image']
     
     def has_add_permission(self, request):
         has_add = super().has_add_permission(request)
@@ -543,12 +544,17 @@ class BookingAdmin(SimpleHistoryAdmin, ImportExportModelAdmin):
         from django.utils import timezone
         from datetime import timedelta
         from apps.store.services.notification_service import NotificationService
+        from apps.store.services.pricing_service import PricingService
         
         count = 0
         for booking in queryset.filter(status='draft'):
+            totals = PricingService.calculate_booking_total(booking)
+            booking.total_price = totals['grand_total']
+            booking.discount_amount = totals['discount']
+            booking.deposit_amount = PricingService.calculate_deposit(totals['grand_total'])
             booking.status = 'pending'
             booking.expires_at = timezone.now() + timedelta(hours=24) # ให้เวลาชำระเงิน 24 ชม. หลังจากกดขอเรียกเก็บ
-            booking.save(update_fields=['status', 'expires_at'])
+            booking.save(update_fields=['total_price', 'discount_amount', 'deposit_amount', 'status', 'expires_at'])
             NotificationService.send_notification(booking, 'pending_deposit')
             count += 1
             

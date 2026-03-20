@@ -1,5 +1,6 @@
 import os
 import io
+import re
 from PyPDF2 import PdfReader, PdfWriter
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -38,6 +39,28 @@ def format_money(amount):
         return "0.00"
     return f"{Decimal(str(amount)):,.2f}"
 
+
+def format_phone_for_display(phone):
+    """Keep leading zero for local Thai phone display on quotation PDF."""
+    if phone is None:
+        return "-"
+
+    raw = str(phone).strip()
+    if not raw:
+        return "-"
+
+    digits = re.sub(r'\D', '', raw)
+
+    # Handle numbers saved without leading 0 (e.g. 884534534 -> 0884534534)
+    if raw.isdigit() and len(digits) in (8, 9) and not raw.startswith('0'):
+        return f"0{digits}"
+
+    # Handle +66 / 66 country code and convert to local format with leading 0.
+    if digits.startswith('66') and len(digits) >= 11:
+        return f"0{digits[2:]}"
+
+    return raw
+
 # ── Max rows that fit in the table area (top 308 → 510, ~20 pt/row) ─────────
 MAX_ROWS = 10
 ITEM_TABLE_TOP = 320
@@ -47,9 +70,9 @@ AMOUNT_RIGHT_X = 568
 TOTALS_RIGHT_X = 567
 
 # Header value positions near top section of quotation template.
-HEADER_VALUE_X = 120
-HEADER_CUSTOMER_TOP = 166
-HEADER_PHONE_TOP = 202
+HEADER_VALUE_X = 100
+HEADER_CUSTOMER_TOP = 200
+HEADER_PHONE_TOP = 242
 
 def generate_overlay(booking):
     """
@@ -86,7 +109,7 @@ def generate_overlay(booking):
 
     # ── Header: Customer identity (values only) ─────────────────────────────
     customer_name = (booking.customer_name or "-").strip() or "-"
-    phone = (booking.phone or "-").strip() or "-"
+    phone = format_phone_for_display(booking.phone)
 
     normal(10)
     can.drawString(HEADER_VALUE_X, _text_y(HEADER_CUSTOMER_TOP), customer_name[:70])

@@ -15,28 +15,35 @@ from django.contrib.auth.decorators import login_required
 from apps.store.models import Product, Studio, Package, Booking, BookingItem, PromotionCode, Profile
 from apps.store.services.availability import AvailabilityService
 from apps.store.services.booking_service import BookingService
+from apps.store.services.pricing_service import PricingService
 
 logger = logging.getLogger(__name__)
+
+
+def _booking_flow_context():
+    return {
+        'deposit_percent': PricingService.get_deposit_percentage(),
+    }
 
 def cart(request):
     """
     หน้าตะกร้าสินค้า (Cart Page) - Step 1/4: รายการสินค้า
     Render template เปล่า โดยข้อมูลสินค้าจะถูกดึงจาก LocalStorage ทางฝั่ง Client
     """
-    return render(request, 'booking/cart.html')
+    return render(request, 'booking/cart.html', _booking_flow_context())
 
 def cart_dates(request):
     """
     หน้าตะกร้าสินค้า - Step 2/4: เลือกวันเวลา
     """
-    return render(request, 'booking/cart_dates.html')
+    return render(request, 'booking/cart_dates.html', _booking_flow_context())
 
 @login_required
 def cart_review(request):
     """
     หน้าตะกร้าสินค้า - Step 3/4: ตรวจสอบและยืนยัน
     """
-    return render(request, 'booking/cart_review.html')
+    return render(request, 'booking/cart_review.html', _booking_flow_context())
 
 @login_required
 def cart_checkout(request, booking_id):

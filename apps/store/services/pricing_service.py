@@ -127,9 +127,30 @@ class PricingService:
         }
 
     @staticmethod
-    def calculate_deposit(total_amount, percentage=0.3):
+    def calculate_deposit(total_amount, percentage=None):
         """
         คำนวณมัดจำ (Deposit)
-        Default: 30% ของยอดรวม
+        รองรับทั้งรูปแบบ ratio (0.3) และ percentage (30)
         """
-        return total_amount * Decimal(str(percentage))
+        if percentage is None:
+            percentage = PricingService.get_deposit_percentage()
+
+        p = Decimal(str(percentage))
+        ratio = (p / Decimal('100')) if p > 1 else p
+        return total_amount * ratio
+
+    @staticmethod
+    def get_deposit_percentage(default=Decimal('30')):
+        """Read global deposit percentage from BookingConfig singleton."""
+        try:
+            from apps.store.models import BookingConfig
+
+            cfg = BookingConfig.objects.order_by('id').first()
+            if cfg and cfg.deposit_percent is not None:
+                pct = Decimal(str(cfg.deposit_percent))
+                if Decimal('0') <= pct <= Decimal('100'):
+                    return pct
+        except Exception:
+            pass
+
+        return Decimal(str(default))

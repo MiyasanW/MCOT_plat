@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Q
 from django.utils import timezone
 from simple_history.models import HistoricalRecords
@@ -24,6 +25,28 @@ class SplashConfig(models.Model):
         from django.core.exceptions import ValidationError
         if not self.pk and SplashConfig.objects.exists():
             raise ValidationError('มีแท็บตั้งค่า Splash Screen อยู่แล้ว ไม่สามารถสร้างเพิ่มได้ โปรดแก้ไขอันเดิม')
+
+
+class BookingConfig(models.Model):
+    """Global booking settings (managed via staff summary, not a standalone admin menu)."""
+    deposit_percent = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=30.00,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        verbose_name="เปอร์เซ็นต์มัดจำ (%)",
+        help_text="ค่า % มัดจำแบบ global ของระบบ"
+    )
+
+    class Meta:
+        verbose_name_plural = "ตั้งค่า - ระบบจอง"
+
+    def __str__(self):
+        return "ตั้งค่าระบบจอง"
+
+    def clean(self):
+        if not self.pk and BookingConfig.objects.exists():
+            raise ValidationError('มีแท็บตั้งค่าระบบจองอยู่แล้ว ไม่สามารถสร้างเพิ่มได้ โปรดแก้ไขอันเดิม')
 
 class ProductCategory(models.Model):
     """หมวดหมู่สินค้า (เช่น กล้อง, เลนส์, ไฟ, รถ OB)"""
@@ -255,7 +278,15 @@ class Booking(models.Model):
     
     # Payment Info (New)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="ยอดรวมทั้งหมด")
-    deposit_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="ยอดมัดจำ (30%)")
+    deposit_percent = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=30.00,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        verbose_name="เปอร์เซ็นต์มัดจำ (%)",
+        help_text="เจ้าหน้าที่สามารถปรับ % มัดจำต่อใบจองได้"
+    )
+    deposit_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="ยอดมัดจำ")
     payment_slip = models.ImageField(upload_to='payment_slips/', blank=True, null=True, verbose_name="สลิปโอนเงิน")
     PAYMENT_STATUS_CHOICES = [
         ('unpaid', 'ยังไม่จ่าย (Unpaid)'),
