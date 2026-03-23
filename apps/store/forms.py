@@ -140,10 +140,7 @@ class UserRegisterForm(UserCreationForm):
             self.fields['password1'].label = "รหัสผ่าน"
             self.fields['password1'].help_text = mark_safe(
                 "<ul class='list-disc pl-4 mt-2 space-y-1'>"
-                "<li>รหัสผ่านต้องไม่คล้ายกับข้อมูลส่วนตัวอื่นๆ ของคุณมากเกินไป</li>"
                 "<li>รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร</li>"
-                "<li>รหัสผ่านต้องไม่ใช่รหัสผ่านที่เดาง่ายหรือใช้กันทั่วไป</li>"
-                "<li>รหัสผ่านต้องไม่เป็นตัวเลขเพียงอย่างเดียว</li>"
                 "</ul>"
             )
             

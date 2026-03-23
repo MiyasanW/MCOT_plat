@@ -130,10 +130,7 @@ DATABASES = {
 
 # Password validation (ความปลอดภัยรหัสผ่าน)
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'apps.store.validators.ThaiUserAttributeSimilarityValidator'},
     {'NAME': 'apps.store.validators.ThaiMinimumLengthValidator', 'OPTIONS': {'min_length': 8}},
-    {'NAME': 'apps.store.validators.ThaiCommonPasswordValidator'},
-    {'NAME': 'apps.store.validators.ThaiNumericPasswordValidator'},
 ]
 
 # Internationalization
